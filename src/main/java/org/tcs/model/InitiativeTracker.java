@@ -5,24 +5,22 @@ import java.util.*;
 public class InitiativeTracker {
   LinkedList<HasInitiative> combatQueue;
 
-  /**
-   * Does nothing if the queue is empty
-   */
-  void advance(){
-    if(!combatQueue.isEmpty()) {
+  /** Does nothing if the queue is empty */
+  void advance() {
+    if (!combatQueue.isEmpty()) {
       combatQueue.add(combatQueue.remove());
     }
   }
 
-  HasInitiative getFirst(){
+  HasInitiative getFirst() {
     return combatQueue.getFirst();
   }
 
-  InitiativeTracker(){
+  InitiativeTracker() {
     combatQueue = new LinkedList<>();
   }
 
-  InitiativeTracker(Collection<? extends HasInitiative> elements){
+  InitiativeTracker(Collection<? extends HasInitiative> elements) {
     ArrayList<HasInitiative> temporary = new ArrayList<>(elements);
     temporary.forEach(HasInitiative::generateInitiative);
     temporary.sort(Comparator.comparingInt(HasInitiative::getInitiative).reversed());
@@ -30,15 +28,16 @@ public class InitiativeTracker {
   }
 
   /**
-   * Generates initiative and adds an element to the queue
-   * at first available position after element before it with greater initiative
+   * Generates initiative and adds an element to the queue at first available position after element
+   * before it with greater initiative
+   *
    * @param entry the entity to be added
    */
   void add(HasInitiative entry) {
     entry.generateInitiative();
-    ListIterator<HasInitiative> thisQueue =  combatQueue.listIterator(1);
-    while(thisQueue.hasPrevious()){
-      if(thisQueue.previous().getInitiative() >= entry.getInitiative()){
+    ListIterator<HasInitiative> thisQueue = combatQueue.listIterator(1);
+    while (thisQueue.hasPrevious()) {
+      if (thisQueue.previous().getInitiative() >= entry.getInitiative()) {
         thisQueue.add(entry);
         return;
       }
@@ -46,5 +45,4 @@ public class InitiativeTracker {
     }
     thisQueue.add(entry);
   }
-
 }
