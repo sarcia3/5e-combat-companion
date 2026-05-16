@@ -20,6 +20,6 @@ class StateTest {
     commoners.add(first);
     commoners.add(second);
     State state = new State(commoners);
-    assertEquals(2, state.initiative.getSize());
+    assertEquals(2, state.initiative.size());
   }
 }
