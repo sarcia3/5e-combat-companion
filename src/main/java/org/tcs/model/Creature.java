@@ -31,10 +31,4 @@ public class Creature implements HasInitiative {
     return 20;
     // TODO: Create randomness generator class in the future
   }
-
-  @Override
-  public int getInitiative() {
-    return 20;
-    // TODO: Create randomness generator class in the future
-  }
 }

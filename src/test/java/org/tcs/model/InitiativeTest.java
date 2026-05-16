@@ -16,11 +16,6 @@ class InitiativeTest {
         rolled = value;
         return value;
       }
-
-      @Override
-      public int getInitiative() {
-        return rolled;
-      }
     };
   }
 
