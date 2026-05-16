@@ -55,17 +55,17 @@ public class InitiativeTracker {
    */
   void add(HasInitiative entry) {
     InitiativeEntry toAdd = new InitiativeEntry(entry);
-    ListIterator<InitiativeEntry> thisQueue = combatQueue.listIterator(1);
-    while (thisQueue.hasPrevious()) {
-      if (thisQueue.previous().compareTo(toAdd) >= 0) {
-        thisQueue.add(toAdd);
+    ListIterator<InitiativeEntry> initiativeQueueIterator = combatQueue.listIterator(1);
+    while (initiativeQueueIterator.hasPrevious()) {
+      if (initiativeQueueIterator.previous().compareTo(toAdd) >= 0) {
+        initiativeQueueIterator.add(toAdd);
         return;
       }
-      thisQueue.next(); // to offset `previous`
-      if (!thisQueue.hasNext()) break;
-      thisQueue.next();
+      initiativeQueueIterator.next(); // to offset `previous`
+      if (!initiativeQueueIterator.hasNext()) break;
+      initiativeQueueIterator.next();
     }
-    thisQueue.add(toAdd);
+    initiativeQueueIterator.add(toAdd);
   }
 
   int size() {
