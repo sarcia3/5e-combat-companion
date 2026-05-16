@@ -4,7 +4,21 @@ import java.util.*;
 
 // should probably implement collections in the future.
 public class InitiativeTracker {
-  LinkedList<HasInitiative> combatQueue;
+  private record InitiativeEntry(int initiative, HasInitiative actor)
+      implements Comparable<InitiativeEntry> {
+
+    InitiativeEntry(HasInitiative o) {
+      this(o.generateInitiative(), o);
+    }
+
+    @Override
+    public int compareTo(InitiativeEntry other) {
+      return Integer.compare(other.initiative, initiative);
+      // flipped on purpose, the greater the initiative the sooner an actor acts.
+    }
+  }
+
+  LinkedList<InitiativeEntry> combatQueue;
 
   /** Does nothing if the queue is empty */
   void advance() {
@@ -14,7 +28,7 @@ public class InitiativeTracker {
   }
 
   HasInitiative getFirst() {
-    return combatQueue.getFirst();
+    return combatQueue.getFirst().actor;
   }
 
   InitiativeTracker() {
@@ -22,9 +36,9 @@ public class InitiativeTracker {
   }
 
   InitiativeTracker(Collection<? extends HasInitiative> elements) {
-    ArrayList<HasInitiative> temporary = new ArrayList<>(elements);
-    temporary.forEach(HasInitiative::generateInitiative);
-    temporary.sort(Comparator.comparingInt(HasInitiative::getInitiative).reversed());
+    ArrayList<InitiativeEntry> temporary = new ArrayList<>();
+    elements.forEach((element) -> temporary.add(new InitiativeEntry(element)));
+    Collections.sort(temporary);
     combatQueue = new LinkedList<>(temporary);
   }
 
@@ -35,16 +49,18 @@ public class InitiativeTracker {
    * @param entry the entity to be added
    */
   void add(HasInitiative entry) {
-    entry.generateInitiative();
-    ListIterator<HasInitiative> thisQueue = combatQueue.listIterator(1);
+    InitiativeEntry toAdd = new InitiativeEntry(entry);
+    ListIterator<InitiativeEntry> thisQueue = combatQueue.listIterator(1);
     while (thisQueue.hasPrevious()) {
-      if (thisQueue.previous().getInitiative() >= entry.getInitiative()) {
-        thisQueue.add(entry);
+      if (thisQueue.previous().compareTo(toAdd) >= 0) {
+        thisQueue.add(toAdd);
         return;
       }
+      thisQueue.next(); // to offset `previous`
+      if (!thisQueue.hasNext()) break;
       thisQueue.next();
     }
-    thisQueue.add(entry);
+    thisQueue.add(toAdd);
   }
 
   int getSize() {
