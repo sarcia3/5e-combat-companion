@@ -7,7 +7,7 @@ import org.tcs.model.geometry.*;
 @SuppressWarnings("unused")
 public class State {
   InitiativeTracker initiative;
-  Map<Creature, Position> creaturePositions;
+  Map<Creature, Point> creaturePositions;
 
   State() {
     initiative = new InitiativeTracker();

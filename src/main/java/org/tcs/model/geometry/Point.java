@@ -1,3 +1,3 @@
 package org.tcs.model.geometry;
 
-public interface Position {}
+public interface Point {}
