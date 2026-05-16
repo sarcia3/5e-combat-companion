@@ -32,10 +32,15 @@ public class InitiativeTracker {
   }
 
   InitiativeTracker() {
-    combatQueue = new LinkedList<>();
+    this(null);
   }
 
   InitiativeTracker(Collection<? extends HasInitiative> elements) {
+    if (elements == null) {
+      combatQueue = new LinkedList<>();
+      return;
+    }
+
     ArrayList<InitiativeEntry> temporary = new ArrayList<>();
     elements.forEach((element) -> temporary.add(new InitiativeEntry(element)));
     Collections.sort(temporary);

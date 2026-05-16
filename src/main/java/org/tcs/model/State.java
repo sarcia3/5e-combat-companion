@@ -10,7 +10,7 @@ public class State {
   Map<Creature, Point> creaturePositions;
 
   State() {
-    initiative = new InitiativeTracker();
+    this(null);
   }
 
   State(Collection<? extends Creature> creatures) {
