@@ -9,8 +9,7 @@ class StateTest {
 
   @Test
   void canCreateEmptyGameState() {
-    State state = new State();
-    assertNotNull(state);
+    new State();
   }
 
   @Test
@@ -21,7 +20,6 @@ class StateTest {
     commoners.add(first);
     commoners.add(second);
     State state = new State(commoners);
-    assertNotNull(state);
     assertEquals(2, state.initiative.getSize());
   }
 }
