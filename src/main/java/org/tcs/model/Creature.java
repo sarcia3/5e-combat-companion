@@ -29,7 +29,7 @@ public class Creature implements HasInitiative {
   @Override
   public int generateInitiative() {
     return 20;
-    // temporary. Create randomness generator class in the future
+    // TODO: Create randomness generator class in the future
   }
 
   @Override
