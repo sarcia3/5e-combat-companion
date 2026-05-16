@@ -68,7 +68,7 @@ public class InitiativeTracker {
     thisQueue.add(toAdd);
   }
 
-  int getSize() {
+  int size() {
     return combatQueue.size();
   }
 }
