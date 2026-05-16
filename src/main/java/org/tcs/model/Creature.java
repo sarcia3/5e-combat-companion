@@ -20,7 +20,7 @@ public class Creature implements HasInitiative {
     // this constructor should be deleted later. This is for the minimal working example
     this.name = name;
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
-    movementSpeed = 30;
+    this.movementSpeed = movementSpeed;
     for (Ability ability : Ability.values()) {
       abilityScores.put(ability, 10);
     }
