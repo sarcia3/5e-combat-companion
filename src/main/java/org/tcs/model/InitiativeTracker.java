@@ -2,6 +2,7 @@ package org.tcs.model;
 
 import java.util.*;
 
+// should probably implement collections in the future.
 public class InitiativeTracker {
   LinkedList<HasInitiative> combatQueue;
 
@@ -44,5 +45,9 @@ public class InitiativeTracker {
       thisQueue.next();
     }
     thisQueue.add(entry);
+  }
+
+  int getSize() {
+    return combatQueue.size();
   }
 }
