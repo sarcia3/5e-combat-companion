@@ -3,17 +3,14 @@ package org.tcs.ui;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
+import org.tcs.model.geometry.RealPoint;
 
 public class MapView extends Canvas {
   private static final double TILE_SIZE = 150;
-  private double cameraX = 0;
-  private double cameraY = 0;
-  private double lastMouseX = 0;
-  private double lastMouseY = 0;
-  private double mousePressX = 0;
-  private double mousePressY = 0;
-  private Integer selectedTileX = null;
-  private Integer selectedTileY = null;
+  private RealPoint camera = new RealPoint(0, 0);
+  private RealPoint lastMouse = new RealPoint(0, 0);
+  private RealPoint mousePress = new RealPoint(0, 0);
+  private RealPoint selectedTile = null;
 
   public MapView() {
     new AnimationTimer() {
@@ -25,35 +22,33 @@ public class MapView extends Canvas {
 
     setOnMousePressed(
         event -> {
-          lastMouseX = event.getX();
-          lastMouseY = event.getY();
-          mousePressX = event.getX();
-          mousePressY = event.getY();
+          lastMouse = new RealPoint(event.getX(), event.getY());
+          mousePress = new RealPoint(event.getX(), event.getY());
         });
 
     setOnMouseDragged(
         event -> {
-          double deltaX = event.getX() - lastMouseX;
-          double deltaY = event.getY() - lastMouseY;
-          cameraX -= deltaX;
-          cameraY -= deltaY;
-          lastMouseX = event.getX();
-          lastMouseY = event.getY();
+          RealPoint delta =
+              new RealPoint(event.getX() - lastMouse.x(), event.getY() - lastMouse.y());
+          camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
+          lastMouse = new RealPoint(event.getX(), event.getY());
         });
 
     setOnMouseClicked(
         event -> {
-          double deltaX = Math.abs(event.getX() - mousePressX);
-          double deltaY = Math.abs(event.getY() - mousePressY);
+          RealPoint delta =
+              new RealPoint(
+                  Math.abs(event.getX() - mousePress.x()), Math.abs(event.getY() - mousePress.y()));
 
-          if (deltaX <= 50 && deltaY <= 50) {
-            double worldX = event.getX() + cameraX - getWidth() / 2;
-            double worldY = event.getY() + cameraY - getHeight() / 2;
-            int tileX = (int) Math.floor(worldX / TILE_SIZE);
-            int tileY = (int) Math.floor(worldY / TILE_SIZE);
-            selectedTileX = tileX;
-            selectedTileY = tileY;
-            System.out.println("Selected square: (" + tileX + ", " + tileY + ")");
+          if (delta.x() <= 50 && delta.y() <= 50) {
+            RealPoint world =
+                new RealPoint(
+                    event.getX() + camera.x() - getWidth() / 2,
+                    event.getY() + camera.y() - getHeight() / 2);
+            RealPoint tile =
+                new RealPoint(Math.floor(world.x() / TILE_SIZE), Math.floor(world.y() / TILE_SIZE));
+            selectedTile = tile;
+            System.out.println("Selected square: (" + (int) tile.x() + ", " + (int) tile.y() + ")");
           }
         });
   }
@@ -67,29 +62,31 @@ public class MapView extends Canvas {
     gc.clearRect(0, 0, width, height);
     gc.fillRect(0, 0, width, height);
 
-    final double GRID_OFFSET_X = (width / 2 - cameraX) % TILE_SIZE;
-    final double GRID_OFFSET_Y = (height / 2 - cameraY) % TILE_SIZE;
+    final RealPoint GRID_OFFSET =
+        new RealPoint((width / 2 - camera.x()) % TILE_SIZE, (height / 2 - camera.y()) % TILE_SIZE);
 
     // Draw grid
     gc.setStroke(Color.GRAY);
     gc.setLineWidth(1);
 
     // Draw vertical lines
-    for (double x = GRID_OFFSET_X; x <= width; x += TILE_SIZE) {
+    for (double x = GRID_OFFSET.x(); x <= width; x += TILE_SIZE) {
       gc.strokeLine(x, 0, x, height);
     }
 
     // Draw horizontal lines
-    for (double y = GRID_OFFSET_Y; y <= height; y += TILE_SIZE) {
+    for (double y = GRID_OFFSET.y(); y <= height; y += TILE_SIZE) {
       gc.strokeLine(0, y, width, y);
     }
 
     // Highlight selected square
-    if (selectedTileX != null && selectedTileY != null) {
-      double selectedScreenX = selectedTileX * TILE_SIZE - cameraX + width / 2;
-      double selectedScreenY = selectedTileY * TILE_SIZE - cameraY + height / 2;
+    if (selectedTile != null) {
+      RealPoint selectedScreen =
+          new RealPoint(
+              selectedTile.x() * TILE_SIZE - camera.x() + width / 2,
+              selectedTile.y() * TILE_SIZE - camera.y() + height / 2);
       gc.setFill(Color.rgb(255, 255, 255, 0.3));
-      gc.fillRect(selectedScreenX, selectedScreenY, TILE_SIZE, TILE_SIZE);
+      gc.fillRect(selectedScreen.x(), selectedScreen.y(), TILE_SIZE, TILE_SIZE);
     }
   }
 }
