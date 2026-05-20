@@ -5,19 +5,23 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.RealPoint;
+import org.tcs.model.geometry.WorldMap;
 
 public class MapView extends Canvas {
-  private static final double TILE_SIZE = 150;
+  private static final double PX_PER_FT = 150;
+  private final ViewModel model;
   private RealPoint camera = new RealPoint(0, 0);
   private RealPoint lastMouse = new RealPoint(0, 0);
   private RealPoint mousePress = new RealPoint(0, 0);
   private Point selectedTile = null;
 
   public MapView(ViewModel model) {
+    this.model = model;
+    // TODO: handle starting & stopping of the rendering
     new AnimationTimer() {
       @Override
       public void handle(long now) {
-        draw(model);
+        draw();
       }
     }.start();
 
@@ -35,30 +39,29 @@ public class MapView extends Canvas {
           lastMouse = new RealPoint(event.getX(), event.getY());
         });
 
-    setOnMouseClicked(
+    setOnMouseReleased(
         event -> {
           RealPoint delta =
               new RealPoint(
                   Math.abs(event.getX() - mousePress.x()), Math.abs(event.getY() - mousePress.y()));
 
-          if (delta.x() <= 50 && delta.y() <= 50) {
+          if (delta.x() <= 10 && delta.y() <= 10) {
             RealPoint world =
                 new RealPoint(
                     event.getX() + camera.x() - getWidth() / 2,
                     event.getY() + camera.y() - getHeight() / 2);
+            WorldMap map = model.getMap();
+            final double realTileSize = PX_PER_FT * map.getPointSize();
             selectedTile =
-                model
-                    .getMap()
-                    .realPointToPoint(
-                        (new RealPoint(
-                            Math.floor(world.x() / TILE_SIZE), Math.floor(world.y() / TILE_SIZE))));
+                map.realPointToPoint(
+                    (new RealPoint(world.x() / realTileSize, world.y() / realTileSize)));
           }
         });
   }
 
-  void draw(ViewModel model) {
-    var map = model.getMap();
-    final double realTileSize = TILE_SIZE * map.getPointSize();
+  private void draw() {
+    WorldMap map = model.getMap();
+    final double realTileSize = PX_PER_FT * map.getPointSize();
 
     var gc = getGraphicsContext2D();
     var width = getWidth();
@@ -70,7 +73,7 @@ public class MapView extends Canvas {
 
     final var GRID_OFFSET =
         new RealPoint(
-            (width / 2 - camera.x()) % realTileSize, (height / 2 - camera.y()) % realTileSize);
+            positiveModulo(camera.x(), realTileSize), positiveModulo(camera.y(), realTileSize));
 
     // Draw grid
     gc.setStroke(Color.GRAY);
@@ -100,5 +103,9 @@ public class MapView extends Canvas {
           realTileSize,
           realTileSize);
     }
+  }
+
+  private static double positiveModulo(double value, double modulus) {
+    return ((value % modulus) + modulus) % modulus;
   }
 }
