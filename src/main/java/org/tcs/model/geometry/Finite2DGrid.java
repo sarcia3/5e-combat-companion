@@ -5,6 +5,7 @@ import javafx.util.Pair;
 
 public class Finite2DGrid implements WorldMap {
   private final int width, height;
+  private final Set<Point2D> occupiedPoints;
 
   public Finite2DGrid(int width, int height) {
     this.width = width;
@@ -74,11 +75,9 @@ public class Finite2DGrid implements WorldMap {
   }
 
   private boolean checkIfAccessible(Point2D point2D) {
-    boolean xCoordinate = point2D.x < width && point2D.x >= 0;
-    boolean yCoordinate = point2D.y < height && point2D.y >= 0;
+    boolean xInBounds = point2D.x < width && point2D.x >= 0;
+    boolean yInBounds = point2D.y < height && point2D.y >= 0;
     boolean occupied = occupiedPoints.contains(point2D);
-    return xCoordinate && yCoordinate && (!occupied);
+    return xInBounds && yInBounds && (!occupied);
   }
-
-  private final Set<Point2D> occupiedPoints;
 }
