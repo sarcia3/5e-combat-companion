@@ -2,7 +2,7 @@ package org.tcs.model.geometry;
 
 public interface WorldMap {
   /**
-   * @return The distance between two points or Float.POSITIVE_INFINITY if there is no path between
+   * @return The distance between two points or Double.POSITIVE_INFINITY if there is no path between
    *     them.
    */
   double getDistance(Point start, Point end);
