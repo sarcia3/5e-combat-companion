@@ -32,10 +32,9 @@ public class Finite2DGrid implements WorldMap {
         for (int j = -1; j <= 1; j++)
           if (i != 0 || j != 0) {
             GridPoint2D next = new GridPoint2D(current.first.x + i, current.first.y + j);
-            if (!distances.containsKey(next) && checkIfAccessible(next)) {
+            if (!distances.containsKey(next) && checkAccessible(next)) {
               queue.add(
-                  new Pair<GridPoint2D, Double>(
-                      next, current.second + (i * j > 0 ? 1.42 : 1.)));
+                  new Pair<GridPoint2D, Double>(next, current.second + (i * j > 0 ? 1.42 : 1.)));
             }
           }
     }
@@ -71,12 +70,12 @@ public class Finite2DGrid implements WorldMap {
 
   private record GridPoint2D(int x, int y) implements Point {}
 
-  private boolean checkIfAccessible(GridPoint2D gridPoint2D) {
+  private boolean checkAccessible(GridPoint2D gridPoint2D) {
     boolean xInBounds = gridPoint2D.x < width && gridPoint2D.x >= 0;
     boolean yInBounds = gridPoint2D.y < height && gridPoint2D.y >= 0;
     boolean occupied = occupiedPoints.contains(gridPoint2D);
     return xInBounds && yInBounds && (!occupied);
   }
 
-  private record  Pair<K, L>(K first, L second){};
+  private record Pair<K, L>(K first, L second) {}
 }
