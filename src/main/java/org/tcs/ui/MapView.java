@@ -3,6 +3,7 @@ package org.tcs.ui;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
+import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.RealPoint;
 
 public class MapView extends Canvas {
@@ -10,13 +11,13 @@ public class MapView extends Canvas {
   private RealPoint camera = new RealPoint(0, 0);
   private RealPoint lastMouse = new RealPoint(0, 0);
   private RealPoint mousePress = new RealPoint(0, 0);
-  private RealPoint selectedTile = null;
+  private Point selectedTile = null;
 
-  public MapView() {
+  public MapView(ViewModel model) {
     new AnimationTimer() {
       @Override
       public void handle(long now) {
-        draw();
+        draw(model);
       }
     }.start();
 
@@ -45,15 +46,20 @@ public class MapView extends Canvas {
                 new RealPoint(
                     event.getX() + camera.x() - getWidth() / 2,
                     event.getY() + camera.y() - getHeight() / 2);
-            RealPoint tile =
-                new RealPoint(Math.floor(world.x() / TILE_SIZE), Math.floor(world.y() / TILE_SIZE));
-            selectedTile = tile;
-            System.out.println("Selected square: (" + (int) tile.x() + ", " + (int) tile.y() + ")");
+            selectedTile =
+                model
+                    .getMap()
+                    .realPointToPoint(
+                        (new RealPoint(
+                            Math.floor(world.x() / TILE_SIZE), Math.floor(world.y() / TILE_SIZE))));
           }
         });
   }
 
-  void draw() {
+  void draw(ViewModel model) {
+    var map = model.getMap();
+    final double realTileSize = TILE_SIZE * map.getPointSize();
+
     var gc = getGraphicsContext2D();
     var width = getWidth();
     var height = getHeight();
@@ -62,31 +68,37 @@ public class MapView extends Canvas {
     gc.clearRect(0, 0, width, height);
     gc.fillRect(0, 0, width, height);
 
-    final RealPoint GRID_OFFSET =
-        new RealPoint((width / 2 - camera.x()) % TILE_SIZE, (height / 2 - camera.y()) % TILE_SIZE);
+    final var GRID_OFFSET =
+        new RealPoint(
+            (width / 2 - camera.x()) % realTileSize, (height / 2 - camera.y()) % realTileSize);
 
     // Draw grid
     gc.setStroke(Color.GRAY);
     gc.setLineWidth(1);
 
     // Draw vertical lines
-    for (double x = GRID_OFFSET.x(); x <= width; x += TILE_SIZE) {
+    for (double x = GRID_OFFSET.x(); x <= width; x += realTileSize) {
       gc.strokeLine(x, 0, x, height);
     }
 
     // Draw horizontal lines
-    for (double y = GRID_OFFSET.y(); y <= height; y += TILE_SIZE) {
+    for (double y = GRID_OFFSET.y(); y <= height; y += realTileSize) {
       gc.strokeLine(0, y, width, y);
     }
 
     // Highlight selected square
     if (selectedTile != null) {
-      RealPoint selectedScreen =
+      var selectedReal = map.pointToRealPoint(selectedTile);
+      var selectedScreen =
           new RealPoint(
-              selectedTile.x() * TILE_SIZE - camera.x() + width / 2,
-              selectedTile.y() * TILE_SIZE - camera.y() + height / 2);
+              selectedReal.x() * realTileSize - camera.x() + width / 2,
+              selectedReal.y() * realTileSize - camera.y() + height / 2);
       gc.setFill(Color.rgb(255, 255, 255, 0.3));
-      gc.fillRect(selectedScreen.x(), selectedScreen.y(), TILE_SIZE, TILE_SIZE);
+      gc.fillRect(
+          selectedScreen.x() - realTileSize / 2,
+          selectedScreen.y() - realTileSize / 2,
+          realTileSize,
+          realTileSize);
     }
   }
 }
