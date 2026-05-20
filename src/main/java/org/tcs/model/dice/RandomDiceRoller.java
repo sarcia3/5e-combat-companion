@@ -2,6 +2,7 @@ package org.tcs.model.dice;
 
 import java.util.Random;
 
+// TODO: reconsider for snapshots
 public class RandomDiceRoller implements DiceRoller {
   Random random = new Random();
 
