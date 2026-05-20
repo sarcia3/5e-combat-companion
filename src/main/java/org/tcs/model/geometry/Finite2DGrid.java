@@ -58,7 +58,7 @@ public class Finite2DGrid implements WorldMap {
 
   @Override
   public boolean freePoint(Point point) {
-    if (!(point instanceof Point2D point2D)) throw new ClassCastException();
+    Point2D point2D = (Point2D) point;
     return occupiedPoints.remove(point2D);
   }
 
