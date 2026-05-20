@@ -21,6 +21,9 @@ public interface WorldMap {
    */
   boolean freePoint(Point point);
 
+  /**
+   * @return Size of a point in feet.
+   */
   double getPointSize();
 
   default boolean isGrid() {
