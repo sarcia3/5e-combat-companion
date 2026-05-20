@@ -13,13 +13,17 @@ public class Finite2DGrid implements WorldMap {
     occupiedPoints = new HashSet<>();
   }
 
+  /**
+   * In this implementation we allow going diagonally with cost being 1.42, approximation of sqrt(2)
+   */
   @Override
   public double getDistance(Point start, Point end) {
     GridPoint2D start2D = (GridPoint2D) start;
     GridPoint2D end2D = (GridPoint2D) end;
     // For now, it runs Dijkstra, but we should replace it with A* later.
     Map<GridPoint2D, Double> distances = new HashMap<>();
-    Queue<Pair<GridPoint2D, Double>> queue = new PriorityQueue<>(Comparator.comparing(Pair::getValue));
+    Queue<Pair<GridPoint2D, Double>> queue =
+        new PriorityQueue<>(Comparator.comparing(Pair::getValue));
     queue.add(new Pair<GridPoint2D, Double>(start2D, 0.));
     while (!queue.isEmpty() && !distances.containsKey(end2D)) {
       Pair<GridPoint2D, Double> current = queue.remove();
@@ -31,7 +35,8 @@ public class Finite2DGrid implements WorldMap {
             GridPoint2D next = new GridPoint2D(current.getKey().x + i, current.getKey().y + j);
             if (!distances.containsKey(next) && checkIfAccessible(next)) {
               queue.add(
-                  new Pair<GridPoint2D, Double>(next, current.getValue() + (i * j > 0 ? 1.5 : 1.)));
+                  new Pair<GridPoint2D, Double>(
+                      next, current.getValue() + (i * j > 0 ? 1.42 : 1.)));
             }
           }
     }
@@ -65,14 +70,7 @@ public class Finite2DGrid implements WorldMap {
     return 1.;
   }
 
-  private record GridPoint2D(int x, int y) implements Point {
-
-    @Override
-    public boolean equals(Object obj) {
-      if (!(obj instanceof GridPoint2D(int x1, int y1))) return false;
-      return x1 == x && y1 == y;
-    }
-  }
+  private record GridPoint2D(int x, int y) implements Point {}
 
   private boolean checkIfAccessible(GridPoint2D gridPoint2D) {
     boolean xInBounds = gridPoint2D.x < width && gridPoint2D.x >= 0;

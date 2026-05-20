@@ -17,11 +17,15 @@ public interface WorldMap {
   boolean occupyPoint(Point point);
 
   /**
+   * A function that frees a point if it was previously occupied.
+   *
    * @return True if the point was occupied and false otherwise.
    */
   boolean freePoint(Point point);
 
   /**
+   * A function that occupies a point if it wasn't previously occupied.
+   *
    * @return Size of a point in feet.
    */
   double getPointSize();
