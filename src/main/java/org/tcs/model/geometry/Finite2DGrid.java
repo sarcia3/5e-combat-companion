@@ -61,7 +61,7 @@ public class Finite2DGrid implements WorldMap {
 
   @Override
   public double getPointSize() {
-    return 0.1f;
+    return 1.;
   }
 
   private record Point2D(int x, int y) implements Point {
