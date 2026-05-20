@@ -1,7 +1,11 @@
-﻿package org.tcs.model.geometry;
+package org.tcs.model.geometry;
 
 public interface WorldMap {
-  float getDistance(Point start, Point end);
+  /**
+   * @return The distance between two points or Float.POSITIVE_INFINITY if there is no path between
+   *     them.
+   */
+  double getDistance(Point start, Point end);
 
   RealPoint pointToRealPoint(Point point);
 
@@ -16,4 +20,10 @@ public interface WorldMap {
    * @return True if the point was occupied and false otherwise.
    */
   boolean freePoint(Point point);
+
+  double getPointSize();
+
+  default boolean isGrid() {
+    return getPointSize() != 0;
+  }
 }

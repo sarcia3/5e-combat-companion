@@ -1,5 +1,3 @@
-﻿package org.tcs.model.geometry;
+package org.tcs.model.geometry;
 
-public class RealPoint {
-  public float x, y;
-}
+public record RealPoint(double x, double y) {}
