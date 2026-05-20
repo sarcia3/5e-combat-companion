@@ -3,5 +3,5 @@
 import java.io.*;
 
 public interface Prototype extends Serializable {
-    String getName();
+  String getName();
 }
