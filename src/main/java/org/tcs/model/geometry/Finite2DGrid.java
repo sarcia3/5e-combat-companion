@@ -1,8 +1,7 @@
 package org.tcs.model.geometry;
 
-import javafx.util.Pair;
-
 import java.util.*;
+import javafx.util.Pair;
 
 public class Finite2DGrid implements WorldMap {
   private final int width, height;
