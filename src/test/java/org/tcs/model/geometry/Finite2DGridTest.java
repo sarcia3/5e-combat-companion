@@ -26,9 +26,9 @@ public class Finite2DGridTest {
       Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
       Point point2 = grid.realPointToPoint(new RealPoint(2., 2.));
       Point point3 = grid.realPointToPoint(new RealPoint(3., 3.));
-      assertEquals(3.5, grid.getDistance(point1, point2));
-      assertEquals(5., grid.getDistance(point1, point3));
-      assertEquals(1.5, grid.getDistance(point2, point3));
+      assertEquals(3.42, grid.getDistance(point1, point2));
+      assertEquals(4.84, grid.getDistance(point1, point3));
+      assertEquals(1.42, grid.getDistance(point2, point3));
     }
 
     @Test
