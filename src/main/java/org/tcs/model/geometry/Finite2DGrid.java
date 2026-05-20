@@ -14,9 +14,8 @@ public class Finite2DGrid implements WorldMap {
 
   @Override
   public double getDistance(Point start, Point end) {
-    if (!(start instanceof Point2D start2D) || !(end instanceof Point2D end2D)) {
-      throw new ClassCastException();
-    }
+    Point2D start2D = (Point2D) start;
+    Point2D end2D = (Point2D) end;
     // For now, it runs Dijkstra, but we should replace it with A* later.
     Map<Point2D, Double> distances = new HashMap<>();
     Queue<Pair<Point2D, Double>> queue = new PriorityQueue<>(Comparator.comparing(Pair::getValue));
@@ -52,14 +51,12 @@ public class Finite2DGrid implements WorldMap {
 
   @Override
   public boolean occupyPoint(Point point) {
-    if (!(point instanceof Point2D point2D)) throw new ClassCastException();
-    return occupiedPoints.add(point2D);
+    return occupiedPoints.add((Point2D) point);
   }
 
   @Override
   public boolean freePoint(Point point) {
-    Point2D point2D = (Point2D) point;
-    return occupiedPoints.remove(point2D);
+    return occupiedPoints.remove((Point2D) point);
   }
 
   @Override
