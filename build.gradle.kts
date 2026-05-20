@@ -4,6 +4,10 @@ plugins {
     id("com.diffplug.spotless") version "8.5.0"
 }
 
+application {
+    mainClass.set("org.tcs.Main")
+}
+
 javafx {
     version = "26.0.1"
     modules = listOf("javafx.controls")
