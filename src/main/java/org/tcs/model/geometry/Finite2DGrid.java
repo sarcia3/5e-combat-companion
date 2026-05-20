@@ -1,7 +1,6 @@
 package org.tcs.model.geometry;
 
 import java.util.*;
-import javafx.util.Pair;
 
 public class Finite2DGrid implements WorldMap {
   private final int width, height;
@@ -23,20 +22,20 @@ public class Finite2DGrid implements WorldMap {
     // For now, it runs Dijkstra, but we should replace it with A* later.
     Map<GridPoint2D, Double> distances = new HashMap<>();
     Queue<Pair<GridPoint2D, Double>> queue =
-        new PriorityQueue<>(Comparator.comparing(Pair::getValue));
+        new PriorityQueue<>(Comparator.comparing(Pair::second));
     queue.add(new Pair<GridPoint2D, Double>(start2D, 0.));
     while (!queue.isEmpty() && !distances.containsKey(end2D)) {
       Pair<GridPoint2D, Double> current = queue.remove();
-      if (distances.containsKey(current.getKey())) continue;
-      else distances.put(current.getKey(), current.getValue());
+      if (distances.containsKey(current.first)) continue;
+      else distances.put(current.first, current.second);
       for (int i = -1; i <= 1; i++)
         for (int j = -1; j <= 1; j++)
           if (i != 0 || j != 0) {
-            GridPoint2D next = new GridPoint2D(current.getKey().x + i, current.getKey().y + j);
+            GridPoint2D next = new GridPoint2D(current.first.x + i, current.first.y + j);
             if (!distances.containsKey(next) && checkIfAccessible(next)) {
               queue.add(
                   new Pair<GridPoint2D, Double>(
-                      next, current.getValue() + (i * j > 0 ? 1.42 : 1.)));
+                      next, current.second + (i * j > 0 ? 1.42 : 1.)));
             }
           }
     }
@@ -78,4 +77,6 @@ public class Finite2DGrid implements WorldMap {
     boolean occupied = occupiedPoints.contains(gridPoint2D);
     return xInBounds && yInBounds && (!occupied);
   }
+
+  private record  Pair<K, L>(K first, L second){};
 }
