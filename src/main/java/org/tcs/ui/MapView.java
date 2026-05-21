@@ -1,5 +1,7 @@
 package org.tcs.ui;
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ContextMenu;
@@ -18,6 +20,9 @@ public class MapView extends Canvas {
   private RealPoint lastMouse = new RealPoint(0, 0);
   private RealPoint mousePress = new RealPoint(0, 0);
   private Point selectedTile = null;
+  private RealPoint contextTarget = new RealPoint(0, 0);
+  // This is a temporary solution. This won't be here (in that state) in the future
+  private final List<Decoration> decorations = new ArrayList<>();
 
   public MapView(ViewModel model) {
     this.model = model;
@@ -34,6 +39,19 @@ public class MapView extends Canvas {
 
     var addMenu = new Menu("Add...");
     var addAsset = new MenuItem("...decoration");
+
+    addAsset.setOnAction(
+        _ -> {
+          var canvasX = contextTarget.x();
+          var canvasY = contextTarget.y();
+
+          // Convert to world coordinates
+          RealPoint worldPos =
+              new RealPoint(
+                  canvasX + camera.x() - getWidth() / 2, canvasY + camera.y() - getHeight() / 2);
+
+          decorations.add(new Decoration(worldPos, Assets.truck));
+        });
 
     addMenu.getItems().add(addAsset);
     contextMenu.getItems().add(addMenu);
@@ -65,6 +83,8 @@ public class MapView extends Canvas {
 
           if (delta.x() <= 10 && delta.y() <= 10) {
             if (event.getButton().equals(MouseButton.SECONDARY)) {
+              contextTarget = new RealPoint(event.getX(), event.getY());
+              contextMenu.hide();
               contextMenu.show(this, event.getScreenX(), event.getScreenY());
             }
 
@@ -86,39 +106,48 @@ public class MapView extends Canvas {
     final double realTileSize = PX_PER_FT * map.getPointSize();
 
     var gc = getGraphicsContext2D();
+    gc.save();
+
     var width = getWidth();
     var height = getHeight();
 
-    gc.setFill(Color.BLACK);
     gc.clearRect(0, 0, width, height);
+    gc.setFill(Color.BLACK);
     gc.fillRect(0, 0, width, height);
 
-    final var GRID_OFFSET =
-        new RealPoint(
-            -positiveModulo(camera.x() - width / 2, realTileSize),
-            -positiveModulo(camera.y() - height / 2, realTileSize));
+    gc.translate(width / 2 - camera.x(), height / 2 - camera.y());
 
     // Draw grid
+    double minWorldX = camera.x() - width / 2;
+    double maxWorldX = camera.x() + width / 2;
+    double minWorldY = camera.y() - height / 2;
+    double maxWorldY = camera.y() + height / 2;
+
+    double firstGridX = Math.floor(minWorldX / realTileSize) * realTileSize;
+    double firstGridY = Math.floor(minWorldY / realTileSize) * realTileSize;
+
     gc.setStroke(Color.GRAY);
     gc.setLineWidth(1);
 
     // Draw vertical lines
-    for (double x = GRID_OFFSET.x(); x <= width; x += realTileSize) {
-      gc.strokeLine(x, 0, x, height);
+    for (double x = firstGridX; x <= maxWorldX; x += realTileSize) {
+      gc.strokeLine(x, minWorldY, x, maxWorldY);
     }
 
     // Draw horizontal lines
-    for (double y = GRID_OFFSET.y(); y <= height; y += realTileSize) {
-      gc.strokeLine(0, y, width, y);
+    for (double y = firstGridY; y <= maxWorldY; y += realTileSize) {
+      gc.strokeLine(minWorldX, y, maxWorldX, y);
+    }
+
+    for (Decoration decoration : decorations) {
+      decoration.draw(gc);
     }
 
     // Highlight selected square
     if (selectedTile != null) {
       var selectedReal = map.pointToRealPoint(selectedTile);
       var selectedScreen =
-          new RealPoint(
-              selectedReal.x() * realTileSize - camera.x() + width / 2,
-              selectedReal.y() * realTileSize - camera.y() + height / 2);
+          new RealPoint(selectedReal.x() * realTileSize, selectedReal.y() * realTileSize);
       gc.setFill(Color.rgb(255, 255, 255, 0.3));
       gc.fillRect(
           selectedScreen.x() - realTileSize / 2,
@@ -126,9 +155,7 @@ public class MapView extends Canvas {
           realTileSize,
           realTileSize);
     }
-  }
 
-  private static double positiveModulo(double value, double modulus) {
-    return ((value % modulus) + modulus) % modulus;
+    gc.restore();
   }
 }
