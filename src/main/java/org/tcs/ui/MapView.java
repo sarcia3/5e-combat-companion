@@ -8,7 +8,7 @@ import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
 
 public class MapView extends Canvas {
-  private static final double PX_PER_FT = 150;
+  public static final double PX_PER_FT = 120;
   private final ViewModel model;
   private RealPoint camera = new RealPoint(0, 0);
   private RealPoint lastMouse = new RealPoint(0, 0);
