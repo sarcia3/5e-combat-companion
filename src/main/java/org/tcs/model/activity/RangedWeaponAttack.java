@@ -8,18 +8,18 @@ public final class RangedWeaponAttack implements WeaponAttack {
   @Override
   public AttackRoll attackRoll() {
     // TODO implement
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public Damage damageRoll() {
     // TODO implement
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public boolean inRange(HasHitPoints target, State state) {
     // TODO implement
-    return false;
+    throw new UnsupportedOperationException();
   }
 }
