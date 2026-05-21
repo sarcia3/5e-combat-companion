@@ -6,7 +6,7 @@ import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.dice.RandomDiceRoller;
 
 /** Player, monster, summon etc. Basically anything that exists, has hp and takes actions */
-public class Creature implements HasInitiative {
+public class Creature implements HasInitiative, HasHitPoints {
 
   int hitPoints = 0;
   int hitPointMaximum;
@@ -38,5 +38,20 @@ public class Creature implements HasInitiative {
   @Override
   public int generateInitiative() {
     return diceRoller.roll(20); // TODO add DEX modifier to the roll
+  }
+
+  @Override
+  public int hitPoints() {
+    return hitPoints + temporaryHitPoints;
+  }
+
+  @Override
+  public int hitPointMaximum() {
+    return hitPointMaximum;
+  }
+
+  @Override
+  public void takeDamage(Damage damage) {
+    // TODO implement, take in mind resistance etc.
   }
 }
