@@ -4,7 +4,8 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class Damage {
-  enum Type {
+  // TODO how would magical vs nonmagical dmg work?
+  public enum Type {
     ACID,
     BLUDGEONING,
     COLD,
@@ -21,4 +22,8 @@ public class Damage {
   }
 
   Map<Type, Integer> byType = new EnumMap<>(Type.class);
+
+  public void add(Type type, int amount) {
+    byType.put(type, byType.getOrDefault(type, 0) + amount);
+  }
 }
