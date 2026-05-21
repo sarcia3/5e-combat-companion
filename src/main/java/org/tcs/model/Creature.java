@@ -8,12 +8,13 @@ import org.tcs.model.dice.RandomDiceRoller;
 /** Player, monster, summon etc. Basically anything that exists, has hp and takes actions */
 public class Creature implements HasInitiative, HasHitPoints {
 
+  String name; // effectively final for the time being, but this might change in the future
   int hitPoints = 0;
-  int hitPointMaximum;
+  int hitPointMaximum = 0;
   int temporaryHitPoints = 0;
   DiceRoller diceRoller;
+  int proficiencyBonus = 2;
 
-  String name; // effectively final for the time being, but this might change in the future
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
 
   /** movement speed in feet */
@@ -21,18 +22,24 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   /** Creates a new creature. Random dice rolling by default. */
   Creature(String name, int hitPointMaximum, int movementSpeed) {
-    this(name, hitPointMaximum, movementSpeed, new RandomDiceRoller());
+    this(name, hitPointMaximum, movementSpeed, 2, new RandomDiceRoller());
   }
 
-  Creature(String name, int hitPointMaximum, int movementSpeed, DiceRoller diceRoller) {
+  Creature(
+      String name,
+      int hitPointMaximum,
+      int movementSpeed,
+      int proficiencyBonus,
+      DiceRoller diceRoller) {
     // this constructor should be deleted later. This is for the minimal working example
     this.name = name;
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
+    this.proficiencyBonus = proficiencyBonus;
     this.movementSpeed = movementSpeed;
 
     for (Ability ability : Ability.values()) abilityScores.put(ability, 10);
 
-    this.diceRoller = new RandomDiceRoller();
+    this.diceRoller = diceRoller;
   }
 
   @Override
@@ -50,8 +57,38 @@ public class Creature implements HasInitiative, HasHitPoints {
     return hitPointMaximum;
   }
 
+  public int abilityModifier(Ability ability) {
+    return Math.floorDiv(abilityScores.get(ability) - 10, 2);
+  }
+
   @Override
   public void takeDamage(Damage damage) {
-    // TODO implement, take in mind resistance etc.
+    // TODO actually implement, considering resistance immunities and so on
+    // currently we just subtract the sum
+    hitPoints -= damage.byType.values().stream().mapToInt(Integer::intValue).sum();
+    if (hitPoints < 0) {
+      // do something
+      hitPoints = 0;
+    }
+  }
+
+  @Override
+  public int armorClass() {
+    // TODO implement
+    return 10;
+  }
+
+  public int proficiencyBonus() {
+    return proficiencyBonus;
+  }
+
+  public DiceRoller diceRoller() {
+    return diceRoller;
+  }
+
+  int criticalHitThreshold() {
+    // there are some features that make it 19. Very rare, but no reason not to add it at this stage
+    // as well.
+    return 20;
   }
 }
