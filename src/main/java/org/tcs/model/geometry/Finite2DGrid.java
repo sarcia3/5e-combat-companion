@@ -6,14 +6,19 @@ public class Finite2DGrid implements WorldMap {
   private final int width, height;
   private final Set<GridPoint2D> occupiedPoints;
 
+  /**
+   * @throws IllegalArgumentException if either width or height is negative.
+   */
   public Finite2DGrid(int width, int height) {
+    if (width < 0 || height < 0) throw new IllegalArgumentException();
     this.width = width;
     this.height = height;
     occupiedPoints = new HashSet<>();
   }
 
   /**
-   * In this implementation we allow going diagonally with cost being 1.42, approximation of sqrt(2)
+   * In this implementation we allow going diagonally with cost being 1.42, approximation of
+   * sqrt(2).
    */
   @Override
   public double getDistance(Point start, Point end) {
@@ -32,7 +37,7 @@ public class Finite2DGrid implements WorldMap {
         for (int j = -1; j <= 1; j++)
           if (i != 0 || j != 0) {
             GridPoint2D next = new GridPoint2D(current.first.x + i, current.first.y + j);
-            if (!distances.containsKey(next) && checkAccessible(next)) {
+            if (!distances.containsKey(next) && (checkAccessible(next) || next.equals(end))) {
               queue.add(
                   new Pair<GridPoint2D, Double>(next, current.second + (i * j > 0 ? 1.42 : 1.)));
             }
@@ -55,12 +60,19 @@ public class Finite2DGrid implements WorldMap {
 
   @Override
   public boolean occupyPoint(Point point) {
-    return occupiedPoints.add((GridPoint2D) point);
+    GridPoint2D gridPoint2D = (GridPoint2D) point;
+    if (!checkInBound(gridPoint2D)) return false;
+    return occupiedPoints.add(gridPoint2D);
   }
 
   @Override
   public boolean freePoint(Point point) {
     return occupiedPoints.remove((GridPoint2D) point);
+  }
+
+  @Override
+  public boolean isPointOccupied(Point point) {
+    return occupiedPoints.contains((GridPoint2D) point);
   }
 
   @Override
@@ -70,11 +82,16 @@ public class Finite2DGrid implements WorldMap {
 
   private record GridPoint2D(int x, int y) implements Point {}
 
-  private boolean checkAccessible(GridPoint2D gridPoint2D) {
+  private boolean checkInBound(GridPoint2D gridPoint2D) {
     boolean xInBounds = gridPoint2D.x < width && gridPoint2D.x >= 0;
     boolean yInBounds = gridPoint2D.y < height && gridPoint2D.y >= 0;
+    return xInBounds && yInBounds;
+  }
+
+  private boolean checkAccessible(GridPoint2D gridPoint2D) {
+
     boolean occupied = occupiedPoints.contains(gridPoint2D);
-    return xInBounds && yInBounds && (!occupied);
+    return checkInBound(gridPoint2D) && (!occupied);
   }
 
   private record Pair<K, L>(K first, L second) {}
