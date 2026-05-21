@@ -33,9 +33,8 @@ public final class MeleeWeaponAttack implements WeaponAttack {
   @Override
   public Damage damageRoll() {
     // TODO allow for weapons that give more complicated dmg types
-    Damage resultingDamage = new Damage();
-    resultingDamage.add(
-        attackWeapon.damageType, attacker.diceRoller().roll(attackWeapon.damageDice));
-    return resultingDamage;
+    Damage result = new Damage();
+    result.add(attackWeapon.damageType, attacker.diceRoller().roll(attackWeapon.damageDice));
+    return result;
   }
 }
