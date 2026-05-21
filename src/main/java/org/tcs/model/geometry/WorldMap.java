@@ -12,14 +12,14 @@ public interface WorldMap {
   Point realPointToPoint(RealPoint realPoint);
 
   /**
-   * A function that frees a point if it was previously occupied.
+   * Frees a point if it was previously occupied.
    *
    * @return True if the point was not occupied yet and false otherwise.
    */
   boolean occupyPoint(Point point);
 
   /**
-   * A function that occupies a point if it wasn't previously occupied.
+   * Occupies a point if it wasn't previously occupied.
    *
    * @return True if the point was occupied and false otherwise.
    */
