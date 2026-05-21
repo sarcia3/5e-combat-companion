@@ -33,10 +33,11 @@ public class MapView extends Canvas {
 
     setOnMouseDragged(
         event -> {
-          RealPoint delta =
-              new RealPoint(event.getX() - lastMouse.x(), event.getY() - lastMouse.y());
-          camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
-          lastMouse = new RealPoint(event.getX(), event.getY());
+          if (event.isSecondaryButtonDown()) {
+            var delta = new RealPoint(event.getX() - lastMouse.x(), event.getY() - lastMouse.y());
+            camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
+            lastMouse = new RealPoint(event.getX(), event.getY());
+          }
         });
 
     setOnMouseReleased(
@@ -45,7 +46,9 @@ public class MapView extends Canvas {
               new RealPoint(
                   Math.abs(event.getX() - mousePress.x()), Math.abs(event.getY() - mousePress.y()));
 
-          if (delta.x() <= 10 && delta.y() <= 10) {
+          if (delta.x() <= 10
+              && delta.y() <= 10
+              && event.getButton().equals(javafx.scene.input.MouseButton.PRIMARY)) {
             RealPoint world =
                 new RealPoint(
                     event.getX() + camera.x() - getWidth() / 2,
