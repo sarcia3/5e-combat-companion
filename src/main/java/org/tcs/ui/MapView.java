@@ -2,6 +2,10 @@ package org.tcs.ui;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.RealPoint;
@@ -25,10 +29,23 @@ public class MapView extends Canvas {
       }
     }.start();
 
+    // Context menu
+    var contextMenu = new ContextMenu();
+
+    var addMenu = new Menu("Add...");
+    var addAsset = new MenuItem("...decoration");
+
+    addMenu.getItems().add(addAsset);
+    contextMenu.getItems().add(addMenu);
+
     setOnMousePressed(
         event -> {
           lastMouse = new RealPoint(event.getX(), event.getY());
           mousePress = new RealPoint(event.getX(), event.getY());
+
+          if (event.getButton().equals(MouseButton.PRIMARY)) {
+            contextMenu.hide();
+          }
         });
 
     setOnMouseDragged(
@@ -46,9 +63,11 @@ public class MapView extends Canvas {
               new RealPoint(
                   Math.abs(event.getX() - mousePress.x()), Math.abs(event.getY() - mousePress.y()));
 
-          if (delta.x() <= 10
-              && delta.y() <= 10
-              && event.getButton().equals(javafx.scene.input.MouseButton.PRIMARY)) {
+          if (delta.x() <= 10 && delta.y() <= 10) {
+            if (event.getButton().equals(MouseButton.SECONDARY)) {
+              contextMenu.show(this, event.getScreenX(), event.getScreenY());
+            }
+
             RealPoint world =
                 new RealPoint(
                     event.getX() + camera.x() - getWidth() / 2,
@@ -76,7 +95,8 @@ public class MapView extends Canvas {
 
     final var GRID_OFFSET =
         new RealPoint(
-            positiveModulo(camera.x(), realTileSize), positiveModulo(camera.y(), realTileSize));
+            -positiveModulo(camera.x() - width / 2, realTileSize),
+            -positiveModulo(camera.y() - height / 2, realTileSize));
 
     // Draw grid
     gc.setStroke(Color.GRAY);
