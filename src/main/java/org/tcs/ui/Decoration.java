@@ -34,6 +34,10 @@ public class Decoration {
     return extent;
   }
 
+  public boolean contains(RealPoint point) {
+    return extent.contains(point.x() - position.x(), point.y() - position.y());
+  }
+
   public void draw(GraphicsContext gc) {
     gc.drawImage(
         image,
