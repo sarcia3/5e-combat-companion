@@ -14,7 +14,7 @@ public interface WorldMap {
    * @return A collection of distances between the starting point and those of target points that
    *     can be reached ordered ascendingly by the distance.
    */
-  Collection<Pair<Point, Double>> getDistance(Point start, Collection<Point> targets);
+  Collection<Pair<Point, Double>> getDistances(Point start, Collection<Point> targets);
 
   RealPoint pointToRealPoint(Point point);
 
