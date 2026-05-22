@@ -28,7 +28,7 @@ public class State {
    * @return False if given creature already exists in this state or the position is already
    *     occupied.
    */
- public boolean addCreature(Creature creature, Point position) {
+  public boolean addCreature(Creature creature, Point position) {
     // TODO Change the InitiativeTracker so that we can add new creatures to it
     if (worldMap.isPointOccupied(position)) return false;
     boolean notExisted = creaturePositions.putIfAbsent(creature, position) == null;
@@ -70,5 +70,4 @@ public class State {
       if (pointsInDistance.contains(entry.getValue())) list.add(entry.getKey());
     return list;
   }
-
 }
