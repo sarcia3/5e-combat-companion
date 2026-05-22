@@ -69,7 +69,7 @@ public class State {
    *     given point.
    */
   // TODO add an option to ignore obstacles
-  public Collection<Creature> getCreaturesWithinDistance(Point point, Double distance) {
+  public Collection<Creature> getCreaturesWithinDistance(Point point, double distance) {
     List<Point> pointsInDistance = new ArrayList<>();
 
     for (Pair<Point, Double> pair :
