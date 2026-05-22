@@ -63,7 +63,7 @@ public class State {
   // TODO add an option to ignore obstacles
   public Collection<Creature> getCreaturesWithinDistance(Point point, Double distance) {
     List<Point> pointsInDistance = new ArrayList<>();
-    for (Pair<Point, Double> pair : worldMap.getDistance(point, creaturePositions.values()))
+    for (Pair<Point, Double> pair : worldMap.getDistances(point, creaturePositions.values()))
       if (pair.second() <= distance) pointsInDistance.add(pair.first());
     List<Creature> list = new ArrayList<>();
     for (Map.Entry<Creature, Point> entry : creaturePositions.entrySet())

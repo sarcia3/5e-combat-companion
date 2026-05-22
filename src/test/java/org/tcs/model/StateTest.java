@@ -2,7 +2,6 @@ package org.tcs.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.jupiter.api.Test;

@@ -89,7 +89,7 @@ public class Finite2DGrid implements WorldMap {
   @Override
   public boolean occupyPoint(Point point) {
     GridPoint2D gridPoint2D = (GridPoint2D) point;
-    if (!checkInBound(gridPoint2D)) return false;
+    if (!checkInBounds(gridPoint2D)) return false;
     return occupiedPoints.add(gridPoint2D);
   }
 
@@ -119,7 +119,7 @@ public class Finite2DGrid implements WorldMap {
   private boolean checkAccessible(GridPoint2D gridPoint2D) {
 
     boolean occupied = occupiedPoints.contains(gridPoint2D);
-    return checkInBound(gridPoint2D) && (!occupied);
+    return checkInBounds(gridPoint2D) && (!occupied);
   }
 
   /**
@@ -132,7 +132,7 @@ public class Finite2DGrid implements WorldMap {
       for (int j = -1; j <= 1; j++)
         if (i != 0 || j != 0) {
           GridPoint2D prospect = new GridPoint2D(gridPoint2D.x + i, gridPoint2D.y + j);
-          if (checkInBound(prospect)) list.add(new Pair<>(prospect, i * j > 0 ? 1.42 : 1));
+          if (checkInBounds(prospect)) list.add(new Pair<>(prospect, i * j > 0 ? 1.42 : 1));
         }
     return list;
   }
