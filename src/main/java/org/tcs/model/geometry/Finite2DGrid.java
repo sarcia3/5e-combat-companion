@@ -110,7 +110,7 @@ public class Finite2DGrid implements WorldMap {
 
   private record GridPoint2D(int x, int y) implements Point {}
 
-  private boolean checkInBound(GridPoint2D gridPoint2D) {
+  private boolean checkInBounds(GridPoint2D gridPoint2D) {
     boolean xInBounds = gridPoint2D.x < width && gridPoint2D.x >= 0;
     boolean yInBounds = gridPoint2D.y < height && gridPoint2D.y >= 0;
     return xInBounds && yInBounds;
