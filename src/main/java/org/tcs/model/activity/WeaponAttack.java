@@ -9,8 +9,6 @@ public sealed interface WeaponAttack permits MeleeWeaponAttack, RangedWeaponAtta
     // TODO how will view model get information about how this went? Probably shouldn't be a void,
     // but what else? Separate record?
 
-    if (!inRange(target, state)) throw new IllegalArgumentException();
-
     AttackRoll attackRollGenerated = attackRoll();
     if (attackRollGenerated.naturalDice() == 1) {
       // critical failure. Attack fails.
@@ -30,6 +28,4 @@ public sealed interface WeaponAttack permits MeleeWeaponAttack, RangedWeaponAtta
   AttackRoll attackRoll();
 
   Damage damageRoll();
-
-  boolean inRange(HasHitPoints target, State state);
 }
