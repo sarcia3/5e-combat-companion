@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.dice.RandomDiceRoller;
+import org.tcs.model.geometry.Point;
 
 /** Player, monster, summon etc. Basically anything that exists, has hp and takes actions */
 public class Creature implements HasInitiative, HasHitPoints {
@@ -14,6 +15,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   int temporaryHitPoints = 0;
   DiceRoller diceRoller;
   int proficiencyBonus = 2;
+  private Point position;
 
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
 
@@ -23,18 +25,20 @@ public class Creature implements HasInitiative, HasHitPoints {
   double movementSpeed = 0;
 
   /** Creates a new creature. Random dice rolling by default. */
-  Creature(String name, int hitPointMaximum, int movementSpeed) {
-    this(name, hitPointMaximum, movementSpeed, 2, new RandomDiceRoller());
+  Creature(String name, Point position, int hitPointMaximum, int movementSpeed) {
+    this(name, position, hitPointMaximum, movementSpeed, 2, new RandomDiceRoller());
   }
 
   Creature(
       String name,
+      Point position,
       int hitPointMaximum,
       int movementSpeed,
       int proficiencyBonus,
       DiceRoller diceRoller) {
     // this constructor should be deleted later. This is for the minimal working example
     this.name = name;
+    this.position = position;
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
     this.proficiencyBonus = proficiencyBonus;
     this.movementSpeed = movementSpeed;
@@ -42,6 +46,15 @@ public class Creature implements HasInitiative, HasHitPoints {
     for (Ability ability : Ability.values()) abilityScores.put(ability, 10);
 
     this.diceRoller = diceRoller;
+  }
+
+  public Point position() {
+    return position;
+  }
+
+  // We make this package-private as it allows the state to be dessynchronized.
+  void setPosition(Point position) {
+    this.position = position;
   }
 
   @Override
