@@ -19,9 +19,11 @@ public class MapView extends Canvas {
   public static final double PX_PER_FT = 120;
   private final ViewModel model;
   private RealPoint camera = new RealPoint(0, 0);
-  // Tracker for drag-based navigation
+  // Tracker for drag-based navigation.
+  // TODO: Calling it a `RealPoint` is misleading. A dedicated record would be more fitting
   private RealPoint lastMouse = new RealPoint(0, 0);
   // Tracker for distinguishing clicks from drags
+  // TODO: Calling it a `RealPoint` is misleading. A dedicated record would be more fitting
   private RealPoint mousePress = new RealPoint(0, 0);
   private Point selectedTile = null;
   private Decoration selectedDecoration = null;
@@ -47,10 +49,7 @@ public class MapView extends Canvas {
     var addMenu = new Menu("Add...");
     var addAsset = new MenuItem("...decoration");
 
-    addAsset.setOnAction(
-        _ -> {
-          decorations.add(new Decoration(contextTarget, Assets.truck));
-        });
+    addAsset.setOnAction(_ -> decorations.add(new Decoration(contextTarget, Assets.truck)));
 
     addMenu.getItems().add(addAsset);
     contextMenu.getItems().add(addMenu);
@@ -61,7 +60,7 @@ public class MapView extends Canvas {
   }
 
   private RealPoint screenToReal(double x, double y) {
-    return new RealPoint(x + camera.x() - getWidth() / 2, y + camera.y() - getWidth());
+    return new RealPoint(x + camera.x() - getWidth() / 2, y + camera.y() - getHeight() / 2);
   }
 
   private void onMouseReleased(MouseEvent event) {
@@ -95,6 +94,16 @@ public class MapView extends Canvas {
   private void onMousePressed(MouseEvent event) {
     lastMouse = new RealPoint(event.getX(), event.getY());
     mousePress = new RealPoint(event.getX(), event.getY());
+    selectedDecoration = null;
+
+    var world = screenToReal(event.getX(), event.getY());
+    for (int i = decorations.size() - 1; i >= 0; i--) {
+      Decoration decoration = decorations.get(i);
+      if (decoration.contains(world)) {
+        selectedDecoration = decoration;
+        return;
+      }
+    }
 
     if (event.getButton().equals(MouseButton.PRIMARY)) {
       contextMenu.hide();
