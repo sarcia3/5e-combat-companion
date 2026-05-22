@@ -3,6 +3,7 @@ package org.tcs.ui;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -140,6 +141,18 @@ public class MapView extends Canvas {
 
     for (Decoration decoration : decorations) {
       decoration.draw(gc);
+    }
+
+    // Highlight selected
+    if (selectedDecoration != null) {
+      gc.setStroke(Color.BLUE);
+      RealPoint pos = selectedDecoration.getPosition();
+      Rectangle2D extent = selectedDecoration.getExtent();
+      gc.strokeRect(
+          pos.x() + extent.getMinX(),
+          pos.y() + extent.getMinY(),
+          extent.getWidth(),
+          extent.getHeight());
     }
 
     // Highlight selected square
