@@ -8,6 +8,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.RealPoint;
@@ -17,12 +18,17 @@ public class MapView extends Canvas {
   public static final double PX_PER_FT = 120;
   private final ViewModel model;
   private RealPoint camera = new RealPoint(0, 0);
+  // Tracker for drag-based navigation
   private RealPoint lastMouse = new RealPoint(0, 0);
+  // Tracker for distinguishing clicks from drags
   private RealPoint mousePress = new RealPoint(0, 0);
   private Point selectedTile = null;
+  private Decoration selectedDecoration = null;
   private RealPoint contextTarget = new RealPoint(0, 0);
   // This is a temporary solution. This won't be here (in that state) in the future
   private final List<Decoration> decorations = new ArrayList<>();
+
+  private final ContextMenu contextMenu;
 
   public MapView(ViewModel model) {
     this.model = model;
@@ -35,70 +41,63 @@ public class MapView extends Canvas {
     }.start();
 
     // Context menu
-    var contextMenu = new ContextMenu();
+    this.contextMenu = new ContextMenu();
 
     var addMenu = new Menu("Add...");
     var addAsset = new MenuItem("...decoration");
 
     addAsset.setOnAction(
         _ -> {
-          var canvasX = contextTarget.x();
-          var canvasY = contextTarget.y();
-
-          // Convert to world coordinates
-          RealPoint worldPos =
-              new RealPoint(
-                  canvasX + camera.x() - getWidth() / 2, canvasY + camera.y() - getHeight() / 2);
-
-          decorations.add(new Decoration(worldPos, Assets.truck));
+          decorations.add(new Decoration(contextTarget, Assets.truck));
         });
 
     addMenu.getItems().add(addAsset);
     contextMenu.getItems().add(addMenu);
 
-    setOnMousePressed(
-        event -> {
-          lastMouse = new RealPoint(event.getX(), event.getY());
-          mousePress = new RealPoint(event.getX(), event.getY());
+    setOnMousePressed(this::onMousePressed);
+    setOnMouseDragged(this::onMouseDragged);
+    setOnMouseReleased(this::onMouseReleased);
+  }
 
-          if (event.getButton().equals(MouseButton.PRIMARY)) {
-            contextMenu.hide();
-          }
-        });
+  private RealPoint screenToReal(double x, double y) {
+    return new RealPoint(x + camera.x() - getWidth() / 2, y + camera.y() - getWidth());
+  }
 
-    setOnMouseDragged(
-        event -> {
-          if (event.isSecondaryButtonDown()) {
-            var delta = new RealPoint(event.getX() - lastMouse.x(), event.getY() - lastMouse.y());
-            camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
-            lastMouse = new RealPoint(event.getX(), event.getY());
-          }
-        });
+  private void onMouseReleased(MouseEvent event) {
+    RealPoint delta =
+        new RealPoint(
+            Math.abs(event.getX() - mousePress.x()), Math.abs(event.getY() - mousePress.y()));
+    RealPoint world = screenToReal(event.getX(), event.getY());
 
-    setOnMouseReleased(
-        event -> {
-          RealPoint delta =
-              new RealPoint(
-                  Math.abs(event.getX() - mousePress.x()), Math.abs(event.getY() - mousePress.y()));
+    if (delta.x() <= 10 && delta.y() <= 10) {
+      if (event.getButton().equals(MouseButton.SECONDARY)) {
+        contextTarget = world;
+        contextMenu.hide();
+        contextMenu.show(this, event.getScreenX(), event.getScreenY());
+      }
 
-          if (delta.x() <= 10 && delta.y() <= 10) {
-            if (event.getButton().equals(MouseButton.SECONDARY)) {
-              contextTarget = new RealPoint(event.getX(), event.getY());
-              contextMenu.hide();
-              contextMenu.show(this, event.getScreenX(), event.getScreenY());
-            }
+      WorldMap map = model.getMap();
+      final double realTileSize = PX_PER_FT * map.getPointSize();
+      selectedTile =
+          map.realPointToPoint((new RealPoint(world.x() / realTileSize, world.y() / realTileSize)));
+    }
+  }
 
-            RealPoint world =
-                new RealPoint(
-                    event.getX() + camera.x() - getWidth() / 2,
-                    event.getY() + camera.y() - getHeight() / 2);
-            WorldMap map = model.getMap();
-            final double realTileSize = PX_PER_FT * map.getPointSize();
-            selectedTile =
-                map.realPointToPoint(
-                    (new RealPoint(world.x() / realTileSize, world.y() / realTileSize)));
-          }
-        });
+  private void onMouseDragged(MouseEvent event) {
+    if (event.isSecondaryButtonDown()) {
+      var delta = new RealPoint(event.getX() - lastMouse.x(), event.getY() - lastMouse.y());
+      camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
+      lastMouse = new RealPoint(event.getX(), event.getY());
+    }
+  }
+
+  private void onMousePressed(MouseEvent event) {
+    lastMouse = new RealPoint(event.getX(), event.getY());
+    mousePress = new RealPoint(event.getX(), event.getY());
+
+    if (event.getButton().equals(MouseButton.PRIMARY)) {
+      contextMenu.hide();
+    }
   }
 
   private void draw() {
