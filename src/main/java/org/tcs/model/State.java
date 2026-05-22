@@ -28,7 +28,7 @@ public class State {
    * @return False if given creature already exists in this state or the position is already
    *     occupied.
    */
-  boolean addCreature(Creature creature, Point position) {
+  public boolean addCreature(Creature creature, Point position) {
     // TODO Change the InitiativeTracker so that we can add new creatures to it
     if (worldMap.isPointOccupied(position)) return false;
     boolean notExisted = creaturePositions.putIfAbsent(creature, position) == null;
@@ -43,7 +43,7 @@ public class State {
    * @throws IllegalArgumentException if actor is not part of the state.
    */
   // TODO add a flag that will allow passing through obstacles
-  boolean moveCreature(Creature actor, Point target) {
+  public boolean moveCreature(Creature actor, Point target) {
     Point start = creaturePositions.get(actor);
     if (start == null) throw new IllegalArgumentException();
     double distance = worldMap.getDistance(start, target);
@@ -62,7 +62,7 @@ public class State {
    *     given point.
    */
   // TODO add an option to ignore obstacles
-  Collection<Creature> getCreaturesWithinDistance(Point point, Double distance) {
+  public Collection<Creature> getCreaturesWithinDistance(Point point, Double distance) {
     List<Point> pointsInDistance = new ArrayList<>();
     for (Pair<Point, Double> pair : worldMap.getDistance(point, creaturePositions.values()))
       if (pair.second() <= distance) pointsInDistance.add(pair.first());
