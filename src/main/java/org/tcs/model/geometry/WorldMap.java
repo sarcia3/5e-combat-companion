@@ -23,7 +23,7 @@ public interface WorldMap {
   /**
    * Occupies a point if it was previously occupied.
    *
-   * @return False it the given point is already occupied or is not part of the map.
+   * @return False if the given point is already occupied or is not part of the map.
    */
   boolean occupyPoint(Point point);
 
