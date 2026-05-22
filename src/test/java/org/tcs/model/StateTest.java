@@ -14,8 +14,8 @@ class StateTest {
 
   @Test
   void canCreateGameStateWithGivenCreatures() {
-    Creature first = new Creature("Boring commoner", 4, 30);
-    Creature second = new Creature("Cool commoner", 5, 30);
+    Creature first = new Creature("Boring commoner", null, 4, 30);
+    Creature second = new Creature("Cool commoner", null, 5, 30);
     ArrayList<Creature> commoners = new ArrayList<>();
     commoners.add(first);
     commoners.add(second);
@@ -41,12 +41,13 @@ class StateTest {
       Point point3 = worldMap.realPointToPoint(new RealPoint(0, 1));
       Point checkingPoint = worldMap.realPointToPoint(new RealPoint(1, 1));
 
-      Creature creature1 = new Creature("Creature", 10, 2);
-      Creature creature2 = new Creature("Creature", 10, 2);
-      Creature creature3 = new Creature("Creature", 10, 2);
-      assertTrue(state.addCreature(creature1, point1));
-      assertTrue(state.addCreature(creature2, point2));
-      assertTrue(state.addCreature(creature3, point3));
+      Creature creature1 = new Creature("Creature", point1, 10, 2);
+      Creature creature2 = new Creature("Creature", point2, 10, 2);
+      Creature creature3 = new Creature("Creature", point3, 10, 2);
+      state.addCreature(creature1);
+      state.addCreature(creature2);
+      state.addCreature(creature3);
+
       Collection<Creature> collection = state.getCreaturesWithinDistance(checkingPoint, 1.);
       assertEquals(2, collection.size());
       assertFalse(collection.contains(creature1));
