@@ -18,6 +18,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
 
   /** movement speed in feet */
+  double maxMovementSpeed=0;
   double movementSpeed = 0;
 
   /** Creates a new creature. Random dice rolling by default. */
