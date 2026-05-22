@@ -54,6 +54,7 @@ public class MapView extends Canvas {
     addMenu.getItems().add(addAsset);
     contextMenu.getItems().add(addMenu);
 
+    // Input handling
     setOnMousePressed(this::onMousePressed);
     setOnMouseDragged(this::onMouseDragged);
     setOnMouseReleased(this::onMouseReleased);
@@ -84,11 +85,18 @@ public class MapView extends Canvas {
   }
 
   private void onMouseDragged(MouseEvent event) {
+    var delta = new RealPoint(event.getX() - lastMouse.x(), event.getY() - lastMouse.y());
+
     if (event.isSecondaryButtonDown()) {
-      var delta = new RealPoint(event.getX() - lastMouse.x(), event.getY() - lastMouse.y());
       camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
-      lastMouse = new RealPoint(event.getX(), event.getY());
+    } else if (event.isPrimaryButtonDown() && selectedDecoration != null) {
+      selectedDecoration.setPosition(
+          new RealPoint(
+              selectedDecoration.getPosition().x() + delta.x(),
+              selectedDecoration.getPosition().y() + delta.y()));
     }
+
+    lastMouse = new RealPoint(event.getX(), event.getY());
   }
 
   private void onMousePressed(MouseEvent event) {
