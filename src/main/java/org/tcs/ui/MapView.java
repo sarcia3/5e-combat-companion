@@ -17,7 +17,7 @@ import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
 
 public class MapView extends Canvas {
-  public static final double PX_PER_FT = 120;
+  public static final double PIXELS_PER_FOOT = 120;
   private final ViewModel model;
   private RealPoint camera = new RealPoint(0, 0);
   // Tracker for drag-based navigation.
@@ -81,7 +81,7 @@ public class MapView extends Canvas {
       }
 
       WorldMap map = model.getMap();
-      final double realTileSize = PX_PER_FT * map.getPointSize();
+      final double realTileSize = PIXELS_PER_FOOT * map.getPointSize();
       selectedTile =
           map.realPointToPoint((new RealPoint(world.x() / realTileSize, world.y() / realTileSize)));
     }
@@ -123,7 +123,7 @@ public class MapView extends Canvas {
 
   private void draw() {
     WorldMap map = model.getMap();
-    final double realTileSize = PX_PER_FT * map.getPointSize();
+    final double realTileSize = PIXELS_PER_FOOT * map.getPointSize();
 
     var gc = getGraphicsContext2D();
     gc.save();
