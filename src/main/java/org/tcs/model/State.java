@@ -28,7 +28,7 @@ public class State {
    */
   public boolean addCreature(Creature creature) {
     // TODO Change the InitiativeTracker so that we can add new creatures to it
-    if (!worldMap.occupyPoint(creature.position())) return false;
+    if (!worldMap.occupyPoint(creature.position(), OccupyReason.Creature)) return false;
     if (creatures.contains(creature)) return false;
     creatures.add(creature);
     return true;
@@ -37,7 +37,7 @@ public class State {
   public void setCreaturePosition(Creature creature, Point position) {
     if (!creatures.contains(creature)) throw new IllegalArgumentException();
     worldMap.freePoint(creature.position());
-    if (!worldMap.occupyPoint(position)) throw new IllegalArgumentException();
+    if (!worldMap.occupyPoint(position, OccupyReason.Creature)) throw new IllegalArgumentException();
     creature.setPosition(position);
   }
 
@@ -55,7 +55,7 @@ public class State {
     double distance = worldMap.getDistance(start, target);
     if (distance > actor.movementSpeed) return false;
     // We should never move to an occupied or non-existent point
-    if (!worldMap.occupyPoint(target)) return false;
+    if (!worldMap.occupyPoint(target, OccupyReason.Creature)) return false;
 
     worldMap.freePoint(start);
     actor.setPosition(target);
