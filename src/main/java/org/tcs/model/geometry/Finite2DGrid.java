@@ -5,7 +5,7 @@ import org.tcs.model.util.Pair;
 
 public class Finite2DGrid implements WorldMap {
   private final int width, height;
-  private final Set<GridPoint2D> occupiedPoints;
+  private final Map<GridPoint2D, OccupyReason> occupiedPoints;
 
   /**
    * @throws IllegalArgumentException if either width or height is negative.
@@ -14,7 +14,7 @@ public class Finite2DGrid implements WorldMap {
     if (width < 0 || height < 0) throw new IllegalArgumentException();
     this.width = width;
     this.height = height;
-    occupiedPoints = new HashSet<>();
+    occupiedPoints = new HashMap<>();
   }
 
   /**
@@ -87,20 +87,21 @@ public class Finite2DGrid implements WorldMap {
   }
 
   @Override
-  public boolean occupyPoint(Point point) {
+  public boolean occupyPoint(Point point, OccupyReason reason) {
+    if (reason == null) throw new IllegalArgumentException();
     GridPoint2D gridPoint2D = (GridPoint2D) point;
     if (!checkInBounds(gridPoint2D)) return false;
-    return occupiedPoints.add(gridPoint2D);
+    return occupiedPoints.put(gridPoint2D, reason) == null;
   }
 
   @Override
   public boolean freePoint(Point point) {
-    return occupiedPoints.remove((GridPoint2D) point);
+    return occupiedPoints.remove((GridPoint2D) point) != null;
   }
 
   @Override
-  public boolean isPointOccupied(Point point) {
-    return occupiedPoints.contains((GridPoint2D) point);
+  public OccupyReason getPointOccupied(Point point) {
+    return occupiedPoints.get((GridPoint2D) point);
   }
 
   @Override
@@ -117,9 +118,7 @@ public class Finite2DGrid implements WorldMap {
   }
 
   private boolean checkAccessible(GridPoint2D gridPoint2D) {
-
-    boolean occupied = occupiedPoints.contains(gridPoint2D);
-    return checkInBounds(gridPoint2D) && (!occupied);
+    return checkInBounds(gridPoint2D) && !isPointOccupied(gridPoint2D);
   }
 
   /**

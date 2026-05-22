@@ -25,7 +25,7 @@ public interface WorldMap {
    *
    * @return False if the given point is already occupied or is not part of the map.
    */
-  boolean occupyPoint(Point point);
+  boolean occupyPoint(Point point, OccupyReason reason);
 
   /**
    * Frees a point if it wasn't previously occupied.
@@ -37,7 +37,14 @@ public interface WorldMap {
   /**
    * @return True if the given point is occupied and false otherwise.
    */
-  boolean isPointOccupied(Point point);
+  default boolean isPointOccupied(Point point) {
+    return getPointOccupied(point) != null;
+  }
+
+  /**
+   * @return Reason if the given point is occupied and `null` otherwise.
+   */
+  OccupyReason getPointOccupied(Point point);
 
   /**
    * @return Size of a point in feet.

@@ -22,7 +22,7 @@ public class Finite2DGridTest {
     void simpleObstacle() {
       Finite2DGrid grid = new Finite2DGrid(10, 10);
       Point obstacle = grid.realPointToPoint(new RealPoint(1., 1.));
-      grid.occupyPoint(obstacle);
+      grid.occupyPoint(obstacle, OccupyReason.Terrain);
       Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
       Point point2 = grid.realPointToPoint(new RealPoint(2., 2.));
       Point point3 = grid.realPointToPoint(new RealPoint(3., 3.));
@@ -36,7 +36,7 @@ public class Finite2DGridTest {
       Finite2DGrid grid = new Finite2DGrid(3, 3);
       List<Point> list = new ArrayList<>();
       for (int i = 0; i < 3; i++) list.add(grid.realPointToPoint(new RealPoint(1., i)));
-      for (Point point : list) grid.occupyPoint(point);
+      for (Point point : list) grid.occupyPoint(point, OccupyReason.Terrain);
       Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
       Point point2 = grid.realPointToPoint(new RealPoint(2., 2.));
       assertEquals(Double.POSITIVE_INFINITY, grid.getDistance(point1, point2));
@@ -48,8 +48,8 @@ public class Finite2DGridTest {
     void addAndDelete() {
       Finite2DGrid grid = new Finite2DGrid(10, 10);
       Point point = grid.realPointToPoint(new RealPoint(0., 0.));
-      assertTrue(grid.occupyPoint(point));
-      assertFalse(grid.occupyPoint(point));
+      assertTrue(grid.occupyPoint(point, OccupyReason.Terrain));
+      assertFalse(grid.occupyPoint(point, OccupyReason.Terrain));
       assertTrue(grid.freePoint(point));
       assertFalse(grid.freePoint(point));
     }
