@@ -9,7 +9,7 @@ public record RealPoint(double x, double y) {
     return new RealPoint(multiplier * this.x(), multiplier * this.y());
   }
 
-  public RealPoint divide(double dividend) {
-    return new RealPoint(this.x() / dividend, this.y() / dividend);
+  public RealPoint divide(double divisor) {
+    return new RealPoint(this.x() / divisor, this.y() / divisor);
   }
 }
