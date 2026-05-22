@@ -124,8 +124,8 @@ public class MapView extends Canvas {
   }
 
   private void draw() {
-    WorldMap map = model.getMap();
-    final double realTileSize = PIXELS_PER_FOOT * map.getPointSize();
+    WorldMap worldMap = model.getMap();
+    final double realTileSize = PIXELS_PER_FOOT * worldMap.getPointSize();
 
     var gc = getGraphicsContext2D();
     gc.save();
@@ -179,7 +179,7 @@ public class MapView extends Canvas {
 
     // Highlight selected square
     if (selectedTile != null) {
-      var selectedReal = map.pointToRealPoint(selectedTile);
+      var selectedReal = worldMap.pointToRealPoint(selectedTile);
       var selectedScreen =
           new RealPoint(selectedReal.x() * realTileSize, selectedReal.y() * realTileSize);
       gc.setFill(Color.rgb(255, 255, 255, 0.3));
