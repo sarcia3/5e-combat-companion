@@ -2,6 +2,7 @@ package org.tcs.model;
 
 import java.util.*;
 import org.tcs.model.geometry.*;
+import org.tcs.model.util.Pair;
 
 @SuppressWarnings("unused")
 public class State {
@@ -61,13 +62,13 @@ public class State {
    *     given point.
    */
   // TODO add an option to ignore obstacles
-  //  This is super inefficient. It should somehow be moved to WorldMap
   Collection<Creature> getCreaturesWithinDistance(Point point, Double distance) {
+    List<Point> pointsInDistance = new ArrayList<>();
+    for (Pair<Point, Double> pair : worldMap.getDistance(point, creaturePositions.values()))
+      if (pair.second() <= distance) pointsInDistance.add(pair.first());
     List<Creature> list = new ArrayList<>();
-    for (Map.Entry<Creature, Point> entry : creaturePositions.entrySet()) {
-      System.out.println(worldMap.getDistance(point, entry.getValue()));
-      if (worldMap.getDistance(point, entry.getValue()) <= distance) list.add(entry.getKey());
-    }
+    for (Map.Entry<Creature, Point> entry : creaturePositions.entrySet())
+      if (pointsInDistance.contains(entry.getValue())) list.add(entry.getKey());
     return list;
   }
 }

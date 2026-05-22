@@ -1,6 +1,7 @@
 package org.tcs.model.geometry;
 
 import java.util.*;
+import org.tcs.model.util.Pair;
 
 public class Finite2DGrid implements WorldMap {
   private final int width, height;
@@ -21,30 +22,57 @@ public class Finite2DGrid implements WorldMap {
    * sqrt(2).
    */
   @Override
-  public double getDistance(Point start, Point end) {
+  public double getDistance(Point start, Point target) {
     GridPoint2D start2D = (GridPoint2D) start;
-    GridPoint2D end2D = (GridPoint2D) end;
+    GridPoint2D target2D = (GridPoint2D) target;
     // For now, it runs Dijkstra, but we should replace it with A* later.
     Map<GridPoint2D, Double> distances = new HashMap<>();
     Queue<Pair<GridPoint2D, Double>> queue =
         new PriorityQueue<>(Comparator.comparing(Pair::second));
     queue.add(new Pair<GridPoint2D, Double>(start2D, 0.));
-    while (!queue.isEmpty() && !distances.containsKey(end2D)) {
+    while (!queue.isEmpty() && !distances.containsKey(target2D)) {
       Pair<GridPoint2D, Double> current = queue.remove();
-      if (distances.containsKey(current.first)) continue;
-      else distances.put(current.first, current.second);
-      for (int i = -1; i <= 1; i++)
-        for (int j = -1; j <= 1; j++)
-          if (i != 0 || j != 0) {
-            GridPoint2D next = new GridPoint2D(current.first.x + i, current.first.y + j);
-            if (!distances.containsKey(next) && (checkAccessible(next) || next.equals(end))) {
-              queue.add(
-                  new Pair<GridPoint2D, Double>(next, current.second + (i * j > 0 ? 1.42 : 1.)));
-            }
-          }
+      // If we've already been in this point do nothing
+      if (distances.containsKey(current.first())) continue;
+      distances.put(current.first(), current.second());
+      // If this point is occupied or outside the map do nothing
+      if (!checkAccessible(current.first())) continue;
+      // Otherwise go to neighbours
+      for (Pair<GridPoint2D, Double> next : getNeighbours(current.first())) {
+        if (!distances.containsKey(next.first())) {
+          queue.add(new Pair<GridPoint2D, Double>(next.first(), next.second() + current.second()));
+        }
+      }
     }
 
-    return distances.getOrDefault(end2D, Double.POSITIVE_INFINITY);
+    return distances.getOrDefault(target2D, Double.POSITIVE_INFINITY);
+  }
+
+  @Override
+  public Collection<Pair<Point, Double>> getDistance(Point start, Collection<Point> targets) {
+    List<Pair<Point, Double>> list = new ArrayList<>();
+    GridPoint2D start2D = (GridPoint2D) start;
+    Map<GridPoint2D, Double> distances = new HashMap<>();
+    Queue<Pair<GridPoint2D, Double>> queue =
+        new PriorityQueue<>(Comparator.comparing(Pair::second));
+    queue.add(new Pair<GridPoint2D, Double>(start2D, 0.));
+    while (!queue.isEmpty() && list.size() < targets.size()) {
+      Pair<GridPoint2D, Double> current = queue.remove();
+      // If we've already been in this point do nothing
+      if (distances.containsKey(current.first())) continue;
+      distances.put(current.first(), current.second());
+      if (targets.contains(current.first()))
+        list.add(new Pair<Point, Double>(current.first(), current.second()));
+      // If this point is occupied or outside the map do nothing
+      if (!checkAccessible(current.first())) continue;
+      // Otherwise go to neighbours
+      for (Pair<GridPoint2D, Double> next : getNeighbours(current.first())) {
+        if (!distances.containsKey(next.first())) {
+          queue.add(new Pair<GridPoint2D, Double>(next.first(), next.second() + current.second()));
+        }
+      }
+    }
+    return list;
   }
 
   @Override
@@ -94,5 +122,18 @@ public class Finite2DGrid implements WorldMap {
     return checkInBound(gridPoint2D) && (!occupied);
   }
 
-  private record Pair<K, L>(K first, L second) {}
+  /**
+   * @return A list of neighbours of the given point with the distance to them. The distance is 1 if
+   *     the Points are side connected and 1.42 if they are diagonally connected.
+   */
+  private Collection<Pair<GridPoint2D, Double>> getNeighbours(GridPoint2D gridPoint2D) {
+    List<Pair<GridPoint2D, Double>> list = new ArrayList<>();
+    for (int i = -1; i <= 1; i++)
+      for (int j = -1; j <= 1; j++)
+        if (i != 0 || j != 0) {
+          GridPoint2D prospect = new GridPoint2D(gridPoint2D.x + i, gridPoint2D.y + j);
+          if (checkInBound(prospect)) list.add(new Pair<>(prospect, i * j > 0 ? 1.42 : 1));
+        }
+    return list;
+  }
 }
