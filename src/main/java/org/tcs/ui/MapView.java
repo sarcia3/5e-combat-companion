@@ -17,6 +17,7 @@ import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
 
 public class MapView extends Canvas {
+  private static final int CLICK_BUFFER = 10;
   public static final double PIXELS_PER_FOOT = 120;
   private final ViewModel model;
   private RealPoint camera = new RealPoint(0, 0);
@@ -73,7 +74,8 @@ public class MapView extends Canvas {
             Math.abs(event.getX() - mousePress.x()), Math.abs(event.getY() - mousePress.y()));
     RealPoint world = screenToReal(event.getX(), event.getY());
 
-    if (delta.x() <= 10 && delta.y() <= 10) {
+    // If the mouse drags for too much, we abort the click attempt
+    if (delta.x() <= CLICK_BUFFER && delta.y() <= CLICK_BUFFER) {
       if (event.getButton().equals(MouseButton.SECONDARY)) {
         contextTarget = world;
         contextMenu.hide();
