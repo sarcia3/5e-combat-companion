@@ -49,7 +49,7 @@ public class Finite2DGrid implements WorldMap {
   }
 
   @Override
-  public Collection<Pair<Point, Double>> getDistance(Point start, Collection<Point> targets) {
+  public Collection<Pair<Point, Double>> getDistances(Point start, Collection<Point> targets) {
     List<Pair<Point, Double>> list = new ArrayList<>();
     GridPoint2D start2D = (GridPoint2D) start;
     Map<GridPoint2D, Double> distances = new HashMap<>();
