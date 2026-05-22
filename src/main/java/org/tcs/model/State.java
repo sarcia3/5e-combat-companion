@@ -52,8 +52,7 @@ public class State {
     if (!worldMap.occupyPoint(target)) return false;
     worldMap.freePoint(start);
     creaturePositions.put(actor, target);
-    // TODO change movementSpeed to double
-    actor.movementSpeed -= (int) distance;
+    actor.movementSpeed -= distance;
     return true;
   }
 
