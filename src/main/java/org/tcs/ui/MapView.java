@@ -2,6 +2,7 @@ package org.tcs.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
@@ -33,6 +34,8 @@ public class MapView extends Canvas {
 
   private final ContextMenu contextMenu;
 
+  private Consumer<RealPoint> onAddDecoration;
+
   public MapView(ViewModel model) {
     this.model = model;
     // TODO: handle starting & stopping of the rendering
@@ -49,7 +52,7 @@ public class MapView extends Canvas {
     var addMenu = new Menu("Add...");
     var addAsset = new MenuItem("...decoration");
 
-    addAsset.setOnAction(_ -> decorations.add(new Decoration(contextTarget, Assets.truck)));
+    addAsset.setOnAction(_ -> onAddDecoration.accept(contextTarget));
 
     addMenu.getItems().add(addAsset);
     contextMenu.getItems().add(addMenu);
@@ -186,5 +189,13 @@ public class MapView extends Canvas {
     }
 
     gc.restore();
+  }
+
+  public void setOnAddDecoration(Consumer<RealPoint> onAddDecoration) {
+    this.onAddDecoration = onAddDecoration;
+  }
+
+  public void addDecoration(Decoration decoration) {
+    decorations.add(decoration);
   }
 }
