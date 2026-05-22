@@ -37,7 +37,8 @@ public class State {
   public void setCreaturePosition(Creature creature, Point position) {
     if (!creatures.contains(creature)) throw new IllegalArgumentException();
     worldMap.freePoint(creature.position());
-    if (!worldMap.occupyPoint(position, OccupyReason.Creature)) throw new IllegalArgumentException();
+    if (!worldMap.occupyPoint(position, OccupyReason.Creature))
+      throw new IllegalArgumentException();
     creature.setPosition(position);
   }
 
