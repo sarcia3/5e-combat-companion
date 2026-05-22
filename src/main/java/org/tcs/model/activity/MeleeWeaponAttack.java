@@ -17,12 +17,6 @@ public final class MeleeWeaponAttack implements WeaponAttack {
   }
 
   @Override
-  public boolean inRange(HasHitPoints target, State state) {
-    // TODO implement
-    return true;
-  }
-
-  @Override
   public AttackRoll attackRoll() {
     int roll = attacker.diceRoller().roll(20);
     // TODO add proficiencies and prof bonus
