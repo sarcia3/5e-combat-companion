@@ -10,14 +10,18 @@ public class State {
   List<Creature> creatures = new ArrayList<>();
   WorldMap worldMap;
 
-  State(WorldMap worldMap) {
+  public State(WorldMap worldMap) {
     this.worldMap = worldMap;
   }
 
-  State(Collection<? extends Creature> creatures, WorldMap worldMap) {
+  public State(Collection<? extends Creature> creatures, WorldMap worldMap) {
     this.worldMap = worldMap;
     initiative = new InitiativeTracker(creatures);
     // TODO add positions and add creatures to positions
+  }
+
+  public WorldMap getMap() {
+    return worldMap;
   }
 
   /**

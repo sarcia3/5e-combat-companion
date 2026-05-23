@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
+import org.tcs.model.Creature;
 
 public class PlayView {
   public static Scene scene(ViewModel model) {
@@ -29,9 +30,12 @@ public class PlayView {
           Drawable.Type type = model.getAddType();
 
           if (type == Drawable.Type.Puppet) {
-            canvas.addCreature(model.getAddTarget(), Assets.images.get(image));
+            canvas.addCreature(
+                new Creature("some name", model.getAddTarget().second(), 20, 5),
+                Assets.images.get(image));
           } else if (type == Drawable.Type.Decoration) {
-            canvas.addDecoration(new Decoration(model.getAddTarget(), Assets.images.get(image)));
+            canvas.addDecoration(
+                new Decoration(model.getAddTarget().first(), Assets.images.get(image)));
           }
         });
     assetSelector.setOnCancel(() -> selectorVisible.set(false));
