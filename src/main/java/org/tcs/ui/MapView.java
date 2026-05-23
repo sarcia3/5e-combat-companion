@@ -104,10 +104,15 @@ public class MapView extends Canvas {
     addMenu.getItems().addAll(addCreature, addDecoration);
 
     var moveUp = new MenuItem("Move up");
+    moveUp.setOnAction(_ -> moveDecorationUp((Decoration) selectedDrawable));
     var moveDown = new MenuItem("Move down");
+    moveDown.setOnAction(_ -> moveDecorationDown((Decoration) selectedDrawable));
     var moveToTop = new MenuItem("Move to top");
+    moveToTop.setOnAction(_ -> moveDecorationToTop((Decoration) selectedDrawable));
     var moveToBottom = new MenuItem("Move to bottom");
+    moveToBottom.setOnAction(_ -> moveDecorationToBottom((Decoration) selectedDrawable));
     var delete = new MenuItem("Delete");
+    delete.setOnAction(_ -> removeDecoration((Decoration) selectedDrawable));
 
     var decorationOptions = List.of(moveUp, moveDown, moveToTop, moveToBottom, delete);
     for (MenuItem option : decorationOptions) {
@@ -286,5 +291,38 @@ public class MapView extends Canvas {
 
   public void addDecoration(Decoration decoration) {
     decorations.add(decoration);
+  }
+
+  public void removeDecoration(Decoration decoration) {
+    decorations.remove(decoration);
+    if (selectedDrawable == decoration) selectedDrawable = null;
+  }
+
+  public void moveDecorationUp(Decoration decoration) {
+    var index = decorations.indexOf(decoration);
+    if (index >= 0 && index < decorations.size() - 1) {
+      var temp = decorations.get(index + 1);
+      decorations.set(index + 1, decoration);
+      decorations.set(index, temp);
+    }
+  }
+
+  public void moveDecorationDown(Decoration decoration) {
+    var index = decorations.indexOf(decoration);
+    if (index > 0) {
+      var temp = decorations.get(index - 1);
+      decorations.set(index - 1, decoration);
+      decorations.set(index, temp);
+    }
+  }
+
+  public void moveDecorationToTop(Decoration decoration) {
+    removeDecoration(decoration);
+    decorations.add(decoration);
+  }
+
+  public void moveDecorationToBottom(Decoration decoration) {
+    removeDecoration(decoration);
+    decorations.addFirst(decoration);
   }
 }
