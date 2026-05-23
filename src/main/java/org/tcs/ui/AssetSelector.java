@@ -1,9 +1,9 @@
 package org.tcs.ui;
 
 import java.util.Map;
-import java.util.function.Consumer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -11,15 +11,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
-// Warning: LLM made this
+// Warning: LLM made a lot of this
 
-public class AssetSelector extends BorderPane {
+public class AssetSelector {
+  private final Stage popup;
   private String selectedImageKey = null;
-  private Consumer<String> onOk = null;
-  private Runnable onCancel = null;
 
-  public AssetSelector() {
+  public AssetSelector(Window owner) {
+    popup = new Stage();
+    popup.initOwner(owner);
+    popup.setTitle("Select Asset");
+    popup.initModality(Modality.APPLICATION_MODAL);
+
     GridPane grid = new GridPane();
     grid.setHgap(10);
     grid.setVgap(10);
@@ -27,7 +34,7 @@ public class AssetSelector extends BorderPane {
 
     int col = 0;
     int row = 0;
-    int maxCols = 5;
+    int maxCols = 4;
 
     for (Map.Entry<String, Image> entry : Assets.images.entrySet()) {
       VBox cell = createImageCell(entry.getKey(), entry.getValue());
@@ -44,19 +51,13 @@ public class AssetSelector extends BorderPane {
     scrollPane.setFitToWidth(true);
 
     Button okButton = new Button("Ok");
-    okButton.setOnAction(
-        _ -> {
-          if (onOk != null) {
-            onOk.accept(selectedImageKey);
-          }
-        });
+    okButton.setOnAction(_ -> popup.hide());
 
     Button cancelButton = new Button("Cancel");
     cancelButton.setOnAction(
         _ -> {
-          if (onCancel != null) {
-            onCancel.run();
-          }
+          selectedImageKey = null;
+          popup.hide();
         });
 
     HBox buttonBox = new HBox(10, okButton, cancelButton);
@@ -64,11 +65,12 @@ public class AssetSelector extends BorderPane {
     buttonBox.setAlignment(Pos.CENTER_RIGHT);
     buttonBox.setPadding(new Insets(10));
 
-    setCenter(scrollPane);
-    setBottom(buttonBox);
-    // Honestly not sure why both are needed
-    setPrefSize(Region.USE_COMPUTED_SIZE, 600);
-    setMaxSize(Region.USE_PREF_SIZE, 600);
+    var root = new BorderPane();
+
+    root.setCenter(scrollPane);
+    root.setBottom(buttonBox);
+
+    popup.setScene(new Scene(root, 600, 600));
   }
 
   private VBox createImageCell(String key, Image image) {
@@ -105,11 +107,8 @@ public class AssetSelector extends BorderPane {
     return cell;
   }
 
-  public void setOnOk(Consumer<String> onOk) {
-    this.onOk = onOk;
-  }
-
-  public void setOnCancel(Runnable onCancel) {
-    this.onCancel = onCancel;
+  public String showAndWait() {
+    popup.showAndWait();
+    return selectedImageKey;
   }
 }
