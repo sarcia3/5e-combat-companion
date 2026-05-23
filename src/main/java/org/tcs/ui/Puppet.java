@@ -32,6 +32,8 @@ public final class Puppet implements Drawable {
 
   @Override
   public void draw(GraphicsContext gc) {
+    if (position == null) return;
+
     gc.drawImage(
         image,
         position.x() + extent.getMinX(),

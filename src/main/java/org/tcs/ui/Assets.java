@@ -6,9 +6,10 @@ import javafx.scene.image.Image;
 
 public class Assets {
   public static Map<String, Image> images = new HashMap<>();
+  public static final Image PLACEHOLDER = new Image("/Truck_Red_Front.png");
 
   public static void init() {
-    images.put("truck", new Image("/Truck_Red_Front.png"));
+    images.put("truck", PLACEHOLDER);
     images.put("bishop", new Image("/w_Bishop.png"));
     images.put("knight", new Image("/w_Knight.png"));
     images.put("pawn", new Image("/w_Pawn.png"));

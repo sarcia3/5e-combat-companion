@@ -15,6 +15,7 @@ public sealed interface Drawable permits Decoration, Puppet {
   Rectangle2D extent();
 
   default boolean contains(RealPoint point) {
+    if (position() == null) return false;
     return extent().contains(point.x() - position().x(), point.y() - position().y());
   }
 

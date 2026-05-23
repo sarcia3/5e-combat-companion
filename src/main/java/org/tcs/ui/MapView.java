@@ -1,9 +1,11 @@
 package org.tcs.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ContextMenu;
@@ -13,9 +15,11 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import org.tcs.model.Creature;
 import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
+import org.tcs.model.util.Pair;
 
 public class MapView extends Canvas {
   private static final int CLICK_BUFFER = 10;
@@ -30,15 +34,15 @@ public class MapView extends Canvas {
   private RealPoint mousePress = new RealPoint(0, 0);
   private Point selectedTile = null;
   private Drawable selectedDrawable = null;
-  private RealPoint contextTarget = new RealPoint(0, 0);
+  private Pair<RealPoint, Point> contextTarget = null;
   // This is a temporary solution. This won't be here (in that state) in the future
   private final List<Decoration> decorations = new ArrayList<>();
-  private final List<Puppet> puppets = new ArrayList<>();
+  private HashMap<Creature, Puppet> puppets = new HashMap<>();
 
   private final ContextMenu contextMenu;
 
-  private Consumer<RealPoint> onAddDecoration;
-  private Consumer<RealPoint> onAddCreature;
+  private Consumer<Pair<RealPoint, Point>> onAddDecoration;
+  private Consumer<Pair<RealPoint, Point>> onAddCreature;
 
   public MapView(ViewModel model) {
     this.model = model;
@@ -49,6 +53,33 @@ public class MapView extends Canvas {
         draw();
       }
     }.start();
+
+    // Sync creatures
+    model
+        .creaturesProperty()
+        .addListener(
+            (ListChangeListener<Creature>)
+                c -> {
+                  WorldMap map = model.getMap();
+                  var newCreatures = new HashMap<Creature, Puppet>();
+                  for (Creature creature : c.getList()) {
+                    RealPoint position =
+                        map.pointToRealPoint(creature.position())
+                            .multiply(map.getPointSize() * PIXELS_PER_FOOT);
+                    if (puppets.containsKey(creature)) {
+                      Puppet puppet = puppets.get(creature);
+                      puppet.setPosition(position);
+                      newCreatures.put(creature, puppet);
+                    } else {
+                      newCreatures.put(
+                          creature,
+                          new Puppet(
+                              position, Assets.PLACEHOLDER, map.getPointSize() * PIXELS_PER_FOOT));
+                    }
+                  }
+
+                  puppets = newCreatures;
+                });
 
     // Context menu
     this.contextMenu = new ContextMenu();
@@ -88,16 +119,16 @@ public class MapView extends Canvas {
 
     // If the mouse drags for too much, we abort the click attempt
     if (delta.x() <= CLICK_BUFFER && delta.y() <= CLICK_BUFFER) {
+      WorldMap map = model.getMap();
+      final double realTileSize = PIXELS_PER_FOOT * map.getPointSize();
+
       if (event.getButton().equals(MouseButton.SECONDARY)) {
-        contextTarget = world;
+        contextTarget = new Pair<>(world, map.realPointToPoint(world.divide(realTileSize)));
         contextMenu.hide();
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
 
-      WorldMap map = model.getMap();
-      final double realTileSize = PIXELS_PER_FOOT * map.getPointSize();
-      selectedTile =
-          map.realPointToPoint((new RealPoint(world.x() / realTileSize, world.y() / realTileSize)));
+      selectedTile = map.realPointToPoint(world.divide(realTileSize));
     }
   }
 
@@ -110,9 +141,10 @@ public class MapView extends Canvas {
       RealPoint world = screenToReal(event.getX(), event.getY());
       if (selectedDrawable instanceof Puppet puppet) {
         // Since puppets snap to the grid, the position has to be rounded to nearest tile center.
-        double tileSize = PIXELS_PER_FOOT * model.getMap().getPointSize();
+        WorldMap map = model.getMap();
+        double tileSize = PIXELS_PER_FOOT * map.getPointSize();
         RealPoint rounded =
-            world.divide(tileSize).floor().add(new RealPoint(.5, .5)).multiply(tileSize);
+            map.pointToRealPoint(map.realPointToPoint(world.divide(tileSize))).multiply(tileSize);
         puppet.setPosition(rounded);
       } else if (selectedDrawable instanceof Decoration decoration) {
         decoration.setPosition(world);
@@ -128,8 +160,7 @@ public class MapView extends Canvas {
     selectedDrawable = null;
 
     var world = screenToReal(event.getX(), event.getY());
-    for (int i = puppets.size() - 1; i >= 0; i--) {
-      Puppet puppet = puppets.get(i);
+    for (Puppet puppet : puppets.values()) {
       if (puppet.contains(world)) {
         selectedDrawable = puppet;
         return;
@@ -190,7 +221,7 @@ public class MapView extends Canvas {
       decoration.draw(gc);
     }
 
-    for (Puppet puppet : puppets) {
+    for (Puppet puppet : puppets.values()) {
       puppet.draw(gc);
     }
 
@@ -222,15 +253,16 @@ public class MapView extends Canvas {
     gc.restore();
   }
 
-  public void setOnAddCreature(Consumer<RealPoint> onAddCreature) {
+  public void setOnAddCreature(Consumer<Pair<RealPoint, Point>> onAddCreature) {
     this.onAddCreature = onAddCreature;
   }
 
-  public void addCreature(RealPoint position, Image image) {
-    puppets.add(new Puppet(position, image, model.getMap().getPointSize() * PIXELS_PER_FOOT));
+  public void addCreature(Creature creature, Image image) {
+    puppets.put(creature, new Puppet(null, image, model.getMap().getPointSize() * PIXELS_PER_FOOT));
+    model.addCreature(creature);
   }
 
-  public void setOnAddDecoration(Consumer<RealPoint> onAddDecoration) {
+  public void setOnAddDecoration(Consumer<Pair<RealPoint, Point>> onAddDecoration) {
     this.onAddDecoration = onAddDecoration;
   }
 

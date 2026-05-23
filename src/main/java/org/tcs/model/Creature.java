@@ -25,11 +25,11 @@ public class Creature implements HasInitiative, HasHitPoints {
   double movementSpeed = 0;
 
   /** Creates a new creature. Random dice rolling by default. */
-  Creature(String name, Point position, int hitPointMaximum, int movementSpeed) {
+  public Creature(String name, Point position, int hitPointMaximum, int movementSpeed) {
     this(name, position, hitPointMaximum, movementSpeed, 2, new RandomDiceRoller());
   }
 
-  Creature(
+  public Creature(
       String name,
       Point position,
       int hitPointMaximum,

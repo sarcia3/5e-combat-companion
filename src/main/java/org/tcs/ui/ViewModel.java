@@ -1,28 +1,50 @@
 package org.tcs.ui;
 
-import org.tcs.model.geometry.Finite2DGrid;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.tcs.model.Creature;
+import org.tcs.model.State;
+import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
+import org.tcs.model.util.Pair;
 
 public class ViewModel {
-  private final WorldMap map = new Finite2DGrid(100, 100);
-  private RealPoint target = null;
+  private final State model;
+  private Pair<RealPoint, Point> target = null;
   private Drawable.Type addType = null;
+  private final ObservableList<Creature> creatures = FXCollections.observableArrayList();
 
-  public WorldMap getMap() {
-    return map;
+  public ViewModel(State model) {
+    this.model = model;
   }
 
-  public void setAddParams(RealPoint target, Drawable.Type addType) {
+  public WorldMap getMap() {
+    return model.getMap();
+  }
+
+  public void setAddParams(Pair<RealPoint, Point> target, Drawable.Type addType) {
     this.target = target;
     this.addType = addType;
   }
 
-  public RealPoint getAddTarget() {
+  public Pair<RealPoint, Point> getAddTarget() {
     return target;
   }
 
   public Drawable.Type getAddType() {
     return addType;
+  }
+
+  public void addCreature(Creature creature) {
+    if (model.addCreature(creature)) {
+      creatures.add(creature);
+    } else {
+      System.err.println("Failed to add creature");
+    }
+  }
+
+  public ObservableList<Creature> creaturesProperty() {
+    return creatures;
   }
 }
