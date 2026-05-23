@@ -13,7 +13,7 @@ public class Main extends Application {
   public void start(Stage primaryStage) {
     Assets.init();
     State state = new State(new Finite2DGrid(100, 100));
-    primaryStage.setScene(PlayView.scene(new ViewModel(state)));
+    primaryStage.setScene(PlayView.scene(new ViewModel(state), primaryStage));
     primaryStage.setTitle("Drageons&Dungons 5e Combat Companion");
     primaryStage.show();
   }

@@ -41,8 +41,8 @@ public class MapView extends Canvas {
 
   private final ContextMenu contextMenu;
 
-  private Consumer<Pair<RealPoint, Point>> onAddDecoration;
-  private Consumer<Pair<RealPoint, Point>> onAddCreature;
+  private Consumer<RealPoint> onAddDecoration;
+  private Consumer<Point> onAddCreature;
 
   public MapView(ViewModel model) {
     this.model = model;
@@ -89,13 +89,13 @@ public class MapView extends Canvas {
     var addDecoration = new MenuItem("...decoration");
     addDecoration.setOnAction(
         _ -> {
-          if (onAddDecoration != null) onAddDecoration.accept(contextTarget);
+          if (onAddDecoration != null) onAddDecoration.accept(contextTarget.first());
         });
 
     var addCreature = new MenuItem("...creature");
     addCreature.setOnAction(
         _ -> {
-          if (onAddCreature != null) onAddCreature.accept(contextTarget);
+          if (onAddCreature != null) onAddCreature.accept(contextTarget.second());
         });
 
     addMenu.getItems().addAll(addCreature, addDecoration);
@@ -251,7 +251,7 @@ public class MapView extends Canvas {
     gc.restore();
   }
 
-  public void setOnAddCreature(Consumer<Pair<RealPoint, Point>> onAddCreature) {
+  public void setOnAddCreature(Consumer<Point> onAddCreature) {
     this.onAddCreature = onAddCreature;
   }
 
@@ -261,7 +261,7 @@ public class MapView extends Canvas {
     model.addCreature(creature);
   }
 
-  public void setOnAddDecoration(Consumer<Pair<RealPoint, Point>> onAddDecoration) {
+  public void setOnAddDecoration(Consumer<RealPoint> onAddDecoration) {
     this.onAddDecoration = onAddDecoration;
   }
 
