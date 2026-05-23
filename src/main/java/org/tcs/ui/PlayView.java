@@ -13,7 +13,12 @@ public class PlayView {
     canvas.setOnAddDecoration(
         target -> {
           selectorVisible.set(true);
-          model.setAddTarget(target);
+          model.setAddParams(target, Drawable.Type.Decoration);
+        });
+    canvas.setOnAddCreature(
+        target -> {
+          selectorVisible.set(true);
+          model.setAddParams(target, Drawable.Type.Puppet);
         });
     canvas.disableProperty().bind(selectorVisible);
 
@@ -21,7 +26,13 @@ public class PlayView {
     assetSelector.setOnOk(
         image -> {
           selectorVisible.set(false);
-          canvas.addDecoration(new Decoration(model.getAddTarget(), Assets.images.get(image)));
+          Drawable.Type type = model.getAddType();
+
+          if (type == Drawable.Type.Puppet) {
+            canvas.addCreature(model.getAddTarget(), Assets.images.get(image));
+          } else if (type == Drawable.Type.Decoration) {
+            canvas.addDecoration(new Decoration(model.getAddTarget(), Assets.images.get(image)));
+          }
         });
     assetSelector.setOnCancel(() -> selectorVisible.set(false));
 

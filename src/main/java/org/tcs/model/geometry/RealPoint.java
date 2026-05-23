@@ -12,4 +12,8 @@ public record RealPoint(double x, double y) {
   public RealPoint divide(double divisor) {
     return new RealPoint(this.x() / divisor, this.y() / divisor);
   }
+
+  public RealPoint floor() {
+    return new RealPoint(Math.floor(x), Math.floor(y));
+  }
 }
