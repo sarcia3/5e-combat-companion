@@ -3,11 +3,11 @@ package org.tcs.ui;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Window;
-import org.tcs.model.Creature;
 
 public class PlayView {
   public static Scene scene(ViewModel model, Window owner) {
     var assetSelector = new AssetSelector(owner);
+    var creatureWizard = new CreatureWizard(model, owner);
 
     var canvas = new MapView(model);
     canvas.setOnAddDecoration(
@@ -19,10 +19,11 @@ public class PlayView {
         });
     canvas.setOnAddCreature(
         target -> {
+          creatureWizard.showAndWait();
           var image = assetSelector.showAndWait();
           if (image == null) return;
 
-          canvas.addCreature(new Creature("some name", target, 20, 5), Assets.images.get(image));
+          canvas.addCreature(model.makeCreature(target), Assets.images.get(image));
         });
 
     var pane = new StackPane();
