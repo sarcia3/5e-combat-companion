@@ -74,7 +74,7 @@ public class MapView extends Canvas {
                       newCreatures.put(
                           creature,
                           new Puppet(
-                              position, Assets.PLACEHOLDER, map.getPointSize() * PIXELS_PER_FOOT));
+                              creature, Assets.PLACEHOLDER, map.getPointSize() * PIXELS_PER_FOOT));
                     }
                   }
 
@@ -143,9 +143,7 @@ public class MapView extends Canvas {
         // Since puppets snap to the grid, the position has to be rounded to nearest tile center.
         WorldMap map = model.getMap();
         double tileSize = PIXELS_PER_FOOT * map.getPointSize();
-        RealPoint rounded =
-            map.pointToRealPoint(map.realPointToPoint(world.divide(tileSize))).multiply(tileSize);
-        puppet.setPosition(rounded);
+        model.setCreaturePosition(puppet.creature, map.realPointToPoint(world.divide(tileSize)));
       } else if (selectedDrawable instanceof Decoration decoration) {
         decoration.setPosition(world);
       }
@@ -258,7 +256,8 @@ public class MapView extends Canvas {
   }
 
   public void addCreature(Creature creature, Image image) {
-    puppets.put(creature, new Puppet(null, image, model.getMap().getPointSize() * PIXELS_PER_FOOT));
+    puppets.put(
+        creature, new Puppet(creature, image, model.getMap().getPointSize() * PIXELS_PER_FOOT));
     model.addCreature(creature);
   }
 

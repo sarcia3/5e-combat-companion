@@ -38,8 +38,13 @@ public class State {
     return true;
   }
 
+  public List<Creature> getCreatures() {
+    return creatures;
+  }
+
   public void setCreaturePosition(Creature creature, Point position) {
-    if (!creatures.contains(creature)) throw new IllegalArgumentException();
+    if (!creatures.contains(creature))
+      throw new IllegalArgumentException("Creature " + creature + " not in state");
     worldMap.freePoint(creature.position());
     if (!worldMap.occupyPoint(position, OccupyReason.Creature))
       throw new IllegalArgumentException();
