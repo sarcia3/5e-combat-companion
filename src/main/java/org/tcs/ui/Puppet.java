@@ -5,26 +5,24 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import org.tcs.model.geometry.RealPoint;
 
-public final class Decoration implements Drawable {
+public final class Puppet implements Drawable {
   private RealPoint position;
   private final Rectangle2D extent;
   private final Image image;
 
-  public Decoration(RealPoint position, Image image) {
+  public Puppet(RealPoint position, Image image, double tileSize) {
     this.position = position;
     this.image = image;
-    this.extent =
-        new Rectangle2D(
-            -image.getWidth() / 2, -image.getHeight() / 2, image.getWidth(), image.getHeight());
+    this.extent = new Rectangle2D(-tileSize / 2, -tileSize / 2, tileSize, tileSize);
+  }
+
+  public void setPosition(RealPoint position) {
+    this.position = position;
   }
 
   @Override
   public RealPoint position() {
     return position;
-  }
-
-  public void setPosition(RealPoint position) {
-    this.position = position;
   }
 
   @Override

@@ -9,6 +9,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -28,14 +29,16 @@ public class MapView extends Canvas {
   // TODO: Calling it a `RealPoint` is misleading. A dedicated record would be more fitting
   private RealPoint mousePress = new RealPoint(0, 0);
   private Point selectedTile = null;
-  private Decoration selectedDecoration = null;
+  private Drawable selectedDrawable = null;
   private RealPoint contextTarget = new RealPoint(0, 0);
   // This is a temporary solution. This won't be here (in that state) in the future
   private final List<Decoration> decorations = new ArrayList<>();
+  private final List<Puppet> puppets = new ArrayList<>();
 
   private final ContextMenu contextMenu;
 
   private Consumer<RealPoint> onAddDecoration;
+  private Consumer<RealPoint> onAddCreature;
 
   public MapView(ViewModel model) {
     this.model = model;
@@ -51,11 +54,20 @@ public class MapView extends Canvas {
     this.contextMenu = new ContextMenu();
 
     var addMenu = new Menu("Add...");
-    var addAsset = new MenuItem("...decoration");
 
-    addAsset.setOnAction(_ -> onAddDecoration.accept(contextTarget));
+    var addDecoration = new MenuItem("...decoration");
+    addDecoration.setOnAction(
+        _ -> {
+          if (onAddDecoration != null) onAddDecoration.accept(contextTarget);
+        });
 
-    addMenu.getItems().add(addAsset);
+    var addCreature = new MenuItem("...creature");
+    addCreature.setOnAction(
+        _ -> {
+          if (onAddCreature != null) onAddCreature.accept(contextTarget);
+        });
+
+    addMenu.getItems().addAll(addCreature, addDecoration);
     contextMenu.getItems().add(addMenu);
 
     // Input handling
@@ -94,11 +106,17 @@ public class MapView extends Canvas {
 
     if (event.isSecondaryButtonDown()) {
       camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
-    } else if (event.isPrimaryButtonDown() && selectedDecoration != null) {
-      selectedDecoration.setPosition(
-          new RealPoint(
-              selectedDecoration.getPosition().x() + delta.x(),
-              selectedDecoration.getPosition().y() + delta.y()));
+    } else if (event.isPrimaryButtonDown() && selectedDrawable != null) {
+      RealPoint world = screenToReal(event.getX(), event.getY());
+      if (selectedDrawable instanceof Puppet puppet) {
+        // Since puppets snap to the grid, the position has to be rounded to nearest tile center.
+        double tileSize = PIXELS_PER_FOOT * model.getMap().getPointSize();
+        RealPoint rounded =
+            world.divide(tileSize).floor().add(new RealPoint(.5, .5)).multiply(tileSize);
+        puppet.setPosition(rounded);
+      } else if (selectedDrawable instanceof Decoration decoration) {
+        decoration.setPosition(world);
+      }
     }
 
     lastMouse = new RealPoint(event.getX(), event.getY());
@@ -107,13 +125,20 @@ public class MapView extends Canvas {
   private void onMousePressed(MouseEvent event) {
     lastMouse = new RealPoint(event.getX(), event.getY());
     mousePress = new RealPoint(event.getX(), event.getY());
-    selectedDecoration = null;
+    selectedDrawable = null;
 
     var world = screenToReal(event.getX(), event.getY());
+    for (int i = puppets.size() - 1; i >= 0; i--) {
+      Puppet puppet = puppets.get(i);
+      if (puppet.contains(world)) {
+        selectedDrawable = puppet;
+        return;
+      }
+    }
     for (int i = decorations.size() - 1; i >= 0; i--) {
       Decoration decoration = decorations.get(i);
       if (decoration.contains(world)) {
-        selectedDecoration = decoration;
+        selectedDrawable = decoration;
         return;
       }
     }
@@ -165,11 +190,15 @@ public class MapView extends Canvas {
       decoration.draw(gc);
     }
 
+    for (Puppet puppet : puppets) {
+      puppet.draw(gc);
+    }
+
     // Highlight selected
-    if (selectedDecoration != null) {
+    if (selectedDrawable != null) {
       gc.setStroke(Color.BLUE);
-      RealPoint pos = selectedDecoration.getPosition();
-      Rectangle2D extent = selectedDecoration.getExtent();
+      RealPoint pos = selectedDrawable.position();
+      Rectangle2D extent = selectedDrawable.extent();
       gc.strokeRect(
           pos.x() + extent.getMinX(),
           pos.y() + extent.getMinY(),
@@ -191,6 +220,14 @@ public class MapView extends Canvas {
     }
 
     gc.restore();
+  }
+
+  public void setOnAddCreature(Consumer<RealPoint> onAddCreature) {
+    this.onAddCreature = onAddCreature;
+  }
+
+  public void addCreature(RealPoint position, Image image) {
+    puppets.add(new Puppet(position, image, model.getMap().getPointSize() * PIXELS_PER_FOOT));
   }
 
   public void setOnAddDecoration(Consumer<RealPoint> onAddDecoration) {
