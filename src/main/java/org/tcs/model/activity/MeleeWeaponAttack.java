@@ -31,4 +31,14 @@ public final class MeleeWeaponAttack implements WeaponAttack {
     result.add(attackWeapon.damageType, attacker.diceRoller().roll(attackWeapon.damageDice));
     return result;
   }
+
+  @Override
+  public double getRange() {
+    return 5.;
+  }
+
+  @Override
+  public String toString() {
+    return attacker.toString() + " attacks with " + attackWeapon.toString();
+  }
 }

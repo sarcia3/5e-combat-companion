@@ -1,7 +1,7 @@
 package org.tcs.model;
 
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
+import org.tcs.model.activity.WeaponAttack;
 import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.dice.RandomDiceRoller;
 import org.tcs.model.geometry.Point;
@@ -16,6 +16,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   DiceRoller diceRoller;
   int proficiencyBonus = 2;
   private Point position;
+  List<WeaponAttack> attacks = new ArrayList<>();
 
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
 
@@ -102,5 +103,15 @@ public class Creature implements HasInitiative, HasHitPoints {
     // there are some features that make it 19. Very rare, but no reason not to add it at this stage
     // as well.
     return 20;
+  }
+
+  public Collection<WeaponAttack> getPossibleAttacks() {
+    // Temporary solution, possible attacks should mostly come from weapons (I think?)
+    return attacks;
+  }
+
+  @Override
+  public String toString() {
+    return name;
   }
 }
