@@ -55,6 +55,12 @@ public class InitiativeTracker {
    */
   void add(HasInitiative entry) {
     InitiativeEntry toAdd = new InitiativeEntry(entry);
+    if (combatQueue.isEmpty()) {
+      combatQueue.add(toAdd);
+      return;
+    }
+    // I feel like it would be much easier to use two priority queues here, one currently going and
+    // one for future turns.
     ListIterator<InitiativeEntry> initiativeQueueIterator = combatQueue.listIterator(1);
     while (initiativeQueueIterator.hasPrevious()) {
       if (initiativeQueueIterator.previous().compareTo(toAdd) >= 0) {

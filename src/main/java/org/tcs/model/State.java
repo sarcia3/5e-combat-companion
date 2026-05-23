@@ -13,7 +13,9 @@ public class State {
   TurnHandler turnHandler;
 
   public State(WorldMap worldMap) {
+
     this.worldMap = worldMap;
+    initiative = new InitiativeTracker();
   }
 
   public State(Collection<? extends Creature> creatures, WorldMap worldMap) {
