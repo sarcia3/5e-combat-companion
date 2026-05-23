@@ -38,13 +38,13 @@ public interface WorldMap {
    * @return True if the given point is occupied and false otherwise.
    */
   default boolean isPointOccupied(Point point) {
-    return getPointOccupied(point) != null;
+    return getOccupyReason(point) != null;
   }
 
   /**
    * @return Reason if the given point is occupied and `null` otherwise.
    */
-  OccupyReason getPointOccupied(Point point);
+  OccupyReason getOccupyReason(Point point);
 
   /**
    * @return Size of a point in feet.

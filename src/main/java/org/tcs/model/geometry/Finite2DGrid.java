@@ -100,7 +100,7 @@ public class Finite2DGrid implements WorldMap {
   }
 
   @Override
-  public OccupyReason getPointOccupied(Point point) {
+  public OccupyReason getOccupyReason(Point point) {
     return occupiedPoints.get((GridPoint2D) point);
   }
 
