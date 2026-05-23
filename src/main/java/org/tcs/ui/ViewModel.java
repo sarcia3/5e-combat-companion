@@ -45,8 +45,12 @@ public class ViewModel {
   }
 
   public void setCreaturePosition(Creature creature, Point position) {
-    model.setCreaturePosition(creature, position);
-    creatures.setAll(model.getCreatures());
+    // Simply ignore failures to move
+    try {
+      model.setCreaturePosition(creature, position);
+      creatures.setAll(model.getCreatures());
+    } catch (IllegalArgumentException _) {
+    }
   }
 
   public ObservableList<Creature> creaturesProperty() {
