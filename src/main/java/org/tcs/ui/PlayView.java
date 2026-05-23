@@ -19,7 +19,7 @@ public class PlayView {
         });
     canvas.setOnAddCreature(
         target -> {
-          creatureWizard.showAndWait();
+          if (!creatureWizard.showAndWait()) return;
           var image = assetSelector.showAndWait();
           if (image == null) return;
 

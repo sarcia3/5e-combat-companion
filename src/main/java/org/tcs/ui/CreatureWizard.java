@@ -18,6 +18,7 @@ import javafx.util.converter.IntegerStringConverter;
 
 public class CreatureWizard {
   private final Stage popup;
+  private boolean okClicked = false;
 
   public CreatureWizard(ViewModel model, Window owner) {
     popup = new Stage();
@@ -68,7 +69,11 @@ public class CreatureWizard {
                         || !model.getCreatureMovementError().isEmpty(),
                 model.creatureHitpointsErrorProperty(),
                 model.creatureMovementErrorProperty()));
-    okButton.setOnAction(_ -> popup.hide());
+    okButton.setOnAction(
+        _ -> {
+          okClicked = true;
+          popup.hide();
+        });
 
     Button cancelButton = new Button("Cancel");
     cancelButton.setOnAction(
@@ -89,7 +94,9 @@ public class CreatureWizard {
     popup.setScene(new Scene(root, 600, 600));
   }
 
-  public void showAndWait() {
+  public boolean showAndWait() {
+    okClicked = false;
     popup.showAndWait();
+    return okClicked;
   }
 }
