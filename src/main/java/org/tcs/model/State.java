@@ -1,6 +1,7 @@
 package org.tcs.model;
 
 import java.util.*;
+import org.tcs.model.activity.WeaponAttack;
 import org.tcs.model.geometry.*;
 import org.tcs.model.util.Pair;
 
@@ -9,6 +10,7 @@ public class State {
   InitiativeTracker initiative;
   List<Creature> creatures = new ArrayList<>();
   WorldMap worldMap;
+  TurnHandler turnHandler;
 
   public State(WorldMap worldMap) {
     this.worldMap = worldMap;
@@ -17,7 +19,6 @@ public class State {
   public State(Collection<? extends Creature> creatures, WorldMap worldMap) {
     this.worldMap = worldMap;
     initiative = new InitiativeTracker(creatures);
-    // TODO add positions and add creatures to positions
   }
 
   public WorldMap getMap() {
@@ -31,10 +32,10 @@ public class State {
    *     occupied.
    */
   public boolean addCreature(Creature creature) {
-    // TODO Change the InitiativeTracker so that we can add new creatures to it
-    if (!worldMap.occupyPoint(creature.position(), OccupyReason.Creature)) return false;
     if (creatures.contains(creature)) return false;
+    if (!worldMap.occupyPoint(creature.position(), OccupyReason.Creature)) return false;
     creatures.add(creature);
+    initiative.add(creature);
     return true;
   }
 
@@ -87,5 +88,39 @@ public class State {
       if (pair.second() <= distance) pointsInDistance.add(pair.first());
 
     return creatures.stream().filter(c -> pointsInDistance.contains(c.position())).toList();
+  }
+
+  public TurnHandler getTurnHandler() {
+    if (turnHandler != null) return turnHandler;
+
+    List<Runnable> list = new ArrayList<>();
+
+    // I don't know how to resolve it in future if the state doesn't know what's hiding under this.
+    // Maybe the hasInitiative interface is too much abstraction for our scope.
+    Creature actor = (Creature) initiative.getFirst();
+
+    for (WeaponAttack attack : actor.getPossibleAttacks()) {
+      for (Creature target : getCreaturesWithinDistance(actor.position(), attack.getRange())) {
+        list.add(
+            new Runnable() {
+              @Override
+              public void run() {
+                attack.resolve(State.this, target);
+                initiative.advance();
+                turnHandler = null;
+                // There should be something here to notify the model?
+                // Or maybe we can decorate it inside the TurnHandler.
+              }
+
+              @Override
+              public String toString() {
+                return attack.toString() + " targeting " + target.toString();
+              }
+            });
+      }
+    }
+
+    turnHandler = new TurnHandler(list);
+    return turnHandler;
   }
 }

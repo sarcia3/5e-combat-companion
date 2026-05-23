@@ -28,4 +28,6 @@ public sealed interface WeaponAttack permits MeleeWeaponAttack, RangedWeaponAtta
   AttackRoll attackRoll();
 
   Damage damageRoll();
+
+  double getRange();
 }

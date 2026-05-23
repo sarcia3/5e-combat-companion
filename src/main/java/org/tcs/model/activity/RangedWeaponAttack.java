@@ -14,4 +14,10 @@ public final class RangedWeaponAttack implements WeaponAttack {
     // TODO implement
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public double getRange() {
+    // TODO implement
+    throw new UnsupportedOperationException();
+  }
 }
