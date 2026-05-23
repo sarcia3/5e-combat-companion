@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -43,6 +45,7 @@ public class MapView extends Canvas {
 
   private Consumer<RealPoint> onAddDecoration;
   private Consumer<Point> onAddCreature;
+  private final SimpleBooleanProperty showDecorationOptions = new SimpleBooleanProperty(false);
 
   public MapView(ViewModel model) {
     this.model = model;
@@ -99,7 +102,21 @@ public class MapView extends Canvas {
         });
 
     addMenu.getItems().addAll(addCreature, addDecoration);
-    contextMenu.getItems().add(addMenu);
+
+    var moveUp = new MenuItem("Move up");
+    var moveDown = new MenuItem("Move down");
+    var moveToTop = new MenuItem("Move to top");
+    var moveToBottom = new MenuItem("Move to bottom");
+    var delete = new MenuItem("Delete");
+
+    var decorationOptions = List.of(moveUp, moveDown, moveToTop, moveToBottom, delete);
+    for (MenuItem option : decorationOptions) {
+      option.visibleProperty().bind(showDecorationOptions);
+      option.disableProperty().bind(showDecorationOptions.not());
+    }
+
+    contextMenu.getItems().addAll(addMenu, new SeparatorMenuItem());
+    contextMenu.getItems().addAll(decorationOptions);
 
     // Input handling
     setOnMousePressed(this::onMousePressed);
@@ -156,6 +173,7 @@ public class MapView extends Canvas {
     lastMouse = new RealPoint(event.getX(), event.getY());
     mousePress = new RealPoint(event.getX(), event.getY());
     selectedDrawable = null;
+    showDecorationOptions.set(false);
 
     var world = screenToReal(event.getX(), event.getY());
     for (Puppet puppet : puppets.values()) {
@@ -168,6 +186,7 @@ public class MapView extends Canvas {
       Decoration decoration = decorations.get(i);
       if (decoration.contains(world)) {
         selectedDrawable = decoration;
+        showDecorationOptions.set(true);
         return;
       }
     }
