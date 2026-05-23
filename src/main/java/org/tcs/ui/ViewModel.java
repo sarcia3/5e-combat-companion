@@ -44,6 +44,11 @@ public class ViewModel {
     }
   }
 
+  public void setCreaturePosition(Creature creature, Point position) {
+    model.setCreaturePosition(creature, position);
+    creatures.setAll(model.getCreatures());
+  }
+
   public ObservableList<Creature> creaturesProperty() {
     return creatures;
   }

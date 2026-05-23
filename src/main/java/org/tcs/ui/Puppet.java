@@ -3,15 +3,18 @@ package org.tcs.ui;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import org.tcs.model.Creature;
 import org.tcs.model.geometry.RealPoint;
 
 public final class Puppet implements Drawable {
+  public final Creature creature;
   private RealPoint position;
   private final Rectangle2D extent;
   private final Image image;
 
-  public Puppet(RealPoint position, Image image, double tileSize) {
-    this.position = position;
+  public Puppet(Creature creature, Image image, double tileSize) {
+    this.creature = creature;
+    this.position = null;
     this.image = image;
     this.extent = new Rectangle2D(-tileSize / 2, -tileSize / 2, tileSize, tileSize);
   }
