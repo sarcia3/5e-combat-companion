@@ -258,6 +258,29 @@ public class MapView extends Canvas {
     gc.setFill(Color.BLACK);
     gc.fillRect(0, 0, width, height);
 
+    // Draw background image, scaled to fill screen while maintaining aspect ratio
+    Image background = Assets.BACKGROUND;
+    double bgWidth = background.getWidth();
+    double bgHeight = background.getHeight();
+    double bgAspect = bgWidth / bgHeight;
+    double screenAspect = width / height;
+
+    double drawWidth, drawHeight, drawX, drawY;
+    if (screenAspect > bgAspect) {
+      // Screen is wider than background - fit to width
+      drawWidth = width;
+      drawHeight = width / bgAspect;
+      drawX = 0;
+      drawY = (height - drawHeight) / 2;
+    } else {
+      // Screen is taller than background - fit to height
+      drawHeight = height;
+      drawWidth = height * bgAspect;
+      drawX = (width - drawWidth) / 2;
+      drawY = 0;
+    }
+    gc.drawImage(background, drawX, drawY, drawWidth, drawHeight);
+
     gc.translate(width / 2 - camera.x(), height / 2 - camera.y());
 
     double opacity;
