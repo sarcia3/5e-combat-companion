@@ -115,11 +115,7 @@ public class State {
 
               @Override
               public String toString() {
-                return actor.toString()
-                    + " attacks "
-                    + target.toString()
-                    + " with "
-                    + weapon.toString();
+                return attack.toString() + " targeting " + weapon.toString();
               }
             });
       }
