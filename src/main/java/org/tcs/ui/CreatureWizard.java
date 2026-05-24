@@ -13,8 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import javafx.util.converter.FloatStringConverter;
-import javafx.util.converter.IntegerStringConverter;
+import javafx.util.converter.NumberStringConverter;
 
 public class CreatureWizard {
   private final Stage popup;
@@ -35,8 +34,19 @@ public class CreatureWizard {
     // Max Hitpoints field
     var maxHitpointsLabel = new Label("Max Hitpoints:");
     var maxHitpointsField = new TextField();
-    maxHitpointsField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0));
-    maxHitpointsField.textProperty().bindBidirectional(model.creatureHitpointsProperty());
+    maxHitpointsField.setTextFormatter(
+        new TextFormatter<>(
+            change1 -> {
+              if (change1.getControlNewText().matches("\\d*")) {
+                return change1;
+              }
+
+              return null;
+            }));
+    Bindings.bindBidirectional(
+        maxHitpointsField.textProperty(),
+        model.creatureHitpointsProperty(),
+        new NumberStringConverter("0"));
     var maxHitpointsError = new Label();
     maxHitpointsError.setTextFill(Color.RED);
     maxHitpointsError.textProperty().bind(model.creatureHitpointsErrorProperty());
@@ -45,8 +55,19 @@ public class CreatureWizard {
     // Movement Speed field
     var movementSpeedLabel = new Label("Movement Speed:");
     var movementSpeedField = new TextField();
-    movementSpeedField.setTextFormatter(new TextFormatter<>(new FloatStringConverter(), 0.0f));
-    movementSpeedField.textProperty().bindBidirectional(model.creatureMovementProperty());
+    movementSpeedField.setTextFormatter(
+        new TextFormatter<>(
+            change -> {
+              if (change.getControlNewText().matches("\\d*.?\\d*")) {
+                return change;
+              }
+
+              return null;
+            }));
+    Bindings.bindBidirectional(
+        movementSpeedField.textProperty(),
+        model.creatureMovementProperty(),
+        new NumberStringConverter("0.0"));
     var movementSpeedError = new Label();
     movementSpeedError.setTextFill(Color.RED);
     movementSpeedError.textProperty().bind(model.creatureMovementErrorProperty());
