@@ -21,7 +21,7 @@ public class PlayView {
   }
 
   public static Scene scene(ViewModel model, Window owner) {
-    ObjectProperty<Mode> currentMode = new SimpleObjectProperty<>(Mode.EDIT_PIECES);
+    ObjectProperty<Mode> currentMode = new SimpleObjectProperty<>(Mode.PLAY);
     var creatureImages = new HashMap<Creature, Image>();
     var assetSelector = new AssetSelector(owner);
     var creatureWizard = new CreatureWizard(model, owner);
