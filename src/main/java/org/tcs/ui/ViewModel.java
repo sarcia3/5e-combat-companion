@@ -1,8 +1,7 @@
 package org.tcs.ui;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,9 +14,9 @@ public class ViewModel {
   private final State model;
   private final ObservableList<Creature> creatures = FXCollections.observableArrayList();
   private final SimpleStringProperty creatureName = new SimpleStringProperty("");
-  private final SimpleStringProperty creatureHitpoints = new SimpleStringProperty("0");
+  private final SimpleIntegerProperty creatureHitpoints = new SimpleIntegerProperty(0);
   private final SimpleStringProperty creatureHitpointsError = new SimpleStringProperty("");
-  private final SimpleStringProperty creatureMovement = new SimpleStringProperty("0.0");
+  private final SimpleDoubleProperty creatureMovement = new SimpleDoubleProperty(0.0);
   private final SimpleStringProperty creatureMovementError = new SimpleStringProperty("");
 
   public ViewModel(State model) {
@@ -27,30 +26,22 @@ public class ViewModel {
     creatureHitpointsError.bind(
         Bindings.createStringBinding(
             () -> {
-              try {
-                int hitpoints = Integer.parseInt(creatureHitpoints.get());
-                if (hitpoints <= 0) {
-                  return "Hitpoints must be positive";
-                }
-                return "";
-              } catch (NumberFormatException e) {
-                return "Hitpoints must be a number";
+              int hitpoints = creatureHitpoints.get();
+              if (hitpoints <= 0) {
+                return "Hitpoints must be positive";
               }
+              return "";
             },
             creatureHitpoints));
 
     creatureMovementError.bind(
         Bindings.createStringBinding(
             () -> {
-              try {
-                double movement = Double.parseDouble(creatureMovement.get());
-                if (movement <= 0) {
-                  return "Movement speed must be positive";
-                }
-                return "";
-              } catch (NumberFormatException e) {
-                return "Movement speed must be a number";
+              double movement = creatureMovement.get();
+              if (movement <= 0) {
+                return "Movement speed must be positive";
               }
+              return "";
             },
             creatureMovement));
   }
@@ -84,7 +75,7 @@ public class ViewModel {
     return creatureName;
   }
 
-  public Property<String> creatureHitpointsProperty() {
+  public IntegerProperty creatureHitpointsProperty() {
     return creatureHitpoints;
   }
 
@@ -96,7 +87,7 @@ public class ViewModel {
     return creatureHitpointsError;
   }
 
-  public Property<String> creatureMovementProperty() {
+  public DoubleProperty creatureMovementProperty() {
     return creatureMovement;
   }
 
@@ -110,15 +101,15 @@ public class ViewModel {
 
   public void resetCreatureData() {
     creatureName.set("");
-    creatureHitpoints.set("0");
-    creatureMovement.set("0.0");
+    creatureHitpoints.set(0);
+    creatureMovement.set(0.0);
   }
 
   public Creature makeCreature(Point position) {
     try {
       String name = creatureName.get();
-      int hitpoints = Integer.parseInt(creatureHitpoints.get());
-      double movement = Double.parseDouble(creatureMovement.get());
+      int hitpoints = creatureHitpoints.get();
+      double movement = creatureMovement.get();
 
       if (hitpoints <= 0 || movement <= 0) {
         throw new IllegalStateException("Invalid creature data");
