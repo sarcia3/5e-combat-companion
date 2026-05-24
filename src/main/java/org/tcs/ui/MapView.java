@@ -354,6 +354,7 @@ public class MapView extends Canvas {
     for (double tileX = minTileX; tileX <= maxTileX; tileX += 1.0) {
       for (double tileY = minTileY; tileY <= maxTileY; tileY += 1.0) {
         Point point = worldMap.realPointToPoint(new RealPoint(tileX + 0.5, tileY + 0.5));
+        if (!worldMap.checkInBounds(point)) continue;
         OccupyReason occupyReason = worldMap.getOccupyReason(point);
 
         Color fillColor;
