@@ -3,6 +3,7 @@ package org.tcs.ui;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import org.tcs.model.Creature;
 import org.tcs.model.geometry.RealPoint;
 
@@ -43,5 +44,20 @@ public final class Puppet implements Drawable {
         position.y() + extent.getMinY(),
         extent.getWidth(),
         extent.getHeight());
+
+    // Healthbar
+    double healthbarWidth = extent.getWidth() * 0.8;
+    double healthbarHeight = 8;
+    double healthbarX = position.x() + extent.getMinX();
+    double healthbarY = position.y() + extent.getMaxY() - healthbarHeight - 4;
+
+    // Background
+    gc.setFill(Color.RED);
+    gc.fillRect(healthbarX, healthbarY, healthbarWidth, healthbarHeight);
+
+    // Foreground (current health)
+    double healthPercentage = (double) creature.hitPoints() / creature.hitPointMaximum();
+    gc.setFill(Color.GREEN);
+    gc.fillRect(healthbarX, healthbarY, healthbarWidth * healthPercentage, healthbarHeight);
   }
 }
