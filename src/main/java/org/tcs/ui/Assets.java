@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 public class Assets {
   public static Map<String, Image> images = new HashMap<>();
   public static final Image PLACEHOLDER = new Image("/Truck_Red_Front.png");
+  public static final Image BACKGROUND = new Image("/background.png");
 
   public static void init() {
     images.put("truck", PLACEHOLDER);
