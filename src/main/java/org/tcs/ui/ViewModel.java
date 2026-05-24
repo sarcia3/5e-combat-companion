@@ -108,8 +108,15 @@ public class ViewModel {
     return creatureMovementError;
   }
 
+  public void resetCreatureData() {
+    creatureName.set("");
+    creatureHitpoints.set("0");
+    creatureMovement.set("0.0");
+  }
+
   public Creature makeCreature(Point position) {
     try {
+      String name = creatureName.get();
       int hitpoints = Integer.parseInt(creatureHitpoints.get());
       double movement = Double.parseDouble(creatureMovement.get());
 
@@ -117,7 +124,9 @@ public class ViewModel {
         throw new IllegalStateException("Invalid creature data");
       }
 
-      return new Creature(creatureName.get(), position, hitpoints, movement);
+      resetCreatureData();
+
+      return new Creature(name, position, hitpoints, movement);
     } catch (NumberFormatException e) {
       throw new IllegalStateException("Invalid creature data");
     }
