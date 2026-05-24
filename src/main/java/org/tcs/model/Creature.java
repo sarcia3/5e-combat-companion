@@ -16,7 +16,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   DiceRoller diceRoller;
   int proficiencyBonus = 2;
   private Point position;
-  List<Weapon> weapons;
+  List<Weapon> weapons = new ArrayList<>();
 
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
 

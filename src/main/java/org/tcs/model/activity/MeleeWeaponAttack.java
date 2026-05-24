@@ -10,17 +10,19 @@ import org.tcs.model.equipment.Weapon;
 public final class MeleeWeaponAttack implements WeaponAttack {
   final Creature attacker;
   final Weapon attackWeapon;
+  final Ability ability;
 
-  public MeleeWeaponAttack(Creature attacker, Weapon attackWeapon) {
+  public MeleeWeaponAttack(Creature attacker, Weapon attackWeapon, Ability ability) {
     this.attacker = attacker;
     this.attackWeapon = attackWeapon;
+    this.ability = ability;
   }
 
   @Override
   public AttackRoll attackRoll() {
     int roll = attacker.diceRoller().roll(20);
     // TODO add proficiencies and prof bonus
-    int modifier = attacker.abilityModifier(attackWeapon.attackAbility);
+    int modifier = attacker.abilityModifier(ability);
     return new AttackRoll(roll, modifier);
   }
 
@@ -28,7 +30,8 @@ public final class MeleeWeaponAttack implements WeaponAttack {
   public Damage damageRoll() {
     // TODO implement using the new DamageRoll class
     Damage result = new Damage();
-    result.add(attackWeapon.damageType, attacker.diceRoller().roll(attackWeapon.damageDice));
+    for (Damage.Type type : attackWeapon.damageTypes())
+      result.add(type, attacker.diceRoller().roll(attackWeapon.damageDice()));
     return result;
   }
 
