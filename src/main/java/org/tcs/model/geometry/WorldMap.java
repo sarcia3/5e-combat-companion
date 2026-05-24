@@ -20,6 +20,8 @@ public interface WorldMap {
 
   Point realPointToPoint(RealPoint realPoint);
 
+  boolean checkInBounds(Point point);
+
   /**
    * Occupies a point if it was previously occupied.
    *

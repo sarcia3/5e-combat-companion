@@ -87,6 +87,11 @@ public class Finite2DGrid implements WorldMap {
   }
 
   @Override
+  public boolean checkInBounds(Point point) {
+    return checkInBounds((GridPoint2D) point);
+  }
+
+  @Override
   public boolean occupyPoint(Point point, OccupyReason reason) {
     if (reason == null) throw new IllegalArgumentException();
     GridPoint2D gridPoint2D = (GridPoint2D) point;
