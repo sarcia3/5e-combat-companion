@@ -108,7 +108,6 @@ public class State {
               @Override
               public void run() {
                 attack.resolve(State.this, target);
-                initiative.advance();
                 turnHandler = null;
                 // There should be something here to notify the model?
                 // Or maybe we can decorate it inside the TurnHandler.
@@ -121,6 +120,20 @@ public class State {
             });
       }
     }
+
+    list.add(
+        new Runnable() {
+          @Override
+          public void run() {
+            initiative.advance();
+            turnHandler = null;
+          }
+
+          @Override
+          public String toString() {
+            return "Proceed to the next creature.";
+          }
+        });
 
     turnHandler = new TurnHandler(list);
     return turnHandler;

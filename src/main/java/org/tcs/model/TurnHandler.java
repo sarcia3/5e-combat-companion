@@ -9,7 +9,7 @@ public class TurnHandler {
     this.possibilities = new ArrayList<>(possibilities);
   }
 
-  public Collection<Object> seePossibilities() {
+  public Collection<Object> getPossibilities() {
     if (possibilities == null) throw new IllegalStateException("Turn already proceeded.");
     return List.copyOf(possibilities);
   }
