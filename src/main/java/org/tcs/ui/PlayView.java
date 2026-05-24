@@ -15,6 +15,7 @@ import org.tcs.model.Creature;
 
 public class PlayView {
   enum Mode {
+    PLAY,
     EDIT_PIECES,
     EDIT_COLLISION
   }
@@ -46,15 +47,18 @@ public class PlayView {
           canvas.addCreature(creature, image);
         });
 
+    var playButton = modeTab(Mode.PLAY, "Play", currentMode);
     var editPiecesButton = modeTab(Mode.EDIT_PIECES, "Edit pieces", currentMode);
     var editCollisionButton = modeTab(Mode.EDIT_COLLISION, "Edit collision", currentMode);
 
-    var buttonBox = new HBox(editPiecesButton, editCollisionButton);
+    var buttonBox = new HBox(playButton, editPiecesButton, editCollisionButton);
     buttonBox.setMaxHeight(Region.USE_PREF_SIZE);
     buttonBox.setAlignment(Pos.CENTER);
     StackPane.setAlignment(buttonBox, Pos.TOP_CENTER);
 
     var initiativeQueue = new InitiativeQueue(model, creatureImages);
+    initiativeQueue.visibleProperty().bind(currentMode.isEqualTo(Mode.PLAY));
+    initiativeQueue.managedProperty().bind(currentMode.isEqualTo(Mode.PLAY));
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
     var pane = new StackPane();
