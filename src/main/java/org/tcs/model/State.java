@@ -2,6 +2,7 @@ package org.tcs.model;
 
 import java.util.*;
 import org.tcs.model.activity.WeaponAttack;
+import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.*;
 import org.tcs.model.util.Pair;
 
@@ -10,7 +11,6 @@ public class State {
   InitiativeTracker initiative;
   List<Creature> creatures = new ArrayList<>();
   WorldMap worldMap;
-  TurnHandler turnHandler;
 
   public State(WorldMap worldMap) {
 
@@ -92,50 +92,34 @@ public class State {
     return creatures.stream().filter(c -> pointsInDistance.contains(c.position())).toList();
   }
 
-  public TurnHandler getTurnHandler() {
-    if (turnHandler != null) return turnHandler;
+  // In the future this Runnable should be our custom interface with something like getVisuals()
+  public Collection<Runnable> getPossibleAttacks(Creature actor, Weapon weapon) {
+    // Maybe we should check here whether the actor has the weapon?
+    // Ditto for actor being the current player (that is actor.equals(initiativeTracker.getFirst())
 
+    Collection<WeaponAttack> attacks = weapon.generateAttacks(actor);
     List<Runnable> list = new ArrayList<>();
 
-    // I don't know how to resolve it in future if the state doesn't know what's hiding under this.
-    // Maybe the hasInitiative interface is too much abstraction for our scope.
-    Creature actor = (Creature) initiative.getFirst();
-
-    for (WeaponAttack attack : actor.getPossibleAttacks()) {
+    for (WeaponAttack attack : attacks) {
       for (Creature target : getCreaturesWithinDistance(actor.position(), attack.getRange())) {
         list.add(
             new Runnable() {
               @Override
               public void run() {
                 attack.resolve(State.this, target);
-                turnHandler = null;
-                // There should be something here to notify the model?
-                // Or maybe we can decorate it inside the TurnHandler.
               }
 
               @Override
               public String toString() {
-                return attack.toString() + " targeting " + target.toString();
+                return actor.toString()
+                    + " attacks "
+                    + target.toString()
+                    + " with "
+                    + weapon.toString();
               }
             });
       }
     }
-
-    list.add(
-        new Runnable() {
-          @Override
-          public void run() {
-            initiative.advance();
-            turnHandler = null;
-          }
-
-          @Override
-          public String toString() {
-            return "Proceed to the next creature.";
-          }
-        });
-
-    turnHandler = new TurnHandler(list);
-    return turnHandler;
+    return list;
   }
 }

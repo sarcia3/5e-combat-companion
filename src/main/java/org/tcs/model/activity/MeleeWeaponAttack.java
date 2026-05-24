@@ -11,7 +11,7 @@ public final class MeleeWeaponAttack implements WeaponAttack {
   final Creature attacker;
   final Weapon attackWeapon;
 
-  MeleeWeaponAttack(Creature attacker, Weapon attackWeapon) {
+  public MeleeWeaponAttack(Creature attacker, Weapon attackWeapon) {
     this.attacker = attacker;
     this.attackWeapon = attackWeapon;
   }
