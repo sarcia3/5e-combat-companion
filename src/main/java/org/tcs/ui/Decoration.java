@@ -34,7 +34,6 @@ public final class Decoration implements Drawable {
 
   @Override
   public void draw(GraphicsContext gc) {
-    ;
     gc.drawImage(
         image,
         position.x() + extent.getMinX(),
