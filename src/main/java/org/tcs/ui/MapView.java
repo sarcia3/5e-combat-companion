@@ -103,14 +103,14 @@ public class MapView extends Canvas {
 
     addMenu.getItems().addAll(addCreature, addDecoration);
 
-    var moveUp = new MenuItem("Move up");
-    moveUp.setOnAction(_ -> moveDecorationUp((Decoration) selectedDrawable));
-    var moveDown = new MenuItem("Move down");
-    moveDown.setOnAction(_ -> moveDecorationDown((Decoration) selectedDrawable));
-    var moveToTop = new MenuItem("Move to top");
-    moveToTop.setOnAction(_ -> moveDecorationToTop((Decoration) selectedDrawable));
-    var moveToBottom = new MenuItem("Move to bottom");
-    moveToBottom.setOnAction(_ -> moveDecorationToBottom((Decoration) selectedDrawable));
+    var moveUp = new MenuItem("Move forward");
+    moveUp.setOnAction(_ -> moveDecorationForward((Decoration) selectedDrawable));
+    var moveDown = new MenuItem("Move backward");
+    moveDown.setOnAction(_ -> moveDecorationBackward((Decoration) selectedDrawable));
+    var moveToTop = new MenuItem("Move to front");
+    moveToTop.setOnAction(_ -> moveDecorationToFront((Decoration) selectedDrawable));
+    var moveToBottom = new MenuItem("Move to back");
+    moveToBottom.setOnAction(_ -> moveDecorationToBack((Decoration) selectedDrawable));
     var delete = new MenuItem("Delete");
     delete.setOnAction(_ -> removeDecoration((Decoration) selectedDrawable));
 
@@ -298,7 +298,7 @@ public class MapView extends Canvas {
     if (selectedDrawable == decoration) selectedDrawable = null;
   }
 
-  public void moveDecorationUp(Decoration decoration) {
+  public void moveDecorationForward(Decoration decoration) {
     var index = decorations.indexOf(decoration);
     if (index >= 0 && index < decorations.size() - 1) {
       var temp = decorations.get(index + 1);
@@ -307,7 +307,7 @@ public class MapView extends Canvas {
     }
   }
 
-  public void moveDecorationDown(Decoration decoration) {
+  public void moveDecorationBackward(Decoration decoration) {
     var index = decorations.indexOf(decoration);
     if (index > 0) {
       var temp = decorations.get(index - 1);
@@ -316,12 +316,12 @@ public class MapView extends Canvas {
     }
   }
 
-  public void moveDecorationToTop(Decoration decoration) {
+  public void moveDecorationToFront(Decoration decoration) {
     removeDecoration(decoration);
     decorations.add(decoration);
   }
 
-  public void moveDecorationToBottom(Decoration decoration) {
+  public void moveDecorationToBack(Decoration decoration) {
     removeDecoration(decoration);
     decorations.addFirst(decoration);
   }
