@@ -77,12 +77,14 @@ public class Finite2DGrid implements WorldMap {
 
   @Override
   public RealPoint pointToRealPoint(Point point) {
+    if (point == null) return null;
     if (!(point instanceof GridPoint2D(int x, int y))) throw new ClassCastException();
     return new RealPoint(x + 0.5, y + 0.5);
   }
 
   @Override
   public Point realPointToPoint(RealPoint realPoint) {
+    if (realPoint == null) return null;
     return new GridPoint2D((int) Math.floor(realPoint.x()), (int) Math.floor(realPoint.y()));
   }
 
@@ -96,7 +98,7 @@ public class Finite2DGrid implements WorldMap {
     if (reason == null) throw new IllegalArgumentException();
     GridPoint2D gridPoint2D = (GridPoint2D) point;
     if (!checkInBounds(gridPoint2D)) return false;
-    return occupiedPoints.put(gridPoint2D, reason) == null;
+    return occupiedPoints.putIfAbsent(gridPoint2D, reason) == null;
   }
 
   @Override
