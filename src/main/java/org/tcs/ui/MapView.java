@@ -3,6 +3,7 @@ package org.tcs.ui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -78,10 +79,12 @@ public class MapView extends Canvas {
                       puppet.setPosition(position);
                       newCreatures.put(creature, puppet);
                     } else {
+                      var randomImage =
+                          new ArrayList<>(Assets.images.values())
+                              .get(new Random().nextInt(Assets.images.size()));
                       newCreatures.put(
                           creature,
-                          new Puppet(
-                              creature, Assets.PLACEHOLDER, map.getPointSize() * PIXELS_PER_FOOT));
+                          new Puppet(creature, randomImage, map.getPointSize() * PIXELS_PER_FOOT));
                     }
                   }
 
