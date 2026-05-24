@@ -22,6 +22,7 @@ public sealed interface WeaponAttack permits MeleeWeaponAttack, RangedWeaponAtta
       return;
     }
 
+    // TODO after converting weapons to use DamageRoll double the dice for critical roll
     target.takeDamage(damageRoll());
   }
 

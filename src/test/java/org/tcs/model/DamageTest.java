@@ -33,4 +33,21 @@ class DamageTest {
 
     assertNull(damage.byType.get(Damage.Type.RADIANT));
   }
+
+  @Test
+  void amountReturnsAccumulatedTotalForType() {
+    Damage damage = new Damage();
+    damage.add(Damage.Type.FIRE, 3);
+    damage.add(Damage.Type.FIRE, 4);
+
+    assertEquals(7, damage.amount(Damage.Type.FIRE));
+  }
+
+  @Test
+  void amountReturnsZeroForUnsetType() {
+    Damage damage = new Damage();
+    damage.add(Damage.Type.FIRE, 5);
+
+    assertEquals(0, damage.amount(Damage.Type.RADIANT));
+  }
 }
