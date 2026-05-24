@@ -68,11 +68,7 @@ public class MapView extends Canvas {
     syncCreatures(model.creaturesProperty());
     model
         .creaturesProperty()
-        .addListener(
-            (ListChangeListener<Creature>)
-                c -> {
-                  syncCreatures(c.getList());
-                });
+        .addListener((ListChangeListener<Creature>) c -> syncCreatures(c.getList()));
 
     // Context menu
     this.contextMenu = new ContextMenu();
