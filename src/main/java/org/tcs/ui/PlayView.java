@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Window;
 
@@ -20,7 +21,7 @@ public class PlayView {
     var assetSelector = new AssetSelector(owner);
     var creatureWizard = new CreatureWizard(model, owner);
 
-    var canvas = new MapView(model);
+    var canvas = new MapView(model, currentMode);
     canvas.setOnAddDecoration(
         target -> {
           var image = assetSelector.showAndWait();
@@ -41,6 +42,7 @@ public class PlayView {
     var editCollisionButton = modeTab(Mode.EDIT_COLLISION, "Edit collision", currentMode);
 
     var buttonBox = new HBox(editPiecesButton, editCollisionButton);
+    buttonBox.setMaxHeight(Region.USE_PREF_SIZE);
     buttonBox.setAlignment(Pos.CENTER);
     StackPane.setAlignment(buttonBox, Pos.TOP_CENTER);
 

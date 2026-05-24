@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
@@ -18,6 +19,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import org.tcs.model.Creature;
+import org.tcs.model.geometry.OccupyReason;
 import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
@@ -46,8 +48,10 @@ public class MapView extends Canvas {
   private Consumer<RealPoint> onAddDecoration;
   private Consumer<Point> onAddCreature;
   private final SimpleBooleanProperty showDecorationOptions = new SimpleBooleanProperty(false);
+  private final ObservableObjectValue<PlayView.Mode> modeProperty;
 
-  public MapView(ViewModel model) {
+  MapView(ViewModel model, ObservableObjectValue<PlayView.Mode> modeProperty) {
+    this.modeProperty = modeProperty;
     this.model = model;
     // TODO: handle starting & stopping of the rendering
     new AnimationTimer() {
@@ -123,6 +127,14 @@ public class MapView extends Canvas {
     contextMenu.getItems().addAll(addMenu, new SeparatorMenuItem());
     contextMenu.getItems().addAll(decorationOptions);
 
+    modeProperty.addListener(
+        (_, _, mode) -> {
+          if (!mode.equals(PlayView.Mode.EDIT_PIECES)) {
+            selectedDrawable = null;
+            contextMenu.hide();
+          }
+        });
+
     // Input handling
     setOnMousePressed(this::onMousePressed);
     setOnMouseDragged(this::onMouseDragged);
@@ -143,14 +155,16 @@ public class MapView extends Canvas {
     if (delta.x() <= CLICK_BUFFER && delta.y() <= CLICK_BUFFER) {
       WorldMap map = model.getMap();
       final double realTileSize = PIXELS_PER_FOOT * map.getPointSize();
+      Point tile = map.realPointToPoint(world.divide(realTileSize));
 
-      if (event.getButton().equals(MouseButton.SECONDARY)) {
-        contextTarget = new Pair<>(world, map.realPointToPoint(world.divide(realTileSize)));
+      if (event.getButton().equals(MouseButton.SECONDARY)
+          && modeProperty.get().equals(PlayView.Mode.EDIT_PIECES)) {
+        contextTarget = new Pair<>(world, tile);
         contextMenu.hide();
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
 
-      selectedTile = map.realPointToPoint(world.divide(realTileSize));
+      selectedTile = tile;
     }
   }
 
@@ -179,6 +193,10 @@ public class MapView extends Canvas {
     mousePress = new RealPoint(event.getX(), event.getY());
     selectedDrawable = null;
     showDecorationOptions.set(false);
+
+    if (modeProperty.get().equals(PlayView.Mode.EDIT_PIECES)) {
+      return;
+    }
 
     var world = screenToReal(event.getX(), event.getY());
     for (Puppet puppet : puppets.values()) {
@@ -217,35 +235,27 @@ public class MapView extends Canvas {
 
     gc.translate(width / 2 - camera.x(), height / 2 - camera.y());
 
-    // Draw grid
-    double minWorldX = camera.x() - width / 2;
-    double maxWorldX = camera.x() + width / 2;
-    double minWorldY = camera.y() - height / 2;
-    double maxWorldY = camera.y() + height / 2;
-
-    double firstGridX = Math.floor(minWorldX / realTileSize) * realTileSize;
-    double firstGridY = Math.floor(minWorldY / realTileSize) * realTileSize;
-
-    gc.setStroke(Color.GRAY);
-    gc.setLineWidth(1);
-
-    // Draw vertical lines
-    for (double x = firstGridX; x <= maxWorldX; x += realTileSize) {
-      gc.strokeLine(x, minWorldY, x, maxWorldY);
+    double opacity;
+    if (modeProperty.get().equals(PlayView.Mode.EDIT_COLLISION)) {
+      drawCollision();
+      opacity = 0.5;
+    } else {
+      opacity = 1.0;
     }
 
-    // Draw horizontal lines
-    for (double y = firstGridY; y <= maxWorldY; y += realTileSize) {
-      gc.strokeLine(minWorldX, y, maxWorldX, y);
-    }
-
+    gc.setGlobalAlpha(opacity);
     for (Decoration decoration : decorations) {
       decoration.draw(gc);
     }
+    gc.setGlobalAlpha(1.0);
 
+    drawGrid();
+
+    gc.setGlobalAlpha(opacity);
     for (Puppet puppet : puppets.values()) {
       puppet.draw(gc);
     }
+    gc.setGlobalAlpha(1.0);
 
     // Highlight selected
     if (selectedDrawable != null) {
@@ -273,6 +283,73 @@ public class MapView extends Canvas {
     }
 
     gc.restore();
+  }
+
+  private void drawGrid() {
+    double width = getWidth();
+    double height = getHeight();
+    var gc = getGraphicsContext2D();
+    final double realTileSize = PIXELS_PER_FOOT * model.getMap().getPointSize();
+
+    // Draw grid
+    double minWorldX = camera.x() - width / 2;
+    double maxWorldX = camera.x() + width / 2;
+    double minWorldY = camera.y() - height / 2;
+    double maxWorldY = camera.y() + height / 2;
+
+    double firstGridX = Math.floor(minWorldX / realTileSize) * realTileSize;
+    double firstGridY = Math.floor(minWorldY / realTileSize) * realTileSize;
+
+    gc.setStroke(Color.GRAY);
+    gc.setLineWidth(1);
+
+    // Draw vertical lines
+    for (double x = firstGridX; x <= maxWorldX; x += realTileSize) {
+      gc.strokeLine(x, minWorldY, x, maxWorldY);
+    }
+
+    // Draw horizontal lines
+    for (double y = firstGridY; y <= maxWorldY; y += realTileSize) {
+      gc.strokeLine(minWorldX, y, maxWorldX, y);
+    }
+  }
+
+  // I don't like this whole method. It works exclusively with a grid while trying to not admit
+  // to work exclusively with a grid.
+  private void drawCollision() {
+    WorldMap worldMap = model.getMap();
+    final double realTileSize = PIXELS_PER_FOOT * worldMap.getPointSize();
+
+    var gc = getGraphicsContext2D();
+
+    double minWorldX = camera.x() - getWidth() / 2;
+    double maxWorldX = camera.x() + getWidth() / 2;
+    double minWorldY = camera.y() - getHeight() / 2;
+    double maxWorldY = camera.y() + getHeight() / 2;
+
+    double minTileX = Math.floor(minWorldX / realTileSize);
+    double maxTileX = Math.ceil(maxWorldX / realTileSize);
+    double minTileY = Math.floor(minWorldY / realTileSize);
+    double maxTileY = Math.ceil(maxWorldY / realTileSize);
+
+    for (double tileX = minTileX; tileX <= maxTileX; tileX += 1.0) {
+      for (double tileY = minTileY; tileY <= maxTileY; tileY += 1.0) {
+        Point point = worldMap.realPointToPoint(new RealPoint(tileX + 0.5, tileY + 0.5));
+        OccupyReason occupyReason = worldMap.getOccupyReason(point);
+
+        Color fillColor;
+        if (occupyReason != null && occupyReason.equals(OccupyReason.Terrain)) {
+          fillColor = Color.rgb(255, 0, 0, 0.5); // Red for occupied
+        } else {
+          fillColor = Color.rgb(0, 255, 0, 0.3); // Green for free
+        }
+
+        gc.setFill(fillColor);
+        double screenX = tileX * realTileSize;
+        double screenY = tileY * realTileSize;
+        gc.fillRect(screenX, screenY, realTileSize, realTileSize);
+      }
+    }
   }
 
   public void setOnAddCreature(Consumer<Point> onAddCreature) {
