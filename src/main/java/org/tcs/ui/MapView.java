@@ -1,9 +1,6 @@
 package org.tcs.ui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -50,8 +47,13 @@ public class MapView extends Canvas {
   private Consumer<Point> onAddCreature;
   private final SimpleBooleanProperty showDecorationOptions = new SimpleBooleanProperty(false);
   private final ObservableObjectValue<PlayView.Mode> modeProperty;
+  private final Map<Creature, Image> creatureImages;
 
-  MapView(ViewModel model, ObservableObjectValue<PlayView.Mode> modeProperty) {
+  MapView(
+      ViewModel model,
+      ObservableObjectValue<PlayView.Mode> modeProperty,
+      Map<Creature, Image> creatureImages) {
+    this.creatureImages = creatureImages;
     this.modeProperty = modeProperty;
     this.model = model;
     // TODO: handle starting & stopping of the rendering
@@ -63,32 +65,13 @@ public class MapView extends Canvas {
     }.start();
 
     // Sync creatures
+    syncCreatures(model.creaturesProperty());
     model
         .creaturesProperty()
         .addListener(
             (ListChangeListener<Creature>)
                 c -> {
-                  WorldMap map = model.getMap();
-                  var newCreatures = new HashMap<Creature, Puppet>();
-                  for (Creature creature : c.getList()) {
-                    RealPoint position =
-                        map.pointToRealPoint(creature.position())
-                            .multiply(map.getPointSize() * PIXELS_PER_FOOT);
-                    if (puppets.containsKey(creature)) {
-                      Puppet puppet = puppets.get(creature);
-                      puppet.setPosition(position);
-                      newCreatures.put(creature, puppet);
-                    } else {
-                      var randomImage =
-                          new ArrayList<>(Assets.images.values())
-                              .get(new Random().nextInt(Assets.images.size()));
-                      newCreatures.put(
-                          creature,
-                          new Puppet(creature, randomImage, map.getPointSize() * PIXELS_PER_FOOT));
-                    }
-                  }
-
-                  puppets = newCreatures;
+                  syncCreatures(c.getList());
                 });
 
     // Context menu
@@ -144,6 +127,30 @@ public class MapView extends Canvas {
     setOnMousePressed(this::onMousePressed);
     setOnMouseDragged(this::onMouseDragged);
     setOnMouseReleased(this::onMouseReleased);
+  }
+
+  private void syncCreatures(List<? extends Creature> creatures) {
+    WorldMap map = model.getMap();
+    var newCreatures = new HashMap<Creature, Puppet>();
+    for (Creature creature : creatures) {
+      RealPoint position =
+          map.pointToRealPoint(creature.position()).multiply(map.getPointSize() * PIXELS_PER_FOOT);
+      if (puppets.containsKey(creature)) {
+        Puppet puppet = puppets.get(creature);
+        puppet.setPosition(position);
+        newCreatures.put(creature, puppet);
+      } else {
+        var randomImage =
+            new ArrayList<>(Assets.images.values()).get(new Random().nextInt(Assets.images.size()));
+        creatureImages.put(creature, randomImage);
+        System.out.println("Adding creature " + creature + " at " + creature.position());
+        Puppet puppet = new Puppet(creature, randomImage, map.getPointSize() * PIXELS_PER_FOOT);
+        puppet.setPosition(position);
+        newCreatures.put(creature, puppet);
+      }
+    }
+
+    puppets = newCreatures;
   }
 
   private RealPoint screenToReal(double x, double y) {

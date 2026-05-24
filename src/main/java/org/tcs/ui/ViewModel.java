@@ -1,11 +1,13 @@
 package org.tcs.ui;
 
+import java.util.ArrayList;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.tcs.model.Creature;
+import org.tcs.model.HasInitiative;
 import org.tcs.model.State;
 import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.WorldMap;
@@ -18,6 +20,7 @@ public class ViewModel {
   private final SimpleStringProperty creatureHitpointsError = new SimpleStringProperty("");
   private final SimpleDoubleProperty creatureMovement = new SimpleDoubleProperty(0.0);
   private final SimpleStringProperty creatureMovementError = new SimpleStringProperty("");
+  private final ObservableList<Creature> initiativeQueue = FXCollections.observableArrayList();
 
   public ViewModel(State model) {
     this.model = model;
@@ -44,18 +47,32 @@ public class ViewModel {
               return "";
             },
             creatureMovement));
+
+    update();
   }
 
   public WorldMap getMap() {
     return model.getMap();
   }
 
+  private void update() {
+    var list = new ArrayList<Creature>();
+
+    for (HasInitiative creature : model.getTurnOrder()) {
+      if (creature instanceof Creature c) {
+        list.add(c);
+      }
+    }
+
+    initiativeQueue.setAll(list);
+  }
+
   public void addCreature(Creature creature) {
     if (model.addCreature(creature)) {
       creatures.add(creature);
-    } else {
-      System.err.println("Failed to add creature");
     }
+
+    update();
   }
 
   public void setCreaturePosition(Creature creature, Point position) {
@@ -121,5 +138,9 @@ public class ViewModel {
     } catch (NumberFormatException e) {
       throw new IllegalStateException("Invalid creature data");
     }
+  }
+
+  public ObservableList<Creature> initiativeQueueProperty() {
+    return initiativeQueue;
   }
 }

@@ -31,6 +31,10 @@ public class InitiativeTracker {
     return combatQueue.getFirst().actor;
   }
 
+  List<HasInitiative> getOrder() {
+    return combatQueue.stream().map(e -> e.actor).toList();
+  }
+
   InitiativeTracker() {
     this(null);
   }

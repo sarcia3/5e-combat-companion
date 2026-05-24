@@ -45,6 +45,10 @@ public class State {
     return creatures;
   }
 
+  public List<HasInitiative> getTurnOrder() {
+    return initiative.getOrder();
+  }
+
   public boolean setCreaturePosition(Creature creature, Point position) {
     if (!creatures.contains(creature))
       throw new IllegalArgumentException("Creature " + creature + " not in state");
