@@ -42,6 +42,10 @@ public final class MeleeWeaponAttack implements WeaponAttack {
 
   @Override
   public String toString() {
-    return attacker.toString() + " attacks with " + attackWeapon.toString();
+    return attacker.toString()
+        + " attacks with "
+        + attackWeapon.toString()
+        + " using "
+        + ability.toString();
   }
 }

@@ -14,6 +14,19 @@ import org.tcs.model.activity.WeaponAttack;
 public record Weapon(
     String name, int damageDice, List<Ability> attackAbilities, List<Damage.Type> damageTypes) {
 
+  public Weapon(String name, int damageDice, Ability attackAbility, Damage.Type damageType) {
+    this(name, damageDice, List.of(attackAbility), List.of(damageType));
+  }
+
+  public Weapon(
+      String name, int damageDice, List<Ability> attackAbilities, Damage.Type damageType) {
+    this(name, damageDice, attackAbilities, List.of(damageType));
+  }
+
+  public Weapon(String name, int damageDice, Ability attackAbility, List<Damage.Type> damageTypes) {
+    this(name, damageDice, List.of(attackAbility), damageTypes);
+  }
+
   public Collection<WeaponAttack> generateAttacks(Creature creature) {
     // temporarily every weapon returns the same thing
     // in the future this should be handled by some flags and whatnot
