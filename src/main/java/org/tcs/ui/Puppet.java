@@ -48,7 +48,7 @@ public final class Puppet implements Drawable {
     // Healthbar
     double healthbarWidth = extent.getWidth() * 0.8;
     double healthbarHeight = 8;
-    double healthbarX = position.x() + extent.getMinX();
+    double healthbarX = position.x() + extent.getMinX() + (extent.getWidth() - healthbarWidth) / 2;
     double healthbarY = position.y() + extent.getMaxY() - healthbarHeight - 4;
 
     // Background
