@@ -55,6 +55,10 @@ public class Creature implements HasInitiative, HasHitPoints {
     this.position = position;
   }
 
+  public String name() {
+    return name;
+  }
+
   @Override
   public int generateInitiative() {
     return diceRoller.roll(20); // TODO add DEX modifier to the roll
