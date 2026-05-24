@@ -19,11 +19,8 @@ public class WeaponsLibrary {
 
     addWeapon(new Weapon("Mace", 6, Ability.STR, Damage.Type.BLUDGEONING));
 
-    addWeapon(new Weapon("Fist", 6, Ability.STR, Damage.Type.BLUDGEONING));
-
-    // When unarmed fighting without either weapon or shield equipped we deal more damage.
-    // See https://5e.mikolek.com/optionalfeatures.html#unarmed%20fighting_tce
-    addWeapon(new Weapon("Two fists", 8, Ability.STR, Damage.Type.BLUDGEONING));
+    // See https://5e.tools/variantrules.html#unarmed%20strike_xphb
+    addWeapon(new Weapon("Fist", 1, Ability.STR, Damage.Type.BLUDGEONING));
   }
 
   public static Collection<Weapon> getWeapons() {
