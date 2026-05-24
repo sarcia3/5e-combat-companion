@@ -36,7 +36,8 @@ class MeleeWeaponAttackTest {
     Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(15, 5));
     Creature target = creature("Goblin", 10, 2, new QueuedDiceRoller());
     Weapon weapon = longsword();
-    MeleeWeaponAttack attack = new MeleeWeaponAttack(attacker, weapon);
+    attacker.addWeapon(weapon);
+    WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
 
     attack.resolve(null, target);
 
@@ -48,7 +49,9 @@ class MeleeWeaponAttackTest {
     // d20 = 1, no damage roll consumed because miss returns early
     Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(1));
     Creature target = creature("Goblin", 10, 2, new QueuedDiceRoller());
-    MeleeWeaponAttack attack = new MeleeWeaponAttack(attacker, longsword());
+    Weapon weapon = longsword();
+    attacker.addWeapon(weapon);
+    WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
 
     attack.resolve(null, target);
 
@@ -60,7 +63,9 @@ class MeleeWeaponAttackTest {
     // attacker has STR 10 (mod 0), target AC is 10; d20 = 5 → total 5, misses
     Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(5));
     Creature target = creature("Goblin", 10, 2, new QueuedDiceRoller());
-    MeleeWeaponAttack attack = new MeleeWeaponAttack(attacker, longsword());
+    Weapon weapon = longsword();
+    attacker.addWeapon(weapon);
+    WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
 
     attack.resolve(null, target);
 
@@ -73,8 +78,9 @@ class MeleeWeaponAttackTest {
     // but nat 20 is an automatic hit; then rolls 6 damage
     Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(20, 6));
     Creature target = creatureWithArmorClass("Stone Golem", 30, 2, 25, new QueuedDiceRoller());
-    MeleeWeaponAttack attack = new MeleeWeaponAttack(attacker, longsword());
-
+    Weapon weapon = longsword();
+    attacker.addWeapon(weapon);
+    WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
     attack.resolve(null, target);
 
     assertEquals(24, target.hitPoints()); // 30 - 6
