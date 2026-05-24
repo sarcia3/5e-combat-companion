@@ -5,6 +5,10 @@ import org.tcs.model.Ability;
 import org.tcs.model.Damage;
 
 public class WeaponsLibrary {
+  WeaponsLibrary() {
+    throw new UnsupportedOperationException("Library is meant to be used as a static class.");
+  }
+
   private static final Map<String, Weapon> weapons = new HashMap<>();
 
   public static void load() {
