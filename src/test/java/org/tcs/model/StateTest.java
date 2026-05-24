@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.tcs.model.geometry.Finite2DGrid;
-import org.tcs.model.geometry.Point;
-import org.tcs.model.geometry.RealPoint;
-import org.tcs.model.geometry.WorldMap;
+import org.tcs.model.equipment.Weapon;
+import org.tcs.model.equipment.WeaponsLibrary;
+import org.tcs.model.geometry.*;
 
 class StateTest {
 
@@ -53,6 +53,50 @@ class StateTest {
       assertFalse(collection.contains(creature1));
       assertTrue(collection.contains(creature2));
       assertTrue(collection.contains(creature3));
+    }
+  }
+
+  public static class GetPossibleAttacksTest {
+    @Test
+    public void simpleScenario() {
+      // A day in London
+      WeaponsLibrary.load();
+      WorldMap map = new Finite2DGrid(10, 10);
+      Weapon dagger = WeaponsLibrary.getWeaponByName("Dagger");
+      List<Creature> list = new ArrayList<>();
+      for (int i = 0; i < 5; i++) {
+        Point point = map.realPointToPoint(new RealPoint(i, i));
+        list.add(new Creature("Commoner " + i, point, 10, 10));
+        list.getLast().addWeapon(dagger);
+      }
+
+      State state = new State(list, map);
+      for (int i = 0; i < 5; i++) {
+        int expected = dagger.generateAttacks(list.get(i)).size();
+        if (i == 0 || i == 4) expected *= 3;
+        else expected *= 4;
+        assertEquals(expected, state.getPossibleAttacks(list.get(i), dagger).size());
+      }
+    }
+
+    @Test
+    public void wallScenario() {
+      WeaponsLibrary.load();
+      WorldMap map = new Finite2DGrid(3, 3);
+      Point point1 = map.realPointToPoint(new RealPoint(0, 0));
+      Point point2 = map.realPointToPoint(new RealPoint(2, 2));
+      Weapon dagger = WeaponsLibrary.getWeaponByName("Dagger");
+      Creature creature1 = new Creature("Commoner 1", point1, 10, 10);
+      Creature creature2 = new Creature("Commoner 2", point2, 10, 10);
+      State state = new State(List.of(creature1, creature2), map);
+      creature1.addWeapon(dagger);
+      creature2.addWeapon(dagger);
+      for (int i = 0; i < 3; i++) {
+        Point point = map.realPointToPoint(new RealPoint(1, i));
+        map.occupyPoint(point, OccupyReason.Terrain);
+      }
+      assertEquals(0, state.getPossibleAttacks(creature1, dagger).size());
+      assertEquals(0, state.getPossibleAttacks(creature2, dagger).size());
     }
   }
 }

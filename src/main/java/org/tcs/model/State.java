@@ -9,11 +9,11 @@ import org.tcs.model.util.Pair;
 @SuppressWarnings("unused")
 public class State {
   InitiativeTracker initiative;
-  List<Creature> creatures = new ArrayList<>();
+  List<Creature> creatures;
   WorldMap worldMap;
 
   public State(WorldMap worldMap) {
-
+    creatures = new ArrayList<>();
     this.worldMap = worldMap;
     initiative = new InitiativeTracker();
   }
@@ -21,6 +21,7 @@ public class State {
   public State(Collection<? extends Creature> creatures, WorldMap worldMap) {
     this.worldMap = worldMap;
     initiative = new InitiativeTracker(creatures);
+    this.creatures = new ArrayList<>(creatures);
   }
 
   public WorldMap getMap() {
@@ -101,20 +102,21 @@ public class State {
     List<Runnable> list = new ArrayList<>();
 
     for (WeaponAttack attack : attacks) {
-      for (Creature target : getCreaturesWithinDistance(actor.position(), attack.getRange())) {
-        list.add(
-            new Runnable() {
-              @Override
-              public void run() {
-                attack.resolve(State.this, target);
-              }
+      for (Creature target : getCreaturesWithinDistance(actor.position(), attack.getRange()))
+        if (target != actor) {
+          list.add(
+              new Runnable() {
+                @Override
+                public void run() {
+                  attack.resolve(State.this, target);
+                }
 
-              @Override
-              public String toString() {
-                return attack.toString() + " targeting " + weapon.toString();
-              }
-            });
-      }
+                @Override
+                public String toString() {
+                  return attack.toString() + " targeting " + weapon.toString();
+                }
+              });
+        }
     }
     return list;
   }
