@@ -136,6 +136,8 @@ public class MapView extends Canvas {
         });
 
     // Input handling
+    setOnMouseExited(_ -> selectedTile = null);
+    setOnMouseMoved(this::updateSelectedTile);
     setOnMousePressed(this::onMousePressed);
     setOnMouseDragged(this::onMouseDragged);
     setOnMouseReleased(this::onMouseReleased);
@@ -143,6 +145,12 @@ public class MapView extends Canvas {
 
   private RealPoint screenToReal(double x, double y) {
     return new RealPoint(x + camera.x() - getWidth() / 2, y + camera.y() - getHeight() / 2);
+  }
+
+  private void updateSelectedTile(MouseEvent event) {
+    RealPoint world = screenToReal(event.getX(), event.getY());
+    var realTileSize = PIXELS_PER_FOOT * model.getMap().getPointSize();
+    selectedTile = model.getMap().realPointToPoint(world.divide(realTileSize));
   }
 
   private void onMouseReleased(MouseEvent event) {
@@ -163,8 +171,6 @@ public class MapView extends Canvas {
         contextMenu.hide();
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
       }
-
-      selectedTile = tile;
     }
   }
 
@@ -185,6 +191,7 @@ public class MapView extends Canvas {
       }
     }
 
+    updateSelectedTile(event);
     lastMouse = new RealPoint(event.getX(), event.getY());
   }
 
@@ -193,12 +200,24 @@ public class MapView extends Canvas {
     mousePress = new RealPoint(event.getX(), event.getY());
     selectedDrawable = null;
     showDecorationOptions.set(false);
+    var world = screenToReal(event.getX(), event.getY());
 
-    if (modeProperty.get().equals(PlayView.Mode.EDIT_PIECES)) {
+    if (modeProperty.get().equals(PlayView.Mode.EDIT_COLLISION)) {
+      if (event.getButton().equals(MouseButton.PRIMARY)) {
+        WorldMap worldMap = model.getMap();
+        var tile =
+            worldMap.realPointToPoint(world.divide(worldMap.getPointSize() * PIXELS_PER_FOOT));
+
+        if (worldMap.getOccupyReason(tile) == OccupyReason.Terrain) {
+          worldMap.freePoint(tile);
+        } else if (worldMap.getOccupyReason(tile) == null) {
+          worldMap.occupyPoint(tile, OccupyReason.Terrain);
+        }
+      }
+
       return;
     }
 
-    var world = screenToReal(event.getX(), event.getY());
     for (Puppet puppet : puppets.values()) {
       if (puppet.contains(world)) {
         selectedDrawable = puppet;
