@@ -1,9 +1,9 @@
 package org.tcs.model;
 
 import java.util.*;
-import org.tcs.model.activity.WeaponAttack;
 import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.dice.RandomDiceRoller;
+import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.Point;
 
 /** Player, monster, summon etc. Basically anything that exists, has hp and takes actions */
@@ -16,7 +16,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   DiceRoller diceRoller;
   int proficiencyBonus = 2;
   private Point position;
-  List<WeaponAttack> attacks = new ArrayList<>();
+  List<Weapon> weapons;
 
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
 
@@ -108,9 +108,12 @@ public class Creature implements HasInitiative, HasHitPoints {
     return 20;
   }
 
-  public Collection<WeaponAttack> getPossibleAttacks() {
-    // Temporary solution, possible attacks should mostly come from weapons (I think?)
-    return attacks;
+  public boolean addWeapon(Weapon weapon) {
+    return weapons.add(weapon);
+  }
+
+  public Collection<Weapon> getWeapons() {
+    return List.copyOf(weapons);
   }
 
   @Override
