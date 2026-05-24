@@ -78,8 +78,7 @@ public class CreatureWizard {
     Button cancelButton = new Button("Cancel");
     cancelButton.setOnAction(
         _ -> {
-          model.creatureHitpointsProperty().setValue("0");
-          model.creatureMovementProperty().setValue("0.0");
+          model.resetCreatureData();
           popup.hide();
         });
 
