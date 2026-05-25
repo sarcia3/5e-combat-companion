@@ -87,27 +87,27 @@ public class DamageRoll {
     String[] parts = input.trim().split("\\s+\\+\\s+");
     List<Component> parsed = new ArrayList<>();
     for (String part : parts) {
-      Matcher m = COMPONENT_PATTERN.matcher(part.trim());
-      if (!m.matches()) {
+      Matcher matcher = COMPONENT_PATTERN.matcher(part.trim());
+      if (!matcher.matches()) {
         throw new IllegalArgumentException("Cannot parse component: '" + part + "'");
       }
       int numberOfDice;
       int numberOfSides;
       int bonus;
-      if (m.group(1) != null) {
-        numberOfDice = Integer.parseInt(m.group(1));
-        numberOfSides = Integer.parseInt(m.group(2));
-        bonus = m.group(3) != null ? Integer.parseInt(m.group(3)) : 0;
+      if (matcher.group(1) != null) {
+        numberOfDice = Integer.parseInt(matcher.group(1));
+        numberOfSides = Integer.parseInt(matcher.group(2));
+        bonus = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
       } else {
         numberOfDice = 0;
         numberOfSides = 0;
-        bonus = Integer.parseInt(m.group(4));
+        bonus = Integer.parseInt(matcher.group(4));
       }
       Damage.Type type;
       try {
-        type = Damage.Type.valueOf(m.group(5).toUpperCase());
+        type = Damage.Type.valueOf(matcher.group(5).toUpperCase());
       } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("Unknown damage type: '" + m.group(5) + "'");
+        throw new IllegalArgumentException("Unknown damage type: '" + matcher.group(5) + "'");
       }
       parsed.add(new Component(numberOfDice, numberOfSides, bonus, type));
     }
