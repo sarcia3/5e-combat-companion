@@ -45,8 +45,10 @@ public class PlayView {
           var creature = model.makeCreature(target);
           var image = Assets.images.get(imageName);
           creatureImages.put(creature, image);
-          canvas.addCreature(creature, image);
+          model.addCreature(creature);
         });
+
+    // Rest of UI
 
     var playButton = modeTab(Mode.PLAY, "Play", currentMode);
     var editPiecesButton = modeTab(Mode.EDIT_PIECES, "Edit pieces", currentMode);

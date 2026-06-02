@@ -134,7 +134,6 @@ public class MapView extends Canvas {
         var randomImage =
             new ArrayList<>(Assets.images.values()).get(new Random().nextInt(Assets.images.size()));
         creatureImages.put(creature, randomImage);
-        System.out.println("Adding creature " + creature + " at " + creature.position());
         Puppet puppet = new Puppet(creature, randomImage, map.getPointSize() * PIXELS_PER_FOOT);
         puppet.setPosition(position);
         newCreatures.put(creature, puppet);
@@ -396,12 +395,6 @@ public class MapView extends Canvas {
 
   public void setOnAddCreature(Consumer<Point> onAddCreature) {
     this.onAddCreature = onAddCreature;
-  }
-
-  public void addCreature(Creature creature, Image image) {
-    puppets.put(
-        creature, new Puppet(creature, image, model.getMap().getPointSize() * PIXELS_PER_FOOT));
-    model.addCreature(creature);
   }
 
   public void setOnAddDecoration(Consumer<RealPoint> onAddDecoration) {
