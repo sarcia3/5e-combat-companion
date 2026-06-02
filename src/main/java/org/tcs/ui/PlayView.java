@@ -12,9 +12,10 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Window;
 import org.tcs.model.Creature;
+import org.tcs.ui.map.MapView;
 
 public class PlayView {
-  enum Mode {
+  public enum Mode {
     PLAY,
     EDIT_PIECES,
     EDIT_COLLISION
