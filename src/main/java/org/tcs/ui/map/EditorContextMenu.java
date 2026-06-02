@@ -11,7 +11,6 @@ import org.tcs.ui.Decoration;
 import org.tcs.ui.Drawable;
 
 public class EditorContextMenu extends ContextMenu {
-  private final ObjectProperty<Runnable> onAddCreature = new SimpleObjectProperty<>(() -> {});
   private final ObjectProperty<ContextTarget> target = new SimpleObjectProperty<>();
   private final ObjectProperty<Drawable> selected = new SimpleObjectProperty<>();
 
@@ -22,7 +21,7 @@ public class EditorContextMenu extends ContextMenu {
     addDecoration.setOnAction(_ -> handler.addDecoration(target.get().real()));
 
     var addCreature = new MenuItem("...creature");
-    addCreature.setOnAction(_ -> onAddCreature.get().run());
+    addCreature.setOnAction(_ -> handler.addPuppet(target.get().point()));
 
     addMenu.getItems().addAll(addCreature, addDecoration);
 
