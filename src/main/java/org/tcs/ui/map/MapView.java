@@ -1,17 +1,14 @@
-package org.tcs.ui;
+package org.tcs.ui.map;
 
 import java.util.*;
 import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -21,7 +18,7 @@ import org.tcs.model.geometry.OccupyReason;
 import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
-import org.tcs.model.util.Pair;
+import org.tcs.ui.*;
 
 public class MapView extends Canvas {
   private static final int CLICK_BUFFER = 10;
@@ -35,21 +32,18 @@ public class MapView extends Canvas {
   // TODO: Calling it a `RealPoint` is misleading. A dedicated record would be more fitting
   private RealPoint mousePress = new RealPoint(0, 0);
   private Point selectedTile = null;
-  private Drawable selectedDrawable = null;
-  private Pair<RealPoint, Point> contextTarget = null;
+  private final ObjectProperty<Drawable> selected = new SimpleObjectProperty<>();
   // This is a temporary solution. This won't be here (in that state) in the future
   private final List<Decoration> decorations = new ArrayList<>();
   private HashMap<Creature, Puppet> puppets = new HashMap<>();
 
-  private final ContextMenu contextMenu;
-
-  private Consumer<RealPoint> onAddDecoration;
-  private Consumer<Point> onAddCreature;
-  private final SimpleBooleanProperty showDecorationOptions = new SimpleBooleanProperty(false);
+  private final EditorContextMenu contextMenu;
   private final ObservableObjectValue<PlayView.Mode> modeProperty;
   private final Map<Creature, Image> creatureImages;
+  private Consumer<Point> onAddCreature = null;
+  private Consumer<RealPoint> onAddDecoration = null;
 
-  MapView(
+  public MapView(
       ViewModel model,
       ObservableObjectValue<PlayView.Mode> modeProperty,
       Map<Creature, Image> creatureImages) {
@@ -71,48 +65,49 @@ public class MapView extends Canvas {
         .addListener((ListChangeListener<Creature>) c -> syncCreatures(c.getList()));
 
     // Context menu
-    this.contextMenu = new ContextMenu();
+    this.contextMenu =
+        new EditorContextMenu(
+            new ContextMenuHandler() {
+              @Override
+              public void addPuppet(Point position) {
+                onAddCreature.accept(position);
+              }
 
-    var addMenu = new Menu("Add...");
+              @Override
+              public void addDecoration(RealPoint position) {
+                onAddDecoration.accept(position);
+              }
 
-    var addDecoration = new MenuItem("...decoration");
-    addDecoration.setOnAction(
-        _ -> {
-          if (onAddDecoration != null) onAddDecoration.accept(contextTarget.first());
-        });
+              @Override
+              public void removeDecoration(Decoration decoration) {
+                MapView.this.removeDecoration(decoration);
+              }
 
-    var addCreature = new MenuItem("...creature");
-    addCreature.setOnAction(
-        _ -> {
-          if (onAddCreature != null) onAddCreature.accept(contextTarget.second());
-        });
+              @Override
+              public void moveDecorationForward(Decoration decoration) {
+                MapView.this.moveDecorationForward(decoration);
+              }
 
-    addMenu.getItems().addAll(addCreature, addDecoration);
+              @Override
+              public void moveDecorationBackward(Decoration decoration) {
+                MapView.this.moveDecorationBackward(decoration);
+              }
 
-    var moveUp = new MenuItem("Move forward");
-    moveUp.setOnAction(_ -> moveDecorationForward((Decoration) selectedDrawable));
-    var moveDown = new MenuItem("Move backward");
-    moveDown.setOnAction(_ -> moveDecorationBackward((Decoration) selectedDrawable));
-    var moveToTop = new MenuItem("Move to front");
-    moveToTop.setOnAction(_ -> moveDecorationToFront((Decoration) selectedDrawable));
-    var moveToBottom = new MenuItem("Move to back");
-    moveToBottom.setOnAction(_ -> moveDecorationToBack((Decoration) selectedDrawable));
-    var delete = new MenuItem("Delete");
-    delete.setOnAction(_ -> removeDecoration((Decoration) selectedDrawable));
+              @Override
+              public void moveDecorationToFront(Decoration decoration) {
+                MapView.this.moveDecorationToFront(decoration);
+              }
 
-    var decorationOptions = List.of(moveUp, moveDown, moveToTop, moveToBottom, delete);
-    for (MenuItem option : decorationOptions) {
-      option.visibleProperty().bind(showDecorationOptions);
-      option.disableProperty().bind(showDecorationOptions.not());
-    }
-
-    contextMenu.getItems().addAll(addMenu, new SeparatorMenuItem());
-    contextMenu.getItems().addAll(decorationOptions);
+              @Override
+              public void moveDecorationToBack(Decoration decoration) {
+                MapView.this.moveDecorationToBack(decoration);
+              }
+            });
+    this.contextMenu.selectedProperty().bind(selected);
 
     modeProperty.addListener(
         (_, _, mode) -> {
           if (!mode.equals(PlayView.Mode.EDIT_PIECES)) {
-            selectedDrawable = null;
             contextMenu.hide();
           }
         });
@@ -173,9 +168,9 @@ public class MapView extends Canvas {
 
       if (event.getButton().equals(MouseButton.SECONDARY)
           && modeProperty.get().equals(PlayView.Mode.EDIT_PIECES)) {
-        contextTarget = new Pair<>(world, tile);
         contextMenu.hide();
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
+        contextMenu.targetProperty().set(new ContextTarget(world, tile));
       }
     }
   }
@@ -185,14 +180,14 @@ public class MapView extends Canvas {
 
     if (event.isSecondaryButtonDown()) {
       camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
-    } else if (event.isPrimaryButtonDown() && selectedDrawable != null) {
+    } else if (event.isPrimaryButtonDown() && selected.get() != null) {
       RealPoint world = screenToReal(event.getX(), event.getY());
-      if (selectedDrawable instanceof Puppet puppet) {
+      if (selected.get() instanceof Puppet puppet) {
         // Since puppets snap to the grid, the position has to be rounded to nearest tile center.
         WorldMap map = model.getMap();
         double tileSize = PIXELS_PER_FOOT * map.getPointSize();
         model.setCreaturePosition(puppet.creature, map.realPointToPoint(world.divide(tileSize)));
-      } else if (selectedDrawable instanceof Decoration decoration) {
+      } else if (selected.get() instanceof Decoration decoration) {
         decoration.setPosition(world);
       }
     }
@@ -204,8 +199,7 @@ public class MapView extends Canvas {
   private void onMousePressed(MouseEvent event) {
     lastMouse = new RealPoint(event.getX(), event.getY());
     mousePress = new RealPoint(event.getX(), event.getY());
-    selectedDrawable = null;
-    showDecorationOptions.set(false);
+    selected.set(null);
     var world = screenToReal(event.getX(), event.getY());
 
     if (modeProperty.get().equals(PlayView.Mode.EDIT_COLLISION)) {
@@ -226,15 +220,14 @@ public class MapView extends Canvas {
 
     for (Puppet puppet : puppets.values()) {
       if (puppet.contains(world)) {
-        selectedDrawable = puppet;
+        selected.set(puppet);
         return;
       }
     }
     for (int i = decorations.size() - 1; i >= 0; i--) {
       Decoration decoration = decorations.get(i);
       if (decoration.contains(world)) {
-        selectedDrawable = decoration;
-        showDecorationOptions.set(true);
+        selected.set(decoration);
         return;
       }
     }
@@ -306,10 +299,10 @@ public class MapView extends Canvas {
     gc.setGlobalAlpha(1.0);
 
     // Highlight selected
-    if (selectedDrawable != null) {
+    if (selected.get() != null) {
       gc.setStroke(Color.BLUE);
-      RealPoint pos = selectedDrawable.position();
-      Rectangle2D extent = selectedDrawable.extent();
+      RealPoint pos = selected.get().position();
+      Rectangle2D extent = selected.get().extent();
       gc.strokeRect(
           pos.x() + extent.getMinX(),
           pos.y() + extent.getMinY(),
@@ -421,7 +414,7 @@ public class MapView extends Canvas {
 
   public void removeDecoration(Decoration decoration) {
     decorations.remove(decoration);
-    if (selectedDrawable == decoration) selectedDrawable = null;
+    if (selected.get() == decoration) selected.set(null);
   }
 
   public void moveDecorationForward(Decoration decoration) {
