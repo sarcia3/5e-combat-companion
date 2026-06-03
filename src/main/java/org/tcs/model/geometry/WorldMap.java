@@ -6,12 +6,12 @@ import org.tcs.model.util.Pair;
 
 public interface WorldMap {
   /**
-   * @param evasion A collection of OccupyReasons that will be ignored when checking if the point is
-   *     occupied.
+   * @param collisionLayers A collection of OccupyReasons that will be ignored when checking if the
+   *     point is occupied.
    * @return The distance between two points or Double.POSITIVE_INFINITY if there is no path between
    *     them or one/both of them are not part of the map.
    */
-  double getDistance(Point start, Point target, Collection<OccupyReason> evasion);
+  double getDistance(Point start, Point target, Collection<OccupyReason> collisionLayers);
 
   /**
    * @return The distance between two points or Double.POSITIVE_INFINITY if there is no path between
@@ -22,13 +22,13 @@ public interface WorldMap {
   }
 
   /**
-   * @param evasion A collection of OccupyReasons that will be ignored when checking if the point is
-   *     occupied.
+   * @param collisionLayers A collection of OccupyReasons that will be ignored when checking if the
+   *     point is occupied.
    * @return A collection of distances between the starting point and those of target points that
    *     can be reached ordered ascendingly by the distance.
    */
   Collection<Pair<Point, Double>> getDistances(
-      Point start, Collection<Point> targets, Collection<OccupyReason> evasion);
+      Point start, Collection<Point> targets, Collection<OccupyReason> collisionLayers);
 
   /**
    * @return A collection of distances between the starting point and those of target points that
