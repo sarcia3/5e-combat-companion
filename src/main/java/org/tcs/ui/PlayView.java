@@ -64,6 +64,9 @@ public class PlayView {
     initiativeQueue.managedProperty().bind(currentMode.isEqualTo(Mode.PLAY));
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
+    var creatureView = new CreatureView(creatureImages);
+    creatureView.creatureProperty().bind(canvas.selected());
+
     var pane = new StackPane();
     pane.getChildren().addAll(canvas, buttonBox, initiativeQueue);
     canvas.widthProperty().bind(pane.widthProperty());
