@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 public class Finite2DGridTest {
   public static class CorrectDistanceCalculationTests {
@@ -40,6 +41,35 @@ public class Finite2DGridTest {
       Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
       Point point2 = grid.realPointToPoint(new RealPoint(2., 2.));
       assertEquals(Double.POSITIVE_INFINITY, grid.getDistance(point1, point2));
+    }
+
+    @Test
+    @Timeout(3)
+    void hugeEmptyTest() {
+      int size = 100000;
+      Finite2DGrid grid = new Finite2DGrid(size, size);
+      Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
+      Point point2 = grid.realPointToPoint(new RealPoint(size - 1., size - 1.));
+      assertEquals((size - 1) * 1.42, grid.getDistance(point1, point2));
+    }
+
+    @Test
+    @Timeout(3)
+    void bigWithDiagonal() {
+      int size = 500;
+      Finite2DGrid grid = new Finite2DGrid(size, size);
+      Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
+      Point point2 = grid.realPointToPoint(new RealPoint(size - 1., size - 1.));
+      for (int i = 1; i < size; i++) {
+        Point point = grid.realPointToPoint(new RealPoint(i, size - i - 1));
+        grid.occupyPoint(point, OccupyReason.Terrain);
+        if (i > 1) {
+          point = grid.realPointToPoint(new RealPoint(i, size - i));
+          grid.occupyPoint(point, OccupyReason.Terrain);
+        }
+      }
+      double answer = size * 2. - 4. + 1.42;
+      assertTrue(Math.abs(answer - grid.getDistance(point1, point2)) < 0.0001);
     }
   }
 
