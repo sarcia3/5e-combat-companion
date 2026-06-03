@@ -1,6 +1,7 @@
 package org.tcs.ui;
 
 import java.util.HashMap;
+import java.util.Map;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
@@ -14,16 +15,47 @@ import javafx.stage.Window;
 import org.tcs.model.Creature;
 import org.tcs.ui.map.MapView;
 
-public class PlayView {
+public class PlayView extends Scene {
   public enum Mode {
     PLAY,
     EDIT_PIECES,
     EDIT_COLLISION
   }
 
-  public static Scene scene(ViewModel model, Window owner) {
+  private final Map<Creature, Image> creatureImages = new HashMap<>();
+
+  public PlayView(ViewModel model, Window owner) {
+    super(new StackPane(), 1200, 900);
+
     ObjectProperty<Mode> currentMode = new SimpleObjectProperty<>(Mode.PLAY);
-    var creatureImages = new HashMap<Creature, Image>();
+    var mapView = getMapView(model, owner, currentMode);
+
+    var playButton = modeTab(Mode.PLAY, "Play", currentMode);
+    var editPiecesButton = modeTab(Mode.EDIT_PIECES, "Edit pieces", currentMode);
+    var editCollisionButton = modeTab(Mode.EDIT_COLLISION, "Edit collision", currentMode);
+
+    var buttonBox = new HBox(playButton, editPiecesButton, editCollisionButton);
+    buttonBox.setMaxHeight(Region.USE_PREF_SIZE);
+    buttonBox.setAlignment(Pos.CENTER);
+    StackPane.setAlignment(buttonBox, Pos.TOP_CENTER);
+
+    var initiativeQueue = new InitiativeQueue(model, creatureImages);
+    initiativeQueue.visibleProperty().bind(currentMode.isEqualTo(Mode.PLAY));
+    initiativeQueue.managedProperty().bind(currentMode.isEqualTo(Mode.PLAY));
+    StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
+
+    var creatureView = new CreatureView(creatureImages);
+    creatureView.creatureProperty().bind(mapView.selected());
+
+    var pane = new StackPane();
+    pane.getChildren().addAll(mapView, buttonBox, initiativeQueue);
+    mapView.widthProperty().bind(pane.widthProperty());
+    mapView.heightProperty().bind(pane.heightProperty());
+
+    setRoot(pane);
+  }
+
+  private MapView getMapView(ViewModel model, Window owner, ObjectProperty<Mode> currentMode) {
     var assetSelector = new AssetSelector(owner);
     var creatureWizard = new CreatureWizard(model, owner);
 
@@ -48,31 +80,7 @@ public class PlayView {
           model.addCreature(creature);
         });
 
-    // Rest of UI
-
-    var playButton = modeTab(Mode.PLAY, "Play", currentMode);
-    var editPiecesButton = modeTab(Mode.EDIT_PIECES, "Edit pieces", currentMode);
-    var editCollisionButton = modeTab(Mode.EDIT_COLLISION, "Edit collision", currentMode);
-
-    var buttonBox = new HBox(playButton, editPiecesButton, editCollisionButton);
-    buttonBox.setMaxHeight(Region.USE_PREF_SIZE);
-    buttonBox.setAlignment(Pos.CENTER);
-    StackPane.setAlignment(buttonBox, Pos.TOP_CENTER);
-
-    var initiativeQueue = new InitiativeQueue(model, creatureImages);
-    initiativeQueue.visibleProperty().bind(currentMode.isEqualTo(Mode.PLAY));
-    initiativeQueue.managedProperty().bind(currentMode.isEqualTo(Mode.PLAY));
-    StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
-
-    var creatureView = new CreatureView(creatureImages);
-    creatureView.creatureProperty().bind(canvas.selected());
-
-    var pane = new StackPane();
-    pane.getChildren().addAll(canvas, buttonBox, initiativeQueue);
-    canvas.widthProperty().bind(pane.widthProperty());
-    canvas.heightProperty().bind(pane.heightProperty());
-
-    return new Scene(pane, 1200, 900);
+    return canvas;
   }
 
   private static Button modeTab(Mode mode, String text, ObjectProperty<Mode> currentMode) {

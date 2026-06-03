@@ -41,7 +41,7 @@ public class InitiativeQueue extends VBox {
   }
 
   private StackPane createEntryNode(Creature creature) {
-    ImageView imageView = new ImageView(images.get(creature));
+    ImageView imageView = new ImageView(images.getOrDefault(creature, Assets.PLACEHOLDER));
     imageView.setFitWidth(60);
     imageView.setFitHeight(60);
     imageView.setPreserveRatio(true);
