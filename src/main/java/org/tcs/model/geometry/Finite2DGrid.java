@@ -25,6 +25,7 @@ public class Finite2DGrid implements WorldMap {
   public double getDistance(Point start, Point target) {
     GridPoint2D start2D = (GridPoint2D) start;
     GridPoint2D target2D = (GridPoint2D) target;
+
     // For now, it runs Dijkstra, but we should replace it with A* later.
     Map<GridPoint2D, Double> distances = new HashMap<>();
     Queue<Pair<GridPoint2D, Double>> queue =
@@ -55,16 +56,21 @@ public class Finite2DGrid implements WorldMap {
     Map<GridPoint2D, Double> distances = new HashMap<>();
     Queue<Pair<GridPoint2D, Double>> queue =
         new PriorityQueue<>(Comparator.comparing(Pair::second));
+
     queue.add(new Pair<GridPoint2D, Double>(start2D, 0.));
     while (!queue.isEmpty() && list.size() < targets.size()) {
+
       Pair<GridPoint2D, Double> current = queue.remove();
       // If we've already been in this point do nothing
       if (distances.containsKey(current.first())) continue;
+
       distances.put(current.first(), current.second());
       if (targets.contains(current.first()))
         list.add(new Pair<Point, Double>(current.first(), current.second()));
+
       // If this point is occupied or outside the map do nothing
       if (!checkAccessible(current.first())) continue;
+
       // Otherwise go to neighbours
       for (Pair<GridPoint2D, Double> next : getNeighbours(current.first())) {
         if (!distances.containsKey(next.first())) {
@@ -112,8 +118,8 @@ public class Finite2DGrid implements WorldMap {
   }
 
   @Override
-  public double getPointSize() {
-    return 1.;
+  public boolean isGrid() {
+    return true;
   }
 
   private record GridPoint2D(int x, int y) implements Point {}
