@@ -48,12 +48,5 @@ public interface WorldMap {
    */
   OccupyReason getOccupyReason(Point point);
 
-  /**
-   * @return Size of a point in feet.
-   */
-  double getPointSize();
-
-  default boolean isGrid() {
-    return getPointSize() != 0;
-  }
+  boolean isGrid();
 }
