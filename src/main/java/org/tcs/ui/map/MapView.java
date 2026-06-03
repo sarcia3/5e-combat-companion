@@ -277,4 +277,8 @@ public class MapView extends Canvas {
   public void setOnAddDecoration(Consumer<RealPoint> onAddDecoration) {
     this.onAddDecoration = onAddDecoration;
   }
+
+  public void addDecoration(Decoration decoration) {
+    drawables.addDecoration(decoration);
+  }
 }
