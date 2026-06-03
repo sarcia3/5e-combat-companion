@@ -122,14 +122,15 @@ public class MapView extends Canvas {
     mousePress = new RealPoint(event.getX(), event.getY());
     var world = screenToReal(event.getX(), event.getY());
 
-    drawables.clearSelection();
     if (event.getButton().equals(MouseButton.PRIMARY)) {
       contextMenu.hide();
     }
 
-    switch (modeProperty.get()) {
-      case EDIT_COLLISION -> collision.onMousePressed(event.getButton(), world, model.getMap());
-      case EDIT_PIECES -> drawables.onMousePressed(world);
+    PlayView.Mode mode = modeProperty.get();
+    if (Objects.requireNonNull(mode) == PlayView.Mode.EDIT_COLLISION) {
+      collision.onMousePressed(event.getButton(), world, model.getMap());
+    } else {
+      drawables.onMousePressed(world, event.getButton());
     }
   }
 
@@ -140,7 +141,10 @@ public class MapView extends Canvas {
     if (event.isSecondaryButtonDown()) {
       camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
     }
-    drawables.onMouseDragged(world);
+
+    if (event.isPrimaryButtonDown()) {
+      drawables.onMouseDragged(world);
+    }
 
     updateSelectedTile(event);
     lastMouse = new RealPoint(event.getX(), event.getY());
