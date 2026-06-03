@@ -16,10 +16,7 @@ import javafx.scene.paint.Color;
 import org.tcs.model.Creature;
 import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
-import org.tcs.ui.Decoration;
-import org.tcs.ui.Drawable;
-import org.tcs.ui.Puppet;
-import org.tcs.ui.ViewModel;
+import org.tcs.ui.*;
 
 class DrawablesView {
   private final ObjectProperty<Drawable> selected = new SimpleObjectProperty<>();
@@ -53,7 +50,9 @@ class DrawablesView {
       } else {
         puppet =
             new Puppet(
-                creature, creatureImages.get(creature), worldMap.getPointSize() * PIXELS_PER_FOOT);
+                creature,
+                creatureImages.getOrDefault(creature, Assets.PLACEHOLDER),
+                worldMap.getPointSize() * PIXELS_PER_FOOT);
       }
 
       puppet.setPosition(position);

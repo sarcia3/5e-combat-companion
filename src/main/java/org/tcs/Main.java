@@ -20,7 +20,7 @@ public class Main extends Application {
         new Creature("Test 1", map.realPointToPoint(new RealPoint(1.0, 1.0)), 10, 20));
     state.addCreature(
         new Creature("Test 2", map.realPointToPoint(new RealPoint(3.0, 3.0)), 10, 20));
-    primaryStage.setScene(PlayView.scene(new ViewModel(state), primaryStage));
+    primaryStage.setScene(new PlayView(new ViewModel(state), primaryStage));
     primaryStage.setTitle("Drageons&Dungons 5e Combat Companion");
     primaryStage.show();
   }
