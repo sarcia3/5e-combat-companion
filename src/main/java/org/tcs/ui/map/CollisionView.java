@@ -13,8 +13,7 @@ import org.tcs.model.geometry.WorldMap;
 class CollisionView {
   public void onMousePressed(MouseButton button, RealPoint position, WorldMap worldMap) {
     if (button.equals(MouseButton.PRIMARY)) {
-      var tile =
-          worldMap.realPointToPoint(position.divide(worldMap.getPointSize() * PIXELS_PER_FOOT));
+      var tile = worldMap.realPointToPoint(position.divide(PIXELS_PER_FOOT));
 
       if (worldMap.getOccupyReason(tile) == OccupyReason.Terrain) {
         worldMap.freePoint(tile);
@@ -30,7 +29,7 @@ class CollisionView {
       double canvasWidth,
       double canvasHeight,
       GraphicsContext gc) {
-    final double realTileSize = PIXELS_PER_FOOT * worldMap.getPointSize();
+    final double realTileSize = PIXELS_PER_FOOT;
 
     double minWorldX = camera.x() - canvasWidth / 2;
     double maxWorldX = camera.x() + canvasWidth / 2;
