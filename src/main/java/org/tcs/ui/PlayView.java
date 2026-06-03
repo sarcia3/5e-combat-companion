@@ -46,9 +46,16 @@ public class PlayView extends Scene {
 
     var creatureView = new CreatureView(creatureImages);
     creatureView.creatureProperty().bind(mapView.selected());
+    creatureView
+        .visibleProperty()
+        .bind(currentMode.isEqualTo(Mode.PLAY).and(creatureView.creatureProperty().isNotNull()));
+    creatureView
+        .managedProperty()
+        .bind(currentMode.isEqualTo(Mode.PLAY).and(creatureView.creatureProperty().isNotNull()));
+    StackPane.setAlignment(creatureView, Pos.TOP_RIGHT);
 
     var pane = new StackPane();
-    pane.getChildren().addAll(mapView, buttonBox, initiativeQueue);
+    pane.getChildren().addAll(mapView, buttonBox, initiativeQueue, creatureView);
     mapView.widthProperty().bind(pane.widthProperty());
     mapView.heightProperty().bind(pane.heightProperty());
 

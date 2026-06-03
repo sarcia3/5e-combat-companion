@@ -12,6 +12,7 @@ import javafx.collections.ListChangeListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.tcs.model.Creature;
 import org.tcs.model.geometry.RealPoint;
@@ -70,8 +71,9 @@ class DrawablesView {
     selected.set(null);
   }
 
-  public void onMousePressed(RealPoint world) {
-    selected.set(null);
+  public void onMousePressed(RealPoint world, MouseButton button) {
+    if (button.equals(MouseButton.PRIMARY)) clearSelection();
+
     for (Puppet puppet : puppets.values()) {
       if (puppet.contains(world)) {
         selected.set(puppet);
