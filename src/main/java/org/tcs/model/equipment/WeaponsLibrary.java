@@ -5,7 +5,7 @@ import org.tcs.model.Ability;
 import org.tcs.model.Damage;
 
 public class WeaponsLibrary {
-  WeaponsLibrary() {
+  private WeaponsLibrary() {
     throw new UnsupportedOperationException("Library is meant to be used as a static class.");
   }
 
