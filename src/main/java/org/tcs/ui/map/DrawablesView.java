@@ -41,10 +41,7 @@ class DrawablesView {
     WorldMap worldMap = model.getMap();
     var newCreatures = new HashMap<Creature, Puppet>();
     for (Creature creature : creatures) {
-      RealPoint position =
-          worldMap
-              .pointToRealPoint(creature.position())
-              .multiply(worldMap.getPointSize() * PIXELS_PER_FOOT);
+      RealPoint position = worldMap.pointToRealPoint(creature.position()).multiply(PIXELS_PER_FOOT);
       Puppet puppet;
       if (puppets.containsKey(creature)) {
         puppet = puppets.get(creature);
@@ -53,7 +50,7 @@ class DrawablesView {
             new Puppet(
                 creature,
                 creatureImages.getOrDefault(creature, Assets.PLACEHOLDER),
-                worldMap.getPointSize() * PIXELS_PER_FOOT);
+                PIXELS_PER_FOOT);
       }
 
       puppet.setPosition(position);
@@ -94,8 +91,8 @@ class DrawablesView {
 
     if (selected.get() instanceof Puppet puppet) {
       // Since puppets snap to the grid, the position has to be rounded to nearest tile center.
-      double tileSize = PIXELS_PER_FOOT * map.getPointSize();
-      model.setCreaturePosition(puppet.creature, map.realPointToPoint(position.divide(tileSize)));
+      model.setCreaturePosition(
+          puppet.creature, map.realPointToPoint(position.divide(PIXELS_PER_FOOT)));
     } else if (selected.get() instanceof Decoration decoration) {
       decoration.setPosition(position);
     }

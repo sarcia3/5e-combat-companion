@@ -113,8 +113,7 @@ public class MapView extends Canvas {
 
   private void updateSelectedTile(MouseEvent event) {
     RealPoint world = screenToReal(event.getX(), event.getY());
-    var realTileSize = PIXELS_PER_FOOT * model.getMap().getPointSize();
-    selectedTile = model.getMap().realPointToPoint(world.divide(realTileSize));
+    selectedTile = model.getMap().realPointToPoint(world.divide(PIXELS_PER_FOOT));
   }
 
   private void onMousePressed(MouseEvent event) {
@@ -159,8 +158,7 @@ public class MapView extends Canvas {
     // If the mouse drags for too much, we abort the click attempt
     if (delta.x() <= CLICK_BUFFER && delta.y() <= CLICK_BUFFER) {
       WorldMap map = model.getMap();
-      final double realTileSize = PIXELS_PER_FOOT * map.getPointSize();
-      Point tile = map.realPointToPoint(world.divide(realTileSize));
+      Point tile = map.realPointToPoint(world.divide(PIXELS_PER_FOOT));
 
       if (event.getButton().equals(MouseButton.SECONDARY)
           && modeProperty.get().equals(PlayView.Mode.EDIT_PIECES)) {
@@ -173,7 +171,7 @@ public class MapView extends Canvas {
 
   private void draw() {
     WorldMap worldMap = model.getMap();
-    final double realTileSize = PIXELS_PER_FOOT * worldMap.getPointSize();
+    final double realTileSize = PIXELS_PER_FOOT;
 
     var gc = getGraphicsContext2D();
     gc.save();
@@ -250,7 +248,7 @@ public class MapView extends Canvas {
     double width = getWidth();
     double height = getHeight();
     var gc = getGraphicsContext2D();
-    final double realTileSize = PIXELS_PER_FOOT * model.getMap().getPointSize();
+    final double realTileSize = PIXELS_PER_FOOT;
 
     // Draw grid
     double minWorldX = camera.x() - width / 2;
