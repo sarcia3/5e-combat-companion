@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ObservableObjectValue;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
@@ -280,5 +281,18 @@ public class MapView extends Canvas {
 
   public void addDecoration(Decoration decoration) {
     drawables.addDecoration(decoration);
+  }
+
+  public ObservableValue<Creature> selected() {
+    return drawables
+        .selectedProperty()
+        .map(
+            v -> {
+              if (v instanceof Puppet p) {
+                return p.creature;
+              }
+
+              return null;
+            });
   }
 }
