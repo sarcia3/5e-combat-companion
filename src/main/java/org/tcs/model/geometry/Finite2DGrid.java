@@ -23,7 +23,7 @@ public class Finite2DGrid implements WorldMap {
    * sqrt(2).
    */
   @Override
-  public double getDistance(Point start, Point target, Collection<OccupyReason> collisionLayers) {
+  public double getDistance(Point start, Point target, Collection<OccupyReason> ignoredColissions) {
     GridPoint2D start2D = (GridPoint2D) start;
     GridPoint2D target2D = (GridPoint2D) target;
 
@@ -48,7 +48,7 @@ public class Finite2DGrid implements WorldMap {
       // If this point is occupied or outside the map do nothing
       if (!checkInBounds(current.first())) continue;
       OccupyReason occupyReason = getOccupyReason(current.first());
-      if (occupyReason != null && !collisionLayers.contains(occupyReason)) continue;
+      if (occupyReason != null && !ignoredColissions.contains(occupyReason)) continue;
 
       distances.put(current.first(), current.second());
 
@@ -72,7 +72,7 @@ public class Finite2DGrid implements WorldMap {
 
   @Override
   public Collection<Pair<Point, Double>> getDistances(
-      Point start, Collection<Point> targets, Collection<OccupyReason> collisionLayers) {
+      Point start, Collection<Point> targets, Collection<OccupyReason> ignoredColissions) {
 
     List<Pair<Point, Double>> list = new ArrayList<>();
     GridPoint2D start2D = (GridPoint2D) start;
@@ -94,7 +94,7 @@ public class Finite2DGrid implements WorldMap {
       // If this point is occupied or outside the map do nothing
       if (!checkInBounds(current.first())) continue;
       OccupyReason occupyReason = getOccupyReason(current.first());
-      if (occupyReason != null && !collisionLayers.contains(occupyReason)) continue;
+      if (occupyReason != null && !ignoredColissions.contains(occupyReason)) continue;
 
       // Otherwise go to neighbours
       for (Pair<GridPoint2D, Double> next : getNeighbours(current.first())) {
