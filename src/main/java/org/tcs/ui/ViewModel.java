@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import org.tcs.model.Creature;
 import org.tcs.model.HasInitiative;
 import org.tcs.model.State;
+import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.WorldMap;
 
@@ -21,6 +22,7 @@ public class ViewModel {
   private final SimpleDoubleProperty creatureMovement = new SimpleDoubleProperty(0.0);
   private final SimpleStringProperty creatureMovementError = new SimpleStringProperty("");
   private final ObservableList<Creature> initiativeQueue = FXCollections.observableArrayList();
+  private final ObservableList<Weapon> weapons = FXCollections.observableArrayList();
 
   public ViewModel(State model) {
     this.model = model;
@@ -140,7 +142,16 @@ public class ViewModel {
     }
   }
 
+  public void loadCreature(Creature creature) {
+    if (creature == null) return;
+    weaponsProperty().setAll(creature.getWeapons());
+  }
+
   public ObservableList<Creature> initiativeQueueProperty() {
     return initiativeQueue;
+  }
+
+  public ObservableList<Weapon> weaponsProperty() {
+    return weapons;
   }
 }
