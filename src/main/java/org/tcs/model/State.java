@@ -31,14 +31,26 @@ public class State {
   /**
    * Adds a creature to the state.
    *
-   * @return False if given creature already exists in this state or the position is already
-   *     occupied.
+   * @return False if the creature already exists in this state or the position is already occupied.
    */
   public boolean addCreature(Creature creature) {
     if (creatures.contains(creature)) return false;
     if (!worldMap.occupyPoint(creature.position(), OccupyReason.Creature)) return false;
     creatures.add(creature);
     initiative.add(creature);
+    return true;
+  }
+
+  /**
+   * Deletes a creature from the state.
+   *
+   * @return False if the creature was not in the state and true otherwise.
+   */
+  public boolean removeCreature(Creature creature) {
+    if (!creatures.contains(creature)) return false;
+    creatures.remove(creature);
+    worldMap.freePoint(creature.position());
+    initiative.remove(creature);
     return true;
   }
 

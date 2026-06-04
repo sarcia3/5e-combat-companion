@@ -81,4 +81,8 @@ public class InitiativeTracker {
   int size() {
     return combatQueue.size();
   }
+
+  void remove(HasInitiative entry) {
+    combatQueue.remove(new InitiativeEntry(entry));
+  }
 }
