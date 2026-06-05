@@ -123,13 +123,13 @@ public class State {
               new StateProcess() {
 
                 @Override
-                public Collection<Creature> getTargets() {
-                  return List.of(target);
+                public Creature getTarget() {
+                  return target;
                 }
 
                 @Override
-                public Collection<Creature> getSource() {
-                  return List.of(actor);
+                public Creature getSource() {
+                  return actor;
                 }
 
                 @Override
