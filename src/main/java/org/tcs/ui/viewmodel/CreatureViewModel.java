@@ -26,8 +26,6 @@ public class CreatureViewModel {
 
           weapons.setAll(creature.get().getWeapons());
         });
-    creature.addListener(_ -> System.out.println("Creature: " + creature.get()));
-    isCurrent.addListener(_ -> System.out.println("Current: " + isCurrent.get()));
     isCurrent.bind(creature.isEqualTo(current));
   }
 
