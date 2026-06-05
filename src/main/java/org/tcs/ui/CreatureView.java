@@ -46,8 +46,12 @@ public class CreatureView extends VBox {
                 .creatureProperty()
                 .map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
 
+    var nothingToDo = new Label("Not this creature's turn");
+    nothingToDo.visibleProperty().bind(model.isCurrentProperty().not());
+    nothingToDo.managedProperty().bind(model.isCurrentProperty().not());
     getChildren()
-        .addAll(name, portrait, topLevel(), weaponSelection(model), targetSelection(model));
+        .addAll(
+            name, portrait, nothingToDo, topLevel(model), weaponSelection(model), targetSelection(model));
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
@@ -56,15 +60,18 @@ public class CreatureView extends VBox {
     model.creatureProperty().addListener(_ -> nav.set(Nav.All));
   }
 
-  private Node topLevel() {
+  private Node topLevel(CreatureViewModel model) {
     var attack = new Button("Attack");
     attack.setOnAction(_ -> nav.set(Nav.Weapons));
 
+    var pass = new Button("Pass");
+    pass.setOnAction(_ -> model.pass());
+
     var topLevel = new VBox();
-    topLevel.getChildren().add(attack);
+    topLevel.getChildren().addAll(attack, pass);
     topLevel.setAlignment(Pos.CENTER);
-    topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All));
-    topLevel.managedProperty().bind(nav.isEqualTo(Nav.All));
+    topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
+    topLevel.managedProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
 
     return topLevel;
   }
