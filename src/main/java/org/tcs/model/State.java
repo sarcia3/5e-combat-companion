@@ -139,7 +139,7 @@ public class State {
 
                 @Override
                 public String toString() {
-                  return attack.toString() + " targeting " + weapon.toString();
+                  return attack.toString() + " targeting " + weapon.name();
                 }
               });
         }
