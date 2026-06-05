@@ -70,7 +70,7 @@ public class CreatureView extends VBox {
                 _ -> {
                   buttons.getChildren().clear();
                   for (Weapon weapon : model.weaponsProperty()) {
-                    var btn = new Button(weapon.toString());
+                    var btn = new Button(weapon.name());
                     btn.setOnAction(
                         _ -> {
                           model.loadAttacks(weapon);
