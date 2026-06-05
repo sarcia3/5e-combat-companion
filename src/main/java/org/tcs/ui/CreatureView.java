@@ -5,7 +5,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -13,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.tcs.model.Creature;
 import org.tcs.model.equipment.Weapon;
+import org.tcs.ui.viewmodel.CreatureViewModel;
 
 public class CreatureView extends VBox {
   private enum Nav {
@@ -23,7 +26,7 @@ public class CreatureView extends VBox {
 
   private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.All);
 
-  public CreatureView(Map<Creature, Image> creatureImages, ViewModel model) {
+  public CreatureView(Map<Creature, Image> creatureImages, CreatureViewModel model) {
     var portrait = new ImageView();
     portrait.setFitHeight(256.0);
     portrait.setPreserveRatio(true);
@@ -31,9 +34,16 @@ public class CreatureView extends VBox {
         .imageProperty()
         .bind(
             model
-                .selectedProperty()
+                .creatureProperty()
                 .map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
 
+    getChildren().addAll(portrait, topLevel(), weaponSelection(model), targetSelection(model));
+    setMaxWidth(320.0);
+    setAlignment(Pos.TOP_CENTER);
+    setBackground(Background.fill(Color.WHITE));
+  }
+
+  private Node topLevel() {
     var attack = new Button("Attack");
     attack.setOnAction(_ -> nav.set(Nav.Weapons));
 
@@ -43,38 +53,63 @@ public class CreatureView extends VBox {
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All));
     topLevel.managedProperty().bind(nav.isEqualTo(Nav.All));
 
-    var attacks = new VBox();
-    var weapons = new VBox();
+    return topLevel;
+  }
+
+  private Node weaponSelection(CreatureViewModel model) {
+    var cancel = new Button("Cancel");
+    cancel.setOnAction(_ -> nav.set(Nav.All));
+
+    var buttons = new VBox();
     model
         .weaponsProperty()
         .addListener(
             (ListChangeListener<? super Weapon>)
                 _ -> {
-                  weapons.getChildren().clear();
+                  buttons.getChildren().clear();
                   for (Weapon weapon : model.weaponsProperty()) {
                     var btn = new Button(weapon.toString());
                     btn.setOnAction(
                         _ -> {
-                          attacks.getChildren().clear();
-                          for (Runnable a : model.getWeaponAttacks(weapon)) {
-                            var attackBtn = new Button(a.toString());
-                            attackBtn.setOnAction(_ -> a.run());
-                            attacks.getChildren().add(attackBtn);
-                            nav.set(Nav.Attacks);
-                          }
+                          model.loadAttacks(weapon);
+                          nav.set(Nav.Attacks);
                         });
-                    weapons.getChildren().add(btn);
+                    buttons.getChildren().add(btn);
                   }
                 });
-    weapons.visibleProperty().bind(nav.isEqualTo(Nav.Weapons));
-    weapons.managedProperty().bind(nav.isEqualTo(Nav.Weapons));
 
-    attacks.visibleProperty().bind(nav.isEqualTo(Nav.Attacks));
-    attacks.managedProperty().bind(nav.isEqualTo(Nav.Attacks));
+    var selection = new VBox();
+    selection.visibleProperty().bind(nav.isEqualTo(Nav.Weapons));
+    selection.managedProperty().bind(nav.isEqualTo(Nav.Weapons));
+    selection.getChildren().addAll(cancel, new Separator(), buttons);
 
-    getChildren().addAll(portrait, topLevel, weapons, attacks);
-    setMaxWidth(320.0);
-    setAlignment(Pos.TOP_CENTER);
-    setBackground(Background.fill(Color.WHITE));
+    return selection;
+  }
+
+  private Node targetSelection(CreatureViewModel model) {
+    var cancel = new Button("Cancel");
+    cancel.setOnAction(_ -> nav.set(Nav.Weapons));
+
+    var buttons = new VBox();
+    model
+        .attacksProperty()
+        .addListener(
+            (ListChangeListener<? super Runnable>)
+                _ -> {
+                  buttons.getChildren().clear();
+                  for (Runnable a : model.attacksProperty()) {
+                    var attackBtn = new Button(a.toString());
+                    attackBtn.setOnAction(_ -> a.run());
+                    buttons.getChildren().add(attackBtn);
+                    nav.set(Nav.Attacks);
+                  }
+                });
+
+    var selection = new VBox();
+    selection.visibleProperty().bind(nav.isEqualTo(Nav.Attacks));
+    selection.managedProperty().bind(nav.isEqualTo(Nav.Attacks));
+    selection.getChildren().addAll(cancel, new Separator(), buttons);
+
+    return selection;
   }
 }

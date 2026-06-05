@@ -11,7 +11,7 @@ import org.tcs.model.geometry.Finite2DGrid;
 import org.tcs.model.geometry.RealPoint;
 import org.tcs.ui.Assets;
 import org.tcs.ui.PlayView;
-import org.tcs.ui.ViewModel;
+import org.tcs.ui.viewmodel.ViewModel;
 
 public class Main extends Application {
   @Override

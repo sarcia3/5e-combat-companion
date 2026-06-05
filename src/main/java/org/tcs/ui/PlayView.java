@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Window;
 import org.tcs.model.Creature;
 import org.tcs.ui.map.MapView;
+import org.tcs.ui.viewmodel.ViewModel;
 
 public class PlayView extends Scene {
   public enum Mode {
@@ -44,14 +45,14 @@ public class PlayView extends Scene {
     initiativeQueue.managedProperty().bind(currentMode.isEqualTo(Mode.PLAY));
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
-    var creatureView = new CreatureView(creatureImages, model);
-    model.selectedProperty().bind(mapView.selected());
+    var creatureView = new CreatureView(creatureImages, model.creature);
+    model.creature.creatureProperty().bind(mapView.selected());
     creatureView
         .visibleProperty()
-        .bind(currentMode.isEqualTo(Mode.PLAY).and(model.selectedProperty().isNotNull()));
+        .bind(currentMode.isEqualTo(Mode.PLAY).and(model.creature.creatureProperty().isNotNull()));
     creatureView
         .managedProperty()
-        .bind(currentMode.isEqualTo(Mode.PLAY).and(model.selectedProperty().isNotNull()));
+        .bind(currentMode.isEqualTo(Mode.PLAY).and(model.creature.creatureProperty().isNotNull()));
     StackPane.setAlignment(creatureView, Pos.TOP_RIGHT);
 
     var pane = new StackPane();
@@ -64,7 +65,7 @@ public class PlayView extends Scene {
 
   private MapView getMapView(ViewModel model, Window owner, ObjectProperty<Mode> currentMode) {
     var assetSelector = new AssetSelector(owner);
-    var creatureWizard = new CreatureWizard(model, owner);
+    var creatureWizard = new CreatureWizard(model.creatureWizard, owner);
 
     var canvas = new MapView(model, currentMode, creatureImages);
     canvas.setOnAddDecoration(
@@ -74,6 +75,8 @@ public class PlayView extends Scene {
 
           canvas.addDecoration(new Decoration(target, Assets.images.get(image)));
         });
+    // Ideally, the asset selector should be a part of the creature wizard. This is just
+    // faster to write like this and there isn't much time.
     canvas.setOnAddCreature(
         target -> {
           if (!creatureWizard.showAndWait()) return;
@@ -81,7 +84,7 @@ public class PlayView extends Scene {
           if (imageName == null) return;
 
           // Listeners will be notified soon after, so we can safely mutate here
-          var creature = model.makeCreature(target);
+          var creature = model.creatureWizard.makeCreature(target);
           var image = Assets.images.get(imageName);
           creatureImages.put(creature, image);
           model.addCreature(creature);

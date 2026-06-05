@@ -18,6 +18,7 @@ import org.tcs.model.Creature;
 import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
 import org.tcs.ui.*;
+import org.tcs.ui.viewmodel.ViewModel;
 
 class DrawablesView {
   private final ObjectProperty<Drawable> selected = new SimpleObjectProperty<>();
