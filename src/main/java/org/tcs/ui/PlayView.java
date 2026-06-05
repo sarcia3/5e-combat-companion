@@ -31,6 +31,22 @@ public class PlayView extends Scene {
     ObjectProperty<Mode> currentMode = new SimpleObjectProperty<>(Mode.PLAY);
     var mapView = getMapView(model, owner, currentMode);
 
+    var creatureEdit = new CreatureEdit(creatureImages, model.creatureEdit);
+    model.creature.creatureProperty().bind(mapView.selected());
+    creatureEdit
+        .visibleProperty()
+        .bind(
+            currentMode
+                .isEqualTo(Mode.EDIT_PIECES)
+                .and(model.creature.creatureProperty().isNotNull()));
+    creatureEdit
+        .managedProperty()
+        .bind(
+            currentMode
+                .isEqualTo(Mode.EDIT_PIECES)
+                .and(model.creature.creatureProperty().isNotNull()));
+    StackPane.setAlignment(creatureEdit, Pos.TOP_RIGHT);
+
     var playButton = modeTab(Mode.PLAY, "Play", currentMode);
     var editPiecesButton = modeTab(Mode.EDIT_PIECES, "Edit pieces", currentMode);
     var editCollisionButton = modeTab(Mode.EDIT_COLLISION, "Edit collision", currentMode);
@@ -51,7 +67,7 @@ public class PlayView extends Scene {
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
     var creatureView = new CreatureView(creatureImages, model.creature);
-    model.creature.creatureProperty().bind(mapView.selected());
+    model.creatureEdit.creatureProperty().bind(mapView.selected());
     creatureView
         .visibleProperty()
         .bind(currentMode.isEqualTo(Mode.PLAY).and(model.creature.creatureProperty().isNotNull()));
@@ -61,7 +77,7 @@ public class PlayView extends Scene {
     StackPane.setAlignment(creatureView, Pos.TOP_RIGHT);
 
     var pane = new StackPane();
-    pane.getChildren().addAll(mapView, buttonBox, initiativeQueue, creatureView);
+    pane.getChildren().addAll(mapView, buttonBox, creatureEdit, initiativeQueue, creatureView);
     mapView.widthProperty().bind(pane.widthProperty());
     mapView.heightProperty().bind(pane.heightProperty());
 
@@ -81,7 +97,7 @@ public class PlayView extends Scene {
           canvas.addDecoration(new Decoration(target, Assets.images.get(image)));
         });
     // Ideally, the asset selector should be a part of the creature wizard. This is just
-    // faster to write like this and there isn't much time.
+    // faster to write like this, and there isn't much time.
     canvas.setOnAddCreature(
         target -> {
           if (!creatureWizard.showAndWait()) return;
