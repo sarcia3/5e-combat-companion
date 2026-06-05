@@ -4,15 +4,18 @@ import java.util.Map;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import org.tcs.model.Creature;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.ui.viewmodel.CreatureViewModel;
@@ -27,6 +30,11 @@ public class CreatureView extends VBox {
   private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.All);
 
   public CreatureView(Map<Creature, Image> creatureImages, CreatureViewModel model) {
+    var name = new Label();
+    name.textProperty().bind(model.creatureProperty().map(Creature::name));
+    name.setTextAlignment(TextAlignment.CENTER);
+    name.setStyle("-fx-font-weight: bold; -fx-font-size: 24px;");
+
     var portrait = new ImageView();
     portrait.setFitHeight(256.0);
     portrait.setPreserveRatio(true);
@@ -37,10 +45,12 @@ public class CreatureView extends VBox {
                 .creatureProperty()
                 .map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
 
-    getChildren().addAll(portrait, topLevel(), weaponSelection(model), targetSelection(model));
+    getChildren()
+        .addAll(name, portrait, topLevel(), weaponSelection(model), targetSelection(model));
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
+    setPadding(new Insets(8.0));
 
     model.creatureProperty().addListener(_ -> nav.set(Nav.All));
   }
