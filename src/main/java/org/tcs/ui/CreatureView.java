@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import org.tcs.model.Creature;
+import org.tcs.model.StateProcess;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.ui.viewmodel.CreatureViewModel;
 
@@ -109,7 +110,7 @@ public class CreatureView extends VBox {
             (ListChangeListener<? super Runnable>)
                 _ -> {
                   buttons.getChildren().clear();
-                  for (Runnable a : model.attacksProperty()) {
+                  for (StateProcess a : model.attacksProperty()) {
                     var attackBtn = new Button(a.toString());
                     attackBtn.setOnAction(_ -> a.run());
                     buttons.getChildren().add(attackBtn);
