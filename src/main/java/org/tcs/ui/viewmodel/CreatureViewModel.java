@@ -1,7 +1,7 @@
 package org.tcs.ui.viewmodel;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.tcs.model.Creature;
@@ -12,10 +12,12 @@ import org.tcs.model.equipment.Weapon;
 public class CreatureViewModel {
   private final State model;
   private final ObjectProperty<Creature> creature = new SimpleObjectProperty<>();
+  private final BooleanProperty isCurrent = new SimpleBooleanProperty(false);
   private final ObservableList<Weapon> weapons = FXCollections.observableArrayList();
   private final ObservableList<StateProcess> attacks = FXCollections.observableArrayList();
+  private Runnable onPass = () -> {};
 
-  public CreatureViewModel(State model) {
+  public CreatureViewModel(State model, ObservableObjectValue<Creature> current) {
     this.model = model;
 
     creature.addListener(
@@ -24,10 +26,21 @@ public class CreatureViewModel {
 
           weapons.setAll(creature.get().getWeapons());
         });
+    creature.addListener(_ -> System.out.println("Creature: " + creature.get()));
+    isCurrent.addListener(_ -> System.out.println("Current: " + isCurrent.get()));
+    isCurrent.bind(creature.isEqualTo(current));
   }
 
   public void loadAttacks(Weapon weapon) {
     attacks.setAll(model.getPossibleAttacks(creature.get(), weapon));
+  }
+
+  public void pass() {
+    onPass.run();
+  }
+
+  public void setOnPass(Runnable onPass) {
+    this.onPass = onPass;
   }
 
   public ObjectProperty<Creature> creatureProperty() {
@@ -40,5 +53,9 @@ public class CreatureViewModel {
 
   public ObservableList<StateProcess> attacksProperty() {
     return attacks;
+  }
+
+  public BooleanProperty isCurrentProperty() {
+    return isCurrent;
   }
 }

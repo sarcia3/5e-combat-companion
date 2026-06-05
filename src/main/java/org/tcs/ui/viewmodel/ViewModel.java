@@ -16,10 +16,16 @@ public class ViewModel {
   public final CreatureViewModel creature;
   private final ObservableList<Creature> creatures = FXCollections.observableArrayList();
   private final ObservableList<Creature> initiativeQueue = FXCollections.observableArrayList();
+  private final ObjectProperty<Creature> currentCreature = new SimpleObjectProperty<>();
 
   public ViewModel(State model) {
     this.model = model;
-    this.creature = new CreatureViewModel(model);
+    creature = new CreatureViewModel(model, currentCreature);
+    creature.setOnPass(
+        () -> {
+          model.nextTurn();
+          update();
+        });
     creatures.setAll(model.getCreatures());
 
     update();
@@ -38,6 +44,11 @@ public class ViewModel {
       }
     }
 
+    if (list.isEmpty()) {
+      currentCreature.set(null);
+    } else {
+      currentCreature.set(list.getFirst());
+    }
     initiativeQueue.setAll(list);
   }
 
