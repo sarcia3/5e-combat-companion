@@ -9,7 +9,7 @@ import org.tcs.model.geometry.Point;
 /** Player, monster, summon etc. Basically anything that exists, has hp and takes actions */
 public class Creature implements HasInitiative, HasHitPoints {
 
-  String name; // effectively final for the time being, but this might change in the future
+  String name;
   int hitPoints = 0;
   int hitPointMaximum = 0;
   int temporaryHitPoints = 0;
@@ -57,6 +57,10 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   public String name() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   @Override
