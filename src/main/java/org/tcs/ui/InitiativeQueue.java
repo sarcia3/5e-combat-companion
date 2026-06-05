@@ -1,10 +1,13 @@
 package org.tcs.ui;
 
 import java.util.Map;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,20 +27,43 @@ public class InitiativeQueue extends VBox {
     this.images = images;
 
     var entries = model.initiativeQueueProperty();
-    entries.addListener((ListChangeListener<Creature>) _ -> rebuildEntries(entries));
-    rebuildEntries(entries);
+    var firstName = new SimpleStringProperty();
+    var label = new Label();
+    label.textProperty().bind(firstName.map(v -> "Next: " + v).orElse("No creatures"));
+    label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 18px;");
 
-    setMaxWidth(Region.USE_PREF_SIZE);
+    entries.addListener(
+        (ListChangeListener<Creature>)
+            _ -> {
+              if (entries.isEmpty()) {
+                firstName.set(null);
+              } else {
+                firstName.set(entries.getFirst().name());
+              }
+            });
+
+    var entriesBox = new VBox(10);
+    entriesBox.setMaxWidth(Region.USE_PREF_SIZE);
+    entries.addListener((ListChangeListener<Creature>) _ -> rebuildEntries(entries, entriesBox));
+    rebuildEntries(entries, entriesBox);
+
+    setPickOnBounds(false);
+    getChildren().addAll(label, entriesBox);
   }
 
-  private void rebuildEntries(ObservableList<Creature> creatures) {
-    getChildren().clear();
+  private void rebuildEntries(ObservableList<Creature> creatures, VBox entriesBox) {
+    entriesBox.getChildren().clear();
 
     // We render 10 entries
     if (creatures.isEmpty()) return;
-    for (int i = 0; i < 10; i++) {
+
+    var first = creatures.getFirst();
+    entriesBox.getChildren().add(createEntryNode(first));
+    entriesBox.getChildren().add(new Separator());
+
+    for (int i = 1; i < 7; i++) {
       var creature = creatures.get(i % creatures.size());
-      getChildren().add(createEntryNode(creature));
+      entriesBox.getChildren().add(createEntryNode(creature));
     }
   }
 
