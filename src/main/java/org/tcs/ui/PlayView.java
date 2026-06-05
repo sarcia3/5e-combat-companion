@@ -45,13 +45,13 @@ public class PlayView extends Scene {
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
     var creatureView = new CreatureView(creatureImages, model);
-    creatureView.creatureProperty().bind(mapView.selected());
+    model.selectedProperty().bind(mapView.selected());
     creatureView
         .visibleProperty()
-        .bind(currentMode.isEqualTo(Mode.PLAY).and(creatureView.creatureProperty().isNotNull()));
+        .bind(currentMode.isEqualTo(Mode.PLAY).and(model.selectedProperty().isNotNull()));
     creatureView
         .managedProperty()
-        .bind(currentMode.isEqualTo(Mode.PLAY).and(creatureView.creatureProperty().isNotNull()));
+        .bind(currentMode.isEqualTo(Mode.PLAY).and(model.selectedProperty().isNotNull()));
     StackPane.setAlignment(creatureView, Pos.TOP_RIGHT);
 
     var pane = new StackPane();

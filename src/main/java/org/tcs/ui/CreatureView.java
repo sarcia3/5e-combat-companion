@@ -17,21 +17,22 @@ import org.tcs.model.equipment.Weapon;
 public class CreatureView extends VBox {
   private enum Nav {
     All,
-    Weapons
+    Weapons,
+    Attacks
   }
 
-  private final ObjectProperty<Creature> creature = new SimpleObjectProperty<>();
   private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.All);
 
   public CreatureView(Map<Creature, Image> creatureImages, ViewModel model) {
-    creature.addListener(_ -> model.loadCreature(creature.get()));
-
     var portrait = new ImageView();
     portrait.setFitHeight(256.0);
     portrait.setPreserveRatio(true);
     portrait
         .imageProperty()
-        .bind(creature.map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
+        .bind(
+            model
+                .selectedProperty()
+                .map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
 
     var attack = new Button("Attack");
     attack.setOnAction(_ -> nav.set(Nav.Weapons));
@@ -42,6 +43,7 @@ public class CreatureView extends VBox {
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All));
     topLevel.managedProperty().bind(nav.isEqualTo(Nav.All));
 
+    var attacks = new VBox();
     var weapons = new VBox();
     model
         .weaponsProperty()
@@ -51,19 +53,28 @@ public class CreatureView extends VBox {
                   weapons.getChildren().clear();
                   for (Weapon weapon : model.weaponsProperty()) {
                     var btn = new Button(weapon.toString());
+                    btn.setOnAction(
+                        _ -> {
+                          attacks.getChildren().clear();
+                          for (Runnable a : model.getWeaponAttacks(weapon)) {
+                            var attackBtn = new Button(a.toString());
+                            attackBtn.setOnAction(_ -> a.run());
+                            attacks.getChildren().add(attackBtn);
+                            nav.set(Nav.Attacks);
+                          }
+                        });
                     weapons.getChildren().add(btn);
                   }
                 });
     weapons.visibleProperty().bind(nav.isEqualTo(Nav.Weapons));
     weapons.managedProperty().bind(nav.isEqualTo(Nav.Weapons));
 
-    getChildren().addAll(portrait, topLevel, weapons);
+    attacks.visibleProperty().bind(nav.isEqualTo(Nav.Attacks));
+    attacks.managedProperty().bind(nav.isEqualTo(Nav.Attacks));
+
+    getChildren().addAll(portrait, topLevel, weapons, attacks);
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
-  }
-
-  public ObjectProperty<Creature> creatureProperty() {
-    return creature;
   }
 }

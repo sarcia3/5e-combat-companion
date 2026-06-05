@@ -1,6 +1,7 @@
 package org.tcs.ui;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
@@ -22,6 +23,7 @@ public class ViewModel {
   private final SimpleDoubleProperty creatureMovement = new SimpleDoubleProperty(0.0);
   private final SimpleStringProperty creatureMovementError = new SimpleStringProperty("");
   private final ObservableList<Creature> initiativeQueue = FXCollections.observableArrayList();
+  private final ObjectProperty<Creature> selected = new SimpleObjectProperty<>();
   private final ObservableList<Weapon> weapons = FXCollections.observableArrayList();
 
   public ViewModel(State model) {
@@ -51,10 +53,17 @@ public class ViewModel {
             creatureMovement));
 
     update();
+
+    selected.addListener(_ -> updateSelected());
   }
 
   public WorldMap getMap() {
     return model.getMap();
+  }
+
+  private void updateSelected() {
+    if (selected.get() == null) return;
+    weapons.setAll(selected.get().getWeapons());
   }
 
   private void update() {
@@ -142,13 +151,16 @@ public class ViewModel {
     }
   }
 
-  public void loadCreature(Creature creature) {
-    if (creature == null) return;
-    weaponsProperty().setAll(creature.getWeapons());
+  public Collection<Runnable> getWeaponAttacks(Weapon weapon) {
+    return model.getPossibleAttacks(selected.get(), weapon);
   }
 
   public ObservableList<Creature> initiativeQueueProperty() {
     return initiativeQueue;
+  }
+
+  public ObjectProperty<Creature> selectedProperty() {
+    return selected;
   }
 
   public ObservableList<Weapon> weaponsProperty() {
