@@ -44,7 +44,7 @@ public final class MeleeWeaponAttack implements WeaponAttack {
   public String toString() {
     return attacker.toString()
         + " attacks with "
-        + attackWeapon.toString()
+        + attackWeapon.name()
         + " using "
         + ability.toString();
   }
