@@ -24,18 +24,14 @@ public record Weapon(String name, List<Mode> possibleAttacks) {
     for (Mode mode : possibleAttacks) {
       // TODO fill in when ranged attacks are implemented
       if (mode.isRanged()) list.add(new RangedWeaponAttack());
-      else list.add(new MeleeWeaponAttack(creature, mode.getDamageRoll(), mode.ability(), this));
+      else list.add(new MeleeWeaponAttack(creature, mode.damageRoll(), mode.ability(), this));
     }
     return list;
   }
 
-  public record Mode(String damageRollStr, Ability ability, boolean isRanged) {
-    Mode(DamageRoll damageRoll, Ability ability, boolean isRanged) {
-      this(damageRoll.toString(), ability, isRanged);
-    }
-
-    DamageRoll getDamageRoll() {
-      return DamageRoll.parse(damageRollStr);
+  public record Mode(DamageRoll damageRoll, Ability ability, boolean isRanged) {
+    public Mode(String damageRollStr, Ability ability, boolean isRanged) {
+      this(DamageRoll.parse(damageRollStr), ability, isRanged);
     }
   }
   ;

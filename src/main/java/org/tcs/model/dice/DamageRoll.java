@@ -12,20 +12,17 @@ import org.tcs.model.Damage;
  *
  * <p>It's a utility which is meant to store things like 2d4 piercing + 1d8 bludgeoning
  */
-public class DamageRoll {
+public record DamageRoll(List<Component> components) {
+
   public record Component(int numberOfDice, int numberOfSides, int bonus, Damage.Type type) {}
 
-  List<Component> components = new ArrayList<>();
+  public DamageRoll(List<Component> components) {
+    if (components == null) this.components = new ArrayList<>();
+    else this.components = components;
+  }
 
-  /**
-   * Creates a roll without bonus
-   *
-   * @param numberOfDice number of dice
-   * @param numberOfSides number of sides on each dice
-   * @param type damage type
-   */
-  DamageRoll(int numberOfDice, int numberOfSides, Damage.Type type) {
-    this(numberOfDice, numberOfSides, 0, type);
+  public DamageRoll(Component component) {
+    this(List.of(component));
   }
 
   /**
@@ -36,17 +33,13 @@ public class DamageRoll {
    * @param bonus bonus added to the roll
    * @param type damage type
    */
-  DamageRoll(int numberOfDice, int numberOfSides, int bonus, Damage.Type type) {
-    components.add(new Component(numberOfDice, numberOfSides, bonus, type));
-  }
-
-  private DamageRoll(List<Component> components) {
-    this.components.addAll(components);
+  public DamageRoll(int numberOfDice, int numberOfSides, int bonus, Damage.Type type) {
+    this(new Component(numberOfDice, numberOfSides, bonus, type));
   }
 
   /** Creates a roll that is the concatenation of the rolls passed in the constructor */
-  DamageRoll(Collection<? extends DamageRoll> Rolls) {
-    Rolls.forEach((r) -> components.addAll(r.components));
+  DamageRoll(Collection<? extends DamageRoll> rolls) {
+    this(rolls.stream().flatMap(r -> r.components().stream()).toList());
   }
 
   /** Doubles the number of dice. */
@@ -112,19 +105,5 @@ public class DamageRoll {
       parsed.add(new Component(numberOfDice, numberOfSides, bonus, type));
     }
     return new DamageRoll(parsed);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-    for (Component component : components) {
-      if (!builder.isEmpty()) builder.append(" + ");
-      if (component.numberOfDice > 0) {
-        builder.append(component.numberOfDice).append("d").append(component.numberOfSides);
-        builder.append("+").append(component.bonus);
-      } else builder.append(component.bonus);
-      builder.append(component.type);
-    }
-    return builder.toString();
   }
 }
