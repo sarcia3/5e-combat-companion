@@ -142,7 +142,7 @@ public class MapView extends Canvas {
       camera = new RealPoint(camera.x() - delta.x(), camera.y() - delta.y());
     }
 
-    if (event.isPrimaryButtonDown()) {
+    if (event.isPrimaryButtonDown() && modeProperty.get().equals(PlayView.Mode.EDIT_PIECES)) {
       drawables.onMouseDragged(world);
     }
 
