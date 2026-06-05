@@ -43,6 +43,11 @@ public class InitiativeQueue extends VBox {
                 firstName.set(entries.getFirst().name());
               }
             });
+    if (entries.isEmpty()) {
+      firstName.set(null);
+    } else {
+      firstName.set(entries.getFirst().name());
+    }
 
     var entriesBox = new VBox(10);
     entriesBox.setMaxWidth(Region.USE_PREF_SIZE);
