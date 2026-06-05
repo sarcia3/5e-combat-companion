@@ -13,12 +13,18 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Window;
 import org.tcs.model.Creature;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.ui.viewmodel.CreatureEditViewModel;
 
 public class CreatureEdit extends VBox {
-  public CreatureEdit(Map<Creature, Image> creatureImages, CreatureEditViewModel model) {
+  private final WeaponSelector weaponSelector;
+
+  public CreatureEdit(
+      Map<Creature, Image> creatureImages, CreatureEditViewModel model, Window owner) {
+    weaponSelector = new WeaponSelector(owner);
+
     var name = new Label();
     name.textProperty().bind(model.creatureProperty().map(Creature::name));
     name.setTextAlignment(TextAlignment.CENTER);
@@ -55,6 +61,14 @@ public class CreatureEdit extends VBox {
                 });
 
     var add = new Button("Add Weapon");
+    add.setOnAction(
+        _ -> {
+          Weapon weapon = weaponSelector.showAndWait();
+
+          if (weapon != null) {
+            model.addWeapon(weapon);
+          }
+        });
 
     var weapons = new VBox();
     weapons.getChildren().addAll(owned, add);
