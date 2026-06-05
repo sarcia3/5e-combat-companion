@@ -43,6 +43,11 @@ public class PlayView extends Scene {
     var initiativeQueue = new InitiativeQueue(model, creatureImages);
     initiativeQueue.visibleProperty().bind(currentMode.isEqualTo(Mode.PLAY));
     initiativeQueue.managedProperty().bind(currentMode.isEqualTo(Mode.PLAY));
+    initiativeQueue.setOnEntryClicked(
+        creature -> {
+          mapView.moveCameraTo(creature);
+          mapView.selectCreature(creature);
+        });
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
     var creatureView = new CreatureView(creatureImages, model.creature);

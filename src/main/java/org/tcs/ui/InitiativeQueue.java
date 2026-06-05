@@ -1,6 +1,7 @@
 package org.tcs.ui;
 
 import java.util.Map;
+import java.util.function.Consumer;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -19,6 +20,7 @@ import org.tcs.ui.viewmodel.ViewModel;
 
 public class InitiativeQueue extends VBox {
   private final Map<Creature, Image> images;
+  private Consumer<Creature> onEntryClicked = _ -> {};
 
   public InitiativeQueue(ViewModel model, Map<Creature, Image> images) {
     super(10);
@@ -76,10 +78,15 @@ public class InitiativeQueue extends VBox {
     StackPane entryPane = new StackPane(imageView);
     entryPane.setStyle("-fx-background-color: #444; -fx-background-radius: 5;");
     entryPane.setPadding(new Insets(5));
+    entryPane.setOnMouseClicked(_ -> onEntryClicked.accept(creature));
 
     Tooltip tooltip = new Tooltip(creature.name());
     Tooltip.install(entryPane, tooltip);
 
     return entryPane;
+  }
+
+  public void setOnEntryClicked(Consumer<Creature> onEntryClicked) {
+    this.onEntryClicked = onEntryClicked;
   }
 }

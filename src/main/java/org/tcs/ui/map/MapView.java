@@ -1,5 +1,7 @@
 package org.tcs.ui.map;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
@@ -22,6 +24,7 @@ public class MapView extends Canvas {
   public static final double PIXELS_PER_FOOT = 120;
   private final ViewModel model;
   private RealPoint camera = new RealPoint(0, 0);
+  private RealPoint cameraTarget = null;
   // Tracker for drag-based navigation.
   // TODO: Calling it a `RealPoint` is misleading. A dedicated record would be more fitting
   private RealPoint lastMouse = new RealPoint(0, 0);
@@ -46,8 +49,12 @@ public class MapView extends Canvas {
     this.model = model;
     // TODO: handle starting & stopping of the rendering
     new AnimationTimer() {
+      private long lastUpdate = System.currentTimeMillis();
+
       @Override
       public void handle(long now) {
+        update(Duration.of(now - lastUpdate, ChronoUnit.NANOS));
+        lastUpdate = now;
         draw();
       }
     }.start();
@@ -108,6 +115,14 @@ public class MapView extends Canvas {
     setOnMouseReleased(this::onMouseReleased);
   }
 
+  public void moveCameraTo(Creature creature) {
+    cameraTarget = model.getMap().pointToRealPoint(creature.position()).multiply(PIXELS_PER_FOOT);
+  }
+
+  public void selectCreature(Creature creature) {
+    drawables.selectCreature(creature);
+  }
+
   private RealPoint screenToReal(double x, double y) {
     return new RealPoint(x + camera.x() - getWidth() / 2, y + camera.y() - getHeight() / 2);
   }
@@ -118,6 +133,7 @@ public class MapView extends Canvas {
   }
 
   private void onMousePressed(MouseEvent event) {
+    cameraTarget = null;
     lastMouse = new RealPoint(event.getX(), event.getY());
     mousePress = new RealPoint(event.getX(), event.getY());
     var world = screenToReal(event.getX(), event.getY());
@@ -166,6 +182,23 @@ public class MapView extends Canvas {
         contextMenu.hide();
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
         contextMenu.targetProperty().set(new ContextTarget(world, tile));
+      }
+    }
+  }
+
+  private void update(Duration delta) {
+    // Smooth camera motion
+    if (cameraTarget != null) {
+      double dx = cameraTarget.x() - camera.x();
+      double dy = cameraTarget.y() - camera.y();
+      double distanceSquared = dx * dx + dy * dy;
+
+      if (distanceSquared < 1.0) {
+        camera = cameraTarget;
+        cameraTarget = null;
+      } else {
+        double speed = 10.0 * delta.toMillis() / 1000.0;
+        camera = new RealPoint(camera.x() + dx * speed, camera.y() + dy * speed);
       }
     }
   }

@@ -160,4 +160,8 @@ class DrawablesView {
     removeDecoration(decoration);
     decorations.addFirst(decoration);
   }
+
+  public void selectCreature(Creature creature) {
+    selected.set(puppets.get(creature));
+  }
 }
