@@ -2,7 +2,6 @@ package org.tcs.model.equipment;
 
 import java.util.*;
 import org.tcs.model.Ability;
-import org.tcs.model.Damage;
 
 public class WeaponsLibrary {
   private WeaponsLibrary() {
@@ -13,14 +12,19 @@ public class WeaponsLibrary {
 
   public static void load() {
     addWeapon(
-        new Weapon("Dagger", 4, List.of(Ability.DEX, Ability.STR), List.of(Damage.Type.PIERCING)));
+        new Weapon(
+            "Dagger",
+            List.of(
+                new Weapon.Mode("1d4 PIERCING", Ability.DEX, false),
+                new Weapon.Mode("1d4 PIERCING", Ability.STR, false))));
+    // new Weapon.Mode("1d4 PIERCING", Ability.DEX, true) when we add ranged weapons
 
-    addWeapon(new Weapon("Club", 4, Ability.STR, Damage.Type.BLUDGEONING));
+    addWeapon(new Weapon("Club", "1d4 BLUDGEONING", Ability.STR, false));
 
-    addWeapon(new Weapon("Mace", 6, Ability.STR, Damage.Type.BLUDGEONING));
+    addWeapon(new Weapon("Mace", "1d6 BLUDGEONING", Ability.STR, false));
 
     // See https://5e.tools/variantrules.html#unarmed%20strike_xphb
-    addWeapon(new Weapon("Fist", 1, Ability.STR, Damage.Type.BLUDGEONING));
+    addWeapon(new Weapon("Fist", "1d1 BLUDGEONING", Ability.STR, false));
   }
 
   public static Collection<Weapon> getWeapons() {

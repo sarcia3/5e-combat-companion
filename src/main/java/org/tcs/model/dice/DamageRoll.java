@@ -113,4 +113,18 @@ public class DamageRoll {
     }
     return new DamageRoll(parsed);
   }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    for (Component component : components) {
+      if (!builder.isEmpty()) builder.append(" + ");
+      if (component.numberOfDice > 0) {
+        builder.append(component.numberOfDice).append("d").append(component.numberOfSides);
+        builder.append("+").append(component.bonus);
+      } else builder.append(component.bonus);
+      builder.append(component.type);
+    }
+    return builder.toString();
+  }
 }
