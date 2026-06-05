@@ -31,7 +31,7 @@ public class PlayView extends Scene {
     ObjectProperty<Mode> currentMode = new SimpleObjectProperty<>(Mode.PLAY);
     var mapView = getMapView(model, owner, currentMode);
 
-    var creatureEdit = new CreatureEdit(creatureImages, model.creatureEdit);
+    var creatureEdit = new CreatureEdit(creatureImages, model.creatureEdit, owner);
     model.creature.creatureProperty().bind(mapView.selected());
     creatureEdit
         .visibleProperty()
