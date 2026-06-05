@@ -51,7 +51,12 @@ public class CreatureView extends VBox {
     nothingToDo.managedProperty().bind(model.isCurrentProperty().not());
     getChildren()
         .addAll(
-            name, portrait, nothingToDo, topLevel(model), weaponSelection(model), targetSelection(model));
+            name,
+            portrait,
+            nothingToDo,
+            topLevel(model),
+            weaponSelection(model),
+            targetSelection(model));
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
