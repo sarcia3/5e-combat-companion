@@ -116,6 +116,8 @@ public class State {
     Collection<WeaponAttack> attacks = weapon.generateAttacks(actor);
     List<StateProcess> list = new ArrayList<>();
 
+    if (actor.isUnconscious()) return list;
+
     for (WeaponAttack attack : attacks) {
       for (Creature target : getCreaturesWithinDistance(actor.position(), attack.getRange()))
         if (target != actor) {
@@ -135,6 +137,7 @@ public class State {
                 @Override
                 public void run() {
                   attack.resolve(State.this, target);
+                  if (target.isDead()) removeCreature(target);
                 }
 
                 @Override
@@ -149,5 +152,11 @@ public class State {
 
   public void nextTurn() {
     initiative.advance();
+    if (initiative.getFirst() instanceof Creature creature) {
+      if (creature.isUnconscious()) {
+        creature.deathSavingThrow();
+        if (creature.isDead()) removeCreature(creature);
+      }
+    }
   }
 }

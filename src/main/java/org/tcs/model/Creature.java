@@ -17,6 +17,8 @@ public class Creature implements HasInitiative, HasHitPoints {
   int proficiencyBonus = 2;
   private Point position;
   List<Weapon> weapons = new ArrayList<>();
+  DeathTracker deathTracker = new DeathTracker();
+  boolean isDead = false;
 
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
 
@@ -86,10 +88,13 @@ public class Creature implements HasInitiative, HasHitPoints {
   public void takeDamage(Damage damage) {
     // TODO actually implement, considering resistance immunities and so on
     // currently we just subtract the sum
-    hitPoints -= damage.byType.values().stream().mapToInt(Integer::intValue).sum();
-    if (hitPoints < 0) {
-      // do something
-      hitPoints = 0;
+    int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
+    if (hitPoints == 0 && actualDamage > 0) {
+      DeathTracker.Result result = deathTracker.savingThrow(diceRoller);
+      if (result == DeathTracker.Result.DEATH) isDead = true;
+    } else {
+      hitPoints -= actualDamage;
+      if (hitPoints < 0) hitPoints = 0;
     }
   }
 
@@ -119,6 +124,24 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   public Collection<Weapon> getWeapons() {
     return List.copyOf(weapons);
+  }
+
+  public boolean isDead() {
+    return isDead;
+  }
+
+  public boolean isUnconscious() {
+    return hitPoints == 0;
+  }
+
+  // package private, should only be called by state
+  void deathSavingThrow() {
+    DeathTracker.Result result = deathTracker.proceed(diceRoller);
+    if (result == DeathTracker.Result.DEATH) isDead = true;
+    if (result == DeathTracker.Result.SAVE) {
+      hitPoints = 1;
+      deathTracker.reset();
+    }
   }
 
   @Override
