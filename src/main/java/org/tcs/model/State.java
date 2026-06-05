@@ -109,19 +109,29 @@ public class State {
     return creatures.stream().filter(c -> pointsInDistance.contains(c.position())).toList();
   }
 
-  // In the future this Runnable should be our custom interface with something like getVisuals()
-  public Collection<Runnable> getPossibleAttacks(Creature actor, Weapon weapon) {
+  public Collection<StateProcess> getPossibleAttacks(Creature actor, Weapon weapon) {
     // Maybe we should check here whether the actor has the weapon?
     // Ditto for actor being the current player (that is actor.equals(initiative.getFirst())
 
     Collection<WeaponAttack> attacks = weapon.generateAttacks(actor);
-    List<Runnable> list = new ArrayList<>();
+    List<StateProcess> list = new ArrayList<>();
 
     for (WeaponAttack attack : attacks) {
       for (Creature target : getCreaturesWithinDistance(actor.position(), attack.getRange()))
         if (target != actor) {
           list.add(
-              new Runnable() {
+              new StateProcess() {
+
+                @Override
+                public Collection<Creature> getTargets() {
+                  return List.of(target);
+                }
+
+                @Override
+                public Collection<Creature> getSource() {
+                  return List.of(actor);
+                }
+
                 @Override
                 public void run() {
                   attack.resolve(State.this, target);
