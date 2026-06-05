@@ -14,12 +14,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.converter.NumberStringConverter;
+import org.tcs.ui.viewmodel.CreatureWizardViewModel;
 
 public class CreatureWizard {
   private final Stage popup;
   private boolean okClicked = false;
 
-  public CreatureWizard(ViewModel model, Window owner) {
+  public CreatureWizard(CreatureWizardViewModel model, Window owner) {
     popup = new Stage();
     popup.initOwner(owner);
     popup.setTitle("Create Creature");

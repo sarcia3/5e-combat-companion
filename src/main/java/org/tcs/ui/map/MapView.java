@@ -15,6 +15,7 @@ import org.tcs.model.geometry.Point;
 import org.tcs.model.geometry.RealPoint;
 import org.tcs.model.geometry.WorldMap;
 import org.tcs.ui.*;
+import org.tcs.ui.viewmodel.ViewModel;
 
 public class MapView extends Canvas {
   private static final int CLICK_BUFFER = 10;

@@ -12,6 +12,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.tcs.model.Creature;
+import org.tcs.ui.viewmodel.ViewModel;
 
 public class InitiativeQueue extends VBox {
   private final Map<Creature, Image> images;
