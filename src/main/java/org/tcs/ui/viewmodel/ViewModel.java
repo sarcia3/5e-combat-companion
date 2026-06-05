@@ -58,6 +58,26 @@ public class ViewModel {
     }
   }
 
+  public void setCreatureName(Creature creature, String name) {
+    String uniqueName = name;
+    int counter = 0;
+
+    while (true) {
+      String testName = uniqueName;
+      boolean isDuplicate =
+          creatures.stream().filter(c -> c != creature).anyMatch(c -> c.name().equals(testName));
+
+      if (!isDuplicate) {
+        creature.setName(uniqueName);
+        creatures.setAll(model.getCreatures());
+        break;
+      }
+
+      counter++;
+      uniqueName = name + " #" + counter;
+    }
+  }
+
   public ObservableList<Creature> creaturesProperty() {
     return creatures;
   }

@@ -87,6 +87,7 @@ public class PlayView extends Scene {
           var creature = model.creatureWizard.makeCreature(target);
           var image = Assets.images.get(imageName);
           creatureImages.put(creature, image);
+          model.setCreatureName(creature, creature.name());
           model.addCreature(creature);
         });
 
