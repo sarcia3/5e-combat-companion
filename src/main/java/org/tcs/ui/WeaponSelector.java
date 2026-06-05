@@ -25,6 +25,22 @@ public class WeaponSelector {
     popup.setTitle("Select Weapon");
 
     weaponList = new ListView<>();
+
+    Runnable submit =
+        () -> {
+          var item = weaponList.getSelectionModel().getSelectedItem();
+          if (item != null) {
+            selected = item.weapon;
+          }
+          popup.close();
+        };
+    weaponList.setOnMouseClicked(
+        event -> {
+          if (event.getClickCount() == 2) {
+            submit.run();
+          }
+        });
+
     weaponList.setPrefHeight(400);
     weaponList.setPrefWidth(300);
     ObservableList<WeaponEntry> entries = FXCollections.observableArrayList();
@@ -35,14 +51,7 @@ public class WeaponSelector {
     }
 
     var okButton = new Button("OK");
-    okButton.setOnAction(
-        _ -> {
-          var item = weaponList.getSelectionModel().getSelectedItem();
-          if (item != null) {
-            selected = item.weapon;
-          }
-          popup.close();
-        });
+    okButton.setOnAction(_ -> submit.run());
 
     var cancelButton = new Button("Cancel");
     cancelButton.setOnAction(_ -> popup.close());
