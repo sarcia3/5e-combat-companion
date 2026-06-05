@@ -6,7 +6,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -14,6 +13,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.converter.NumberStringConverter;
+import org.tcs.ui.util.BetterTextField;
 import org.tcs.ui.viewmodel.CreatureWizardViewModel;
 
 public class CreatureWizard {
@@ -28,13 +28,13 @@ public class CreatureWizard {
 
     // Name field
     var nameLabel = new Label("Name:");
-    var nameField = new TextField();
+    var nameField = new BetterTextField();
     nameField.textProperty().bindBidirectional(model.creatureNameProperty());
     HBox nameBox = new HBox(10, nameLabel, nameField);
 
     // Max Hitpoints field
     var maxHitpointsLabel = new Label("Max Hitpoints:");
-    var maxHitpointsField = new TextField();
+    var maxHitpointsField = new BetterTextField();
     maxHitpointsField.setTextFormatter(
         new TextFormatter<>(
             change1 -> {
@@ -55,7 +55,7 @@ public class CreatureWizard {
 
     // Movement Speed field
     var movementSpeedLabel = new Label("Movement Speed:");
-    var movementSpeedField = new TextField();
+    var movementSpeedField = new BetterTextField();
     movementSpeedField.setTextFormatter(
         new TextFormatter<>(
             change -> {
