@@ -1,6 +1,7 @@
 package org.tcs.model.activity;
 
 import org.tcs.model.*;
+import org.tcs.model.dice.DamageRoll;
 import org.tcs.model.equipment.Weapon;
 
 /**
@@ -9,13 +10,16 @@ import org.tcs.model.equipment.Weapon;
  */
 public final class MeleeWeaponAttack implements WeaponAttack {
   final Creature attacker;
-  final Weapon attackWeapon;
+  final DamageRoll damageRoll;
   final Ability ability;
+  final Weapon weapon;
 
-  public MeleeWeaponAttack(Creature attacker, Weapon attackWeapon, Ability ability) {
+  public MeleeWeaponAttack(
+      Creature attacker, DamageRoll damageRoll, Ability ability, Weapon weapon) {
     this.attacker = attacker;
-    this.attackWeapon = attackWeapon;
+    this.damageRoll = damageRoll;
     this.ability = ability;
+    this.weapon = weapon;
   }
 
   @Override
@@ -28,11 +32,7 @@ public final class MeleeWeaponAttack implements WeaponAttack {
 
   @Override
   public Damage damageRoll() {
-    // TODO implement using the new DamageRoll class
-    Damage result = new Damage();
-    for (Damage.Type type : attackWeapon.damageTypes())
-      result.add(type, attacker.diceRoller().roll(attackWeapon.damageDice()));
-    return result;
+    return damageRoll.resolve(attacker.diceRoller());
   }
 
   @Override
@@ -42,10 +42,6 @@ public final class MeleeWeaponAttack implements WeaponAttack {
 
   @Override
   public String toString() {
-    return attacker.toString()
-        + " attacks with "
-        + attackWeapon.name()
-        + " using "
-        + ability.toString();
+    return attacker.toString() + " attacks with " + weapon.name() + " using " + ability.toString();
   }
 }

@@ -5,34 +5,38 @@ import java.util.Collection;
 import java.util.List;
 import org.tcs.model.Ability;
 import org.tcs.model.Creature;
-import org.tcs.model.Damage;
 import org.tcs.model.activity.MeleeWeaponAttack;
+import org.tcs.model.activity.RangedWeaponAttack;
 import org.tcs.model.activity.WeaponAttack;
+import org.tcs.model.dice.DamageRoll;
 
-// In most cases both attackAbilities and damageTypes will be one element, but it seems like the
-// best construction for odd behaviours
-public record Weapon(
-    String name, int damageDice, List<Ability> attackAbilities, List<Damage.Type> damageTypes) {
-
-  public Weapon(String name, int damageDice, Ability attackAbility, Damage.Type damageType) {
-    this(name, damageDice, List.of(attackAbility), List.of(damageType));
+public record Weapon(String name, List<Mode> possibleAttacks) {
+  public Weapon(String name, Mode possibleAttack) {
+    this(name, List.of(possibleAttack));
   }
 
-  public Weapon(
-      String name, int damageDice, List<Ability> attackAbilities, Damage.Type damageType) {
-    this(name, damageDice, attackAbilities, List.of(damageType));
-  }
-
-  public Weapon(String name, int damageDice, Ability attackAbility, List<Damage.Type> damageTypes) {
-    this(name, damageDice, List.of(attackAbility), damageTypes);
+  public Weapon(String name, String damageRollStr, Ability ability, boolean isRanged) {
+    this(name, List.of(new Mode(damageRollStr, ability, isRanged)));
   }
 
   public Collection<WeaponAttack> generateAttacks(Creature creature) {
-    // temporarily every weapon returns the same thing
-    // in the future this should be handled by some flags and whatnot
     List<WeaponAttack> list = new ArrayList<>();
-    for (Ability ability : attackAbilities)
-      list.add(new MeleeWeaponAttack(creature, this, ability));
+    for (Mode mode : possibleAttacks) {
+      // TODO fill in when ranged attacks are implemented
+      if (mode.isRanged()) list.add(new RangedWeaponAttack());
+      else list.add(new MeleeWeaponAttack(creature, mode.getDamageRoll(), mode.ability(), this));
+    }
     return list;
   }
+
+  public record Mode(String damageRollStr, Ability ability, boolean isRanged) {
+    Mode(DamageRoll damageRoll, Ability ability, boolean isRanged) {
+      this(damageRoll.toString(), ability, isRanged);
+    }
+
+    DamageRoll getDamageRoll() {
+      return DamageRoll.parse(damageRollStr);
+    }
+  }
+  ;
 }

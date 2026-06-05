@@ -2,11 +2,9 @@ package org.tcs;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.tcs.model.Ability;
 import org.tcs.model.Creature;
-import org.tcs.model.Damage;
 import org.tcs.model.State;
-import org.tcs.model.equipment.Weapon;
+import org.tcs.model.equipment.WeaponsLibrary;
 import org.tcs.model.geometry.Finite2DGrid;
 import org.tcs.model.geometry.RealPoint;
 import org.tcs.ui.Assets;
@@ -20,7 +18,9 @@ public class Main extends Application {
     var map = new Finite2DGrid(100, 100);
     var state = new State(map);
     var creature = new Creature("Test 1", map.realPointToPoint(new RealPoint(1.0, 1.0)), 10, 20);
-    creature.addWeapon(new Weapon("aaa", 1, Ability.CHA, Damage.Type.ACID));
+
+    WeaponsLibrary.load();
+    creature.addWeapon(WeaponsLibrary.getWeaponByName("Dagger"));
     state.addCreature(creature);
     state.addCreature(
         new Creature("Test 2", map.realPointToPoint(new RealPoint(3.0, 3.0)), 10, 20));
