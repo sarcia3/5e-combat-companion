@@ -83,5 +83,23 @@ public class Finite2DGridTest {
       assertTrue(grid.freePoint(point));
       assertFalse(grid.freePoint(point));
     }
+
+    @Test
+    void ignoreStartingObstacle() {
+      Finite2DGrid grid = new Finite2DGrid(3, 3);
+      Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
+      Point point2 = grid.realPointToPoint(new RealPoint(2., 2.));
+      grid.occupyPoint(point1, OccupyReason.Creature);
+      assertEquals(2 * 1.42, grid.getDistance(point1, point2));
+    }
+
+    @Test
+    void ignoreTargetObstacle() {
+      Finite2DGrid grid = new Finite2DGrid(3, 3);
+      Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
+      Point point2 = grid.realPointToPoint(new RealPoint(2., 2.));
+      grid.occupyPoint(point2, OccupyReason.Creature);
+      assertEquals(2 * 1.42, grid.getDistance(point1, point2));
+    }
   }
 }

@@ -45,13 +45,16 @@ public class Finite2DGrid implements WorldMap {
       // If we've already been in this point do nothing
       if (distances.containsKey(current.first())) continue;
 
-      // If this point is occupied or outside the map do nothing
+      // If this point is outside the map do nothing
       if (!checkInBounds(current.first())) continue;
-      OccupyReason occupyReason = getOccupyReason(current.first());
-      if (occupyReason != null && !ignoredCollisions.contains(occupyReason)) continue;
 
       distances.put(current.first(), current.second());
 
+      // If the point is occupied and is not the starting point do nothing
+      if (!current.first().equals(start2D)) {
+        OccupyReason occupyReason = getOccupyReason(current.first());
+        if (occupyReason != null && !ignoredCollisions.contains(occupyReason)) continue;
+      }
       // Otherwise go to neighbours
       for (Pair<GridPoint2D, Double> next : getNeighbours(current.first())) {
         if (!distances.containsKey(next.first())) {
@@ -87,14 +90,18 @@ public class Finite2DGrid implements WorldMap {
       // If we've already been in this point do nothing
       if (distances.containsKey(current.first())) continue;
 
+      // If this point is outside the map do nothing
+      if (!checkInBounds(current.first())) continue;
+
       distances.put(current.first(), current.second());
       if (targets.contains(current.first()))
         list.add(new Pair<Point, Double>(current.first(), current.second()));
 
-      // If this point is occupied or outside the map do nothing
-      if (!checkInBounds(current.first())) continue;
-      OccupyReason occupyReason = getOccupyReason(current.first());
-      if (occupyReason != null && !ignoredCollisions.contains(occupyReason)) continue;
+      // If the point is occupied and is not the starting point do nothing
+      if (!current.first().equals(start2D)) {
+        OccupyReason occupyReason = getOccupyReason(current.first());
+        if (occupyReason != null && !ignoredCollisions.contains(occupyReason)) continue;
+      }
 
       // Otherwise go to neighbours
       for (Pair<GridPoint2D, Double> next : getNeighbours(current.first())) {
