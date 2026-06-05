@@ -6,13 +6,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.tcs.model.Creature;
 import org.tcs.model.State;
+import org.tcs.model.StateProcess;
 import org.tcs.model.equipment.Weapon;
 
 public class CreatureViewModel {
   private final State model;
   private final ObjectProperty<Creature> creature = new SimpleObjectProperty<>();
   private final ObservableList<Weapon> weapons = FXCollections.observableArrayList();
-  private final ObservableList<Runnable> attacks = FXCollections.observableArrayList();
+  private final ObservableList<StateProcess> attacks = FXCollections.observableArrayList();
 
   public CreatureViewModel(State model) {
     this.model = model;
@@ -37,7 +38,7 @@ public class CreatureViewModel {
     return weapons;
   }
 
-  public ObservableList<Runnable> attacksProperty() {
+  public ObservableList<StateProcess> attacksProperty() {
     return attacks;
   }
 }
