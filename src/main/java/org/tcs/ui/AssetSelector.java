@@ -90,7 +90,7 @@ public class AssetSelector {
     cell.setStyle("-fx-border-color: transparent; -fx-border-width: 2;");
 
     cell.setOnMouseClicked(
-        _ -> {
+        event -> {
           selectedImageKey = key;
           GridPane parent = (GridPane) cell.getParent();
           parent
@@ -102,6 +102,10 @@ public class AssetSelector {
                     }
                   });
           cell.setStyle("-fx-border-color: blue; -fx-border-width: 2;");
+
+          if (event.getClickCount() == 2) {
+            popup.hide();
+          }
         });
 
     return cell;
