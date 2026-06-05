@@ -41,6 +41,8 @@ public class CreatureView extends VBox {
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
+
+    model.creatureProperty().addListener(_ -> nav.set(Nav.All));
   }
 
   private Node topLevel() {
