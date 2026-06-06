@@ -69,11 +69,14 @@ public class CreatureView extends VBox {
     var attack = new Button("Attack");
     attack.setOnAction(_ -> nav.set(Nav.Weapons));
 
+    var move = new Button("Move");
+    move.setOnAction(_ -> nav.set(Nav.Weapons));
+
     var pass = new Button("Pass");
     pass.setOnAction(_ -> model.pass());
 
     var topLevel = new VBox();
-    topLevel.getChildren().addAll(attack, pass);
+    topLevel.getChildren().addAll(attack, move, pass);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
     topLevel.managedProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
