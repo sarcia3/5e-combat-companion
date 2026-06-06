@@ -31,7 +31,7 @@ public class PlayView extends Scene {
     ObjectProperty<Mode> currentMode = new SimpleObjectProperty<>(Mode.PLAY);
     var mapView = getMapView(model, owner, currentMode);
 
-    var creatureEdit = new CreatureEdit(creatureImages, model.creatureEdit, owner);
+    var creatureEdit = new CreatureEdit(creatureImages, model.creature, owner);
     model.creature.creatureProperty().bind(mapView.selected());
     creatureEdit
         .visibleProperty()
@@ -67,7 +67,6 @@ public class PlayView extends Scene {
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
     var creatureView = new CreatureView(creatureImages, model.creature);
-    model.creatureEdit.creatureProperty().bind(mapView.selected());
     creatureView
         .visibleProperty()
         .bind(currentMode.isEqualTo(Mode.PLAY).and(model.creature.creatureProperty().isNotNull()));

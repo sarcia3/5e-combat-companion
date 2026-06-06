@@ -14,7 +14,6 @@ public class ViewModel {
   private final State model;
   public final CreatureWizardViewModel creatureWizard = new CreatureWizardViewModel();
   public final CreatureViewModel creature;
-  public final CreatureEditViewModel creatureEdit = new CreatureEditViewModel();
   private final ObservableList<Creature> creatures = FXCollections.observableArrayList();
   private final ObservableList<Creature> initiativeQueue = FXCollections.observableArrayList();
   private final ObjectProperty<Creature> currentCreature = new SimpleObjectProperty<>();

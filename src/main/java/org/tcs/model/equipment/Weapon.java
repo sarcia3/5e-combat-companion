@@ -34,5 +34,4 @@ public record Weapon(String name, List<Mode> possibleAttacks) {
       this(DamageRoll.parse(damageRollStr), ability, isRanged);
     }
   }
-  ;
 }
