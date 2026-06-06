@@ -94,7 +94,10 @@ public class Creature implements HasInitiative, HasHitPoints {
       if (result == DeathTracker.Result.DEATH) isDead = true;
     } else {
       hitPoints -= actualDamage;
-      if (hitPoints < 0) hitPoints = 0;
+      if (hitPoints < 0) {
+        if (hitPoints <= -hitPointMaximum) isDead = true;
+        hitPoints = 0;
+      }
     }
   }
 
