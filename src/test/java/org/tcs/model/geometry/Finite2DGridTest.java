@@ -11,7 +11,7 @@ public class Finite2DGridTest {
   public static class CorrectDistanceCalculationTests {
     @Test
     void straightPath() {
-      Finite2DGrid grid = new Finite2DGrid(10, 10);
+      WorldMap grid = new Finite2DGrid(10, 10);
       List<Point> list = new ArrayList<>();
       for (int i = 0; i < 10; i++) list.add(grid.realPointToPoint(new RealPoint(0, i)));
       for (int i = 0; i < list.size(); i++)
@@ -21,7 +21,7 @@ public class Finite2DGridTest {
 
     @Test
     void simpleObstacle() {
-      Finite2DGrid grid = new Finite2DGrid(10, 10);
+      WorldMap grid = new Finite2DGrid(10, 10);
       Point obstacle = grid.realPointToPoint(new RealPoint(1., 1.));
       grid.occupyPoint(obstacle, OccupyReason.Terrain);
       Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
@@ -34,7 +34,7 @@ public class Finite2DGridTest {
 
     @Test
     void impenetrableWall() {
-      Finite2DGrid grid = new Finite2DGrid(3, 3);
+      WorldMap grid = new Finite2DGrid(3, 3);
       List<Point> list = new ArrayList<>();
       for (int i = 0; i < 3; i++) list.add(grid.realPointToPoint(new RealPoint(1., i)));
       for (Point point : list) grid.occupyPoint(point, OccupyReason.Terrain);
@@ -47,7 +47,7 @@ public class Finite2DGridTest {
     @Timeout(3)
     void hugeEmptyTest() {
       int size = 100000;
-      Finite2DGrid grid = new Finite2DGrid(size, size);
+      WorldMap grid = new Finite2DGrid(size, size);
       Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
       Point point2 = grid.realPointToPoint(new RealPoint(size - 1., size - 1.));
       assertEquals((size - 1) * 1.42, grid.getDistance(point1, point2));
@@ -57,7 +57,7 @@ public class Finite2DGridTest {
     @Timeout(3)
     void bigWithDiagonal() {
       int size = 500;
-      Finite2DGrid grid = new Finite2DGrid(size, size);
+      WorldMap grid = new Finite2DGrid(size, size);
       Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
       Point point2 = grid.realPointToPoint(new RealPoint(size - 1., size - 1.));
       for (int i = 1; i < size; i++) {
@@ -76,7 +76,7 @@ public class Finite2DGridTest {
   public static class OccupyingTests {
     @Test
     void addAndDelete() {
-      Finite2DGrid grid = new Finite2DGrid(10, 10);
+      WorldMap grid = new Finite2DGrid(10, 10);
       Point point = grid.realPointToPoint(new RealPoint(0., 0.));
       assertTrue(grid.occupyPoint(point, OccupyReason.Terrain));
       assertFalse(grid.occupyPoint(point, OccupyReason.Terrain));
@@ -86,7 +86,7 @@ public class Finite2DGridTest {
 
     @Test
     void ignoreStartingObstacle() {
-      Finite2DGrid grid = new Finite2DGrid(3, 3);
+      WorldMap grid = new Finite2DGrid(3, 3);
       Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
       Point point2 = grid.realPointToPoint(new RealPoint(2., 2.));
       grid.occupyPoint(point1, OccupyReason.Creature);
@@ -95,7 +95,7 @@ public class Finite2DGridTest {
 
     @Test
     void ignoreTargetObstacle() {
-      Finite2DGrid grid = new Finite2DGrid(3, 3);
+      WorldMap grid = new Finite2DGrid(3, 3);
       Point point1 = grid.realPointToPoint(new RealPoint(0., 0.));
       Point point2 = grid.realPointToPoint(new RealPoint(2., 2.));
       grid.occupyPoint(point2, OccupyReason.Creature);
