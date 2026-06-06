@@ -18,12 +18,8 @@ public class NavMapTest {
       for (int j = 0; j < 3; j++) {
         Point target = grid.realPointToPoint(new RealPoint(i, j));
         double dist = grid.getDistance(point, target);
-        if (dist > 1.) dist = Double.POSITIVE_INFINITY;
+        if (dist != 1.) dist = Double.POSITIVE_INFINITY;
         assertEquals(dist, map.distanceTo(target));
-        if (target.equals(point)) {
-          assertEquals(List.of(point), map.pathTo(target));
-          continue;
-        }
         if (dist == 1.) {
           assertEquals(List.of(point, target), map.pathTo(target));
           continue;
