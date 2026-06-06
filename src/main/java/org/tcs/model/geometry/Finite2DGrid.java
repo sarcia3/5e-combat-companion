@@ -114,6 +114,12 @@ public class Finite2DGrid implements WorldMap {
   }
 
   @Override
+  public NavMap navMap(Point from) {
+    // TODO: implement
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public RealPoint pointToRealPoint(Point point) {
     if (point == null) return null;
     if (!(point instanceof GridPoint2D(int x, int y))) throw new ClassCastException();

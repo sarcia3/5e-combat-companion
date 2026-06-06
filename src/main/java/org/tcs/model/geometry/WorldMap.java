@@ -38,6 +38,11 @@ public interface WorldMap {
     return getDistances(start, targets, new ArrayList<>());
   }
 
+  /**
+   * @return The navigation map starting from the given point.
+   */
+  NavMap navMap(Point start);
+
   RealPoint pointToRealPoint(Point point);
 
   Point realPointToPoint(RealPoint realPoint);
