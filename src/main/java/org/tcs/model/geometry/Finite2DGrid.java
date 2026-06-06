@@ -113,14 +113,14 @@ public class Finite2DGrid implements WorldMap {
     return list;
   }
 
+  private record Node(GridPoint2D node, GridPoint2D parent, Double dist) {}
+
   @Override
   public NavMap navMap(Point start, double budget, Collection<OccupyReason> ignoredCollisions) {
     Map<GridPoint2D, GridPoint2D> parents = new HashMap<>();
     Map<GridPoint2D, Double> distances = new HashMap<>();
 
     GridPoint2D start2D = (GridPoint2D) start;
-
-    record Node(GridPoint2D node, GridPoint2D parent, Double dist) {}
 
     Queue<Node> queue = new PriorityQueue<>(Comparator.comparing(Node::dist));
     queue.add(new Node(start2D, null, 0.));
