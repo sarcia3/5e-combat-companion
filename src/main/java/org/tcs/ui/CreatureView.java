@@ -25,10 +25,13 @@ public class CreatureView extends VBox {
   private enum Nav {
     All,
     Weapons,
-    Attacks
+    Attacks,
+    Movement
   }
 
   private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.All);
+  private Runnable onStartMoving = () -> {};
+  private Runnable onStopMoving = () -> {};
 
   public CreatureView(Map<Creature, Image> creatureImages, CreatureViewModel model) {
     var name = new Label();
@@ -56,7 +59,8 @@ public class CreatureView extends VBox {
             nothingToDo,
             topLevel(model),
             weaponSelection(model),
-            targetSelection(model));
+            targetSelection(model),
+            movement());
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
@@ -70,7 +74,11 @@ public class CreatureView extends VBox {
     attack.setOnAction(_ -> nav.set(Nav.Weapons));
 
     var move = new Button("Move");
-    move.setOnAction(_ -> nav.set(Nav.Weapons));
+    move.setOnAction(
+        _ -> {
+          nav.set(Nav.Movement);
+          onStartMoving.run();
+        });
 
     var pass = new Button("Pass");
     pass.setOnAction(_ -> model.pass());
@@ -139,5 +147,30 @@ public class CreatureView extends VBox {
     selection.getChildren().addAll(cancel, new Separator(), buttons);
 
     return selection;
+  }
+
+  private Node movement() {
+    var cancel = new Button("Cancel");
+    cancel.setOnAction(_ -> stopMoving());
+
+    var box = new VBox();
+    box.setAlignment(Pos.CENTER);
+    box.visibleProperty().bind(nav.isEqualTo(Nav.Movement));
+    box.managedProperty().bind(nav.isEqualTo(Nav.Movement));
+    box.getChildren().addAll(cancel);
+    return box;
+  }
+
+  public void stopMoving() {
+    nav.set(Nav.All);
+    onStopMoving.run();
+  }
+
+  public void setOnStopMoving(Runnable onStopMoving) {
+    this.onStopMoving = onStopMoving;
+  }
+
+  public void setOnStartMoving(Runnable onStartMoving) {
+    this.onStartMoving = onStartMoving;
   }
 }
