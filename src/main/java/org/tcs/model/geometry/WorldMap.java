@@ -39,9 +39,15 @@ public interface WorldMap {
   }
 
   /**
+   * @param ignoredCollisions A collection of OccupyReasons that will be ignored when checking if
+   *     the point is occupied.
    * @return The navigation map starting from the given point.
    */
-  NavMap navMap(Point start);
+  NavMap navMap(Point start, double budget, Collection<OccupyReason> ignoredCollisions);
+
+  default NavMap navMap(Point start, double budget) {
+    return navMap(start, budget, new ArrayList<>());
+  }
 
   RealPoint pointToRealPoint(Point point);
 

@@ -114,9 +114,61 @@ public class Finite2DGrid implements WorldMap {
   }
 
   @Override
-  public NavMap navMap(Point from) {
-    // TODO: implement
-    throw new UnsupportedOperationException();
+  public NavMap navMap(Point start, double budget, Collection<OccupyReason> ignoredCollisions) {
+    Map<GridPoint2D, GridPoint2D> parents = new HashMap<>();
+    Map<GridPoint2D, Double> distances = new HashMap<>();
+
+    GridPoint2D start2D = (GridPoint2D) start;
+
+    record Node(GridPoint2D node, GridPoint2D parent, Double dist) {}
+    ;
+
+    Queue<Node> queue = new PriorityQueue<>(Comparator.comparing(Node::dist));
+    queue.add(new Node(start2D, null, 0.));
+
+    while (!queue.isEmpty()) {
+
+      Node current = queue.remove();
+      // If we've already been in this point do nothing
+      if (distances.containsKey(current.node())) continue;
+
+      // If this point is outside the map do nothing
+      if (!checkInBounds(current.node())) continue;
+
+      distances.put(current.node(), current.dist());
+      parents.put(current.node(), current.parent());
+      // If the point is occupied and is not the starting point do nothing
+      if (!current.node().equals(start2D)) {
+        OccupyReason occupyReason = getOccupyReason(current.node());
+        if (occupyReason != null && !ignoredCollisions.contains(occupyReason)) continue;
+      }
+
+      // Otherwise go to neighbours
+      for (Pair<GridPoint2D, Double> next : getNeighbours(current.node())) {
+        if (!distances.containsKey(next.first())) {
+          queue.add(new Node(next.first(), current.node(), next.second() + current.dist()));
+        }
+      }
+    }
+
+    return new NavMap() {
+      @Override
+      public List<Point> pathTo(Point target) {
+        if (!parents.containsKey((GridPoint2D) target)) return null;
+        List<Point> list = new ArrayList<>();
+        while (target != null) {
+          list.add(target);
+          target = parents.get((GridPoint2D) target);
+        }
+        list.add(target);
+        return list.reversed();
+      }
+
+      @Override
+      public double distanceTo(Point target) {
+        return distances.getOrDefault((GridPoint2D) target, Double.POSITIVE_INFINITY);
+      }
+    };
   }
 
   @Override
