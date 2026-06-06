@@ -121,7 +121,6 @@ public class Finite2DGrid implements WorldMap {
     GridPoint2D start2D = (GridPoint2D) start;
 
     record Node(GridPoint2D node, GridPoint2D parent, Double dist) {}
-    ;
 
     Queue<Node> queue = new PriorityQueue<>(Comparator.comparing(Node::dist));
     queue.add(new Node(start2D, null, 0.));
@@ -137,6 +136,7 @@ public class Finite2DGrid implements WorldMap {
 
       distances.put(current.node(), current.dist());
       parents.put(current.node(), current.parent());
+
       // If the point is occupied and is not the starting point do nothing
       if (!current.node().equals(start2D)) {
         OccupyReason occupyReason = getOccupyReason(current.node());
@@ -145,7 +145,7 @@ public class Finite2DGrid implements WorldMap {
 
       // Otherwise go to neighbours
       for (Pair<GridPoint2D, Double> next : getNeighbours(current.node())) {
-        if (!distances.containsKey(next.first())) {
+        if (!distances.containsKey(next.first()) && next.second() + current.dist <= budget) {
           queue.add(new Node(next.first(), current.node(), next.second() + current.dist()));
         }
       }
@@ -154,18 +154,20 @@ public class Finite2DGrid implements WorldMap {
     return new NavMap() {
       @Override
       public List<Point> pathTo(Point target) {
-        if (!parents.containsKey((GridPoint2D) target)) return null;
+        // We do not want to move into an occupied tile
+        if (!parents.containsKey((GridPoint2D) target) || isPointOccupied(target)) return null;
         List<Point> list = new ArrayList<>();
         while (target != null) {
           list.add(target);
           target = parents.get((GridPoint2D) target);
         }
-        list.add(target);
         return list.reversed();
       }
 
       @Override
       public double distanceTo(Point target) {
+        // We do not want to move into an occupied tile
+        if (isPointOccupied(target)) return Double.POSITIVE_INFINITY;
         return distances.getOrDefault((GridPoint2D) target, Double.POSITIVE_INFINITY);
       }
     };
