@@ -33,6 +33,11 @@ public class CreatureViewModel {
     attacks.setAll(model.getPossibleAttacks(creature.get(), weapon));
   }
 
+  public void addWeapon(Weapon weapon) {
+    creature.get().addWeapon(weapon);
+    weapons.setAll(creature.get().getWeapons());
+  }
+
   public void pass() {
     onPass.run();
   }

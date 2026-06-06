@@ -16,13 +16,12 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Window;
 import org.tcs.model.Creature;
 import org.tcs.model.equipment.Weapon;
-import org.tcs.ui.viewmodel.CreatureEditViewModel;
+import org.tcs.ui.viewmodel.CreatureViewModel;
 
 public class CreatureEdit extends VBox {
   private final WeaponSelector weaponSelector;
 
-  public CreatureEdit(
-      Map<Creature, Image> creatureImages, CreatureEditViewModel model, Window owner) {
+  public CreatureEdit(Map<Creature, Image> creatureImages, CreatureViewModel model, Window owner) {
     weaponSelector = new WeaponSelector(owner);
 
     var name = new Label();
@@ -47,7 +46,7 @@ public class CreatureEdit extends VBox {
     setPadding(new Insets(8.0));
   }
 
-  private Node weapons(CreatureEditViewModel model) {
+  private Node weapons(CreatureViewModel model) {
     var owned = new VBox();
     model
         .weaponsProperty()
