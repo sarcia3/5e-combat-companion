@@ -54,8 +54,17 @@ public class CreatureEdit extends VBox {
                 .creatureProperty()
                 .map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
 
+    var deletedLabel = new Label("This creature was deleted.");
+    deletedLabel.managedProperty().bind(nav.isEqualTo(Nav.Deleted));
+    deletedLabel.visibleProperty().bind(nav.isEqualTo(Nav.Deleted));
+
     getChildren()
-        .addAll(name, portrait, weapons(creatureViewModel), choices(viewModel, creatureViewModel));
+        .addAll(
+            name,
+            portrait,
+            weapons(creatureViewModel),
+            choices(viewModel, creatureViewModel),
+            deletedLabel);
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
@@ -73,6 +82,7 @@ public class CreatureEdit extends VBox {
     deletion.setOnAction(
         _ -> {
           viewModel.removeCreature(creature.creatureProperty().get());
+          nav.set(Nav.Deleted);
         });
 
     var choices = new VBox();
