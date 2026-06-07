@@ -60,7 +60,7 @@ public class CreatureView extends VBox {
             topLevel(model),
             weaponSelection(model),
             targetSelection(model),
-            movement());
+            movement(model));
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
@@ -149,7 +149,11 @@ public class CreatureView extends VBox {
     return selection;
   }
 
-  private Node movement() {
+  private Node movement(CreatureViewModel model) {
+    var left = new Label();
+    left.textProperty()
+        .bind(model.movementLeftProperty().asString("%.1f").map(s -> "Movement left: " + s));
+
     var cancel = new Button("Cancel");
     cancel.setOnAction(_ -> stopMoving());
 
@@ -157,7 +161,7 @@ public class CreatureView extends VBox {
     box.setAlignment(Pos.CENTER);
     box.visibleProperty().bind(nav.isEqualTo(Nav.Movement));
     box.managedProperty().bind(nav.isEqualTo(Nav.Movement));
-    box.getChildren().addAll(cancel);
+    box.getChildren().addAll(left, cancel);
     return box;
   }
 
