@@ -55,7 +55,12 @@ public record DamageRoll(List<Component> components) {
     for (var component : components) {
       result.add(
           component.type,
-          diceRoller.roll(component.numberOfDice, component.numberOfSides) + component.bonus);
+          diceRoller.roll(
+                  component.numberOfDice,
+                  component.numberOfSides,
+                  new DiceRoller.RollInformation(
+                      "Attacker", "rolls for " + component.type + " damage"))
+              + component.bonus);
     }
     return result;
   }

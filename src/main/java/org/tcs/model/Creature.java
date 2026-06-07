@@ -19,7 +19,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   private Point position;
   Inventory inventory = new Inventory();
 
-  DeathTracker deathTracker = new DeathTracker();
+  DeathTracker deathTracker = new DeathTracker(this);
   boolean isDead = false;
 
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
@@ -65,7 +65,10 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public int generateInitiative() {
-    return diceRoller.roll(20); // TODO add DEX modifier to the roll
+    return diceRoller.roll(
+        20,
+        new DiceRoller.RollInformation(
+            name, "rolls for initiative")); // TODO add DEX modifier to the roll
   }
 
   @Override

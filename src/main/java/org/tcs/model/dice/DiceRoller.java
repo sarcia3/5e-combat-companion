@@ -21,7 +21,7 @@ public interface DiceRoller {
     if (numberOfDice < 0) throw new IllegalArgumentException();
     int result = 0;
     for (int i = 0; i < numberOfDice; i++) {
-      result += roll(numberOfSides);
+      result += roll(numberOfSides, information);
     }
     return result;
   }
@@ -75,7 +75,7 @@ public interface DiceRoller {
   }
 
   record RollInformation(String origin, String reason) {
-    RollInformation() {
+    public RollInformation() {
       this("", "");
     }
   }
