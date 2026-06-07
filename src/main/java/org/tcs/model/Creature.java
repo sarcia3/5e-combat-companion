@@ -72,8 +72,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   public int generateInitiative() {
     return diceRoller.roll(
         20,
-        new DiceRoller.RollInformation(
-            name, "rolls for initiative")); // TODO add DEX modifier to the roll
+        new DiceRoller.RollInformation(name, "initiative")); // TODO add DEX modifier to the roll
   }
 
   @Override

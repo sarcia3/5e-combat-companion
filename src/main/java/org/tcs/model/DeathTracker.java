@@ -19,7 +19,7 @@ public class DeathTracker {
   Result proceed(DiceRoller roller) {
     if (isStable) return Result.NONE;
     int score =
-        roller.roll(20, new DiceRoller.RollInformation(creature.name, "rolls death saving throw"));
+        roller.roll(20, new DiceRoller.RollInformation(creature.name, "death saving throw"));
     if (score < 10) failures++;
     else successes++;
     // Critical failure/success
