@@ -72,6 +72,7 @@ public class CreatureViewModel {
   }
 
   void reloadNavMap() {
+    if (creature.get() == null) return;
     movementLeft.set(creature.get().movementLeft());
     navMap = model.getMap().navMap(creature.get().position(), creature.get().movementLeft());
   }
