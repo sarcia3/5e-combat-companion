@@ -30,8 +30,7 @@ public final class MeleeWeaponAttack implements WeaponAttack {
             .diceRoller()
             .roll(
                 20,
-                new DiceRoller.RollInformation(
-                    attacker.name(), "rolls to hit with " + weapon.name()));
+                new DiceRoller.RollInformation(attacker.name(), "hitting with " + weapon.name()));
     // TODO add proficiencies and prof bonus
     int modifier = attacker.abilityModifier(ability);
     return new AttackRoll(roll, modifier);
