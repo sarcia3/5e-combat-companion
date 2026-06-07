@@ -62,7 +62,7 @@ class StateTest {
       // A day in London
       WeaponsLibrary.load();
       WorldMap map = new Finite2DGrid(10, 10);
-      Weapon dagger = WeaponsLibrary.getWeaponByName("Dagger");
+      Weapon dagger = WeaponsLibrary.get("Dagger");
       List<Creature> list = new ArrayList<>();
       for (int i = 0; i < 5; i++) {
         Point point = map.realPointToPoint(new RealPoint(i, i));
@@ -86,7 +86,7 @@ class StateTest {
       WorldMap map = new Finite2DGrid(3, 3);
       Point point1 = map.realPointToPoint(new RealPoint(0, 0));
       Point point2 = map.realPointToPoint(new RealPoint(2, 2));
-      Weapon dagger = WeaponsLibrary.getWeaponByName("Dagger");
+      Weapon dagger = WeaponsLibrary.get("Dagger");
       Creature creature1 = new Creature("Commoner 1", point1, 10, 10);
       Creature creature2 = new Creature("Commoner 2", point2, 10, 10);
       State state = new State(List.of(creature1, creature2), map);
@@ -106,7 +106,7 @@ class StateTest {
     public void carriedButNotWieldedWeaponCannotBeUsedToAttack() {
       WeaponsLibrary.load();
       WorldMap map = new Finite2DGrid(3, 3);
-      Weapon dagger = WeaponsLibrary.getWeaponByName("Dagger");
+      Weapon dagger = WeaponsLibrary.get("Dagger");
       Creature attacker =
           new Creature("Attacker", map.realPointToPoint(new RealPoint(0, 0)), 10, 10);
       Creature target = new Creature("Target", map.realPointToPoint(new RealPoint(1, 0)), 10, 10);
@@ -122,7 +122,7 @@ class StateTest {
     public void wieldedWeaponCanBeUsedToAttack() {
       WeaponsLibrary.load();
       WorldMap map = new Finite2DGrid(3, 3);
-      Weapon dagger = WeaponsLibrary.getWeaponByName("Dagger");
+      Weapon dagger = WeaponsLibrary.get("Dagger");
       Creature attacker =
           new Creature("Attacker", map.realPointToPoint(new RealPoint(0, 0)), 10, 10);
       Creature target = new Creature("Target", map.realPointToPoint(new RealPoint(1, 0)), 10, 10);
