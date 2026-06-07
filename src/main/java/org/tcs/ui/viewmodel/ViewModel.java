@@ -25,19 +25,14 @@ public class ViewModel {
     creature.setOnPass(
         () -> {
           model.nextTurn();
-          if (!creatures.equals(model.getCreatures())) creatures.setAll(model.getCreatures());
-          else update();
+          update();
         });
-    creature.setOnAction(
-        () -> {
-          // Checking if somebody has
-          if (!creatures.equals(model.getCreatures())) creatures.setAll(model.getCreatures());
-        });
-    creatures.setAll(model.getCreatures());
 
+    model.setOnRemove(creatures::remove);
+    model.setOnAdd(creatures::add);
     creatures.addListener((ListChangeListener<Creature>) _ -> update());
 
-    update();
+    creatures.setAll(model.getCreatures());
   }
 
   public WorldMap getMap() {
@@ -62,19 +57,11 @@ public class ViewModel {
   }
 
   public void addCreature(Creature creature) {
-    if (model.addCreature(creature)) {
-      creatures.add(creature);
-    }
-
-    update();
+    model.addCreature(creature);
   }
 
   public void removeCreature(Creature creature) {
-    if (model.removeCreature(creature)) {
-      creatures.remove(creature);
-    }
-
-    update();
+    model.removeCreature(creature);
   }
 
   public void setCreaturePosition(Creature creature, Point position) {
