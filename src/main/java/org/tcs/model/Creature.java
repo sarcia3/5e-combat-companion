@@ -90,7 +90,12 @@ public class Creature implements HasInitiative, HasHitPoints {
     // currently we just subtract the sum
     int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
     if (hitPoints == 0 && actualDamage > 0) {
-      DeathTracker.Result result = deathTracker.savingThrow(diceRoller);
+      if (actualDamage <= hitPointMaximum) {
+        isDead = true;
+        return;
+      }
+      // TODO implement catching critical throws
+      DeathTracker.Result result = deathTracker.takingDamage(false);
       if (result == DeathTracker.Result.DEATH) isDead = true;
     } else {
       hitPoints -= actualDamage;

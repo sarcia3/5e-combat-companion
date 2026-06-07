@@ -58,8 +58,15 @@ public class DeathTests {
             return 19 % numberOfSides;
           }
         };
+    DiceRoller dice2 =
+        new DiceRoller() {
+          @Override
+          public int roll(int numberOfSides) {
+            return 19 % numberOfSides + 1;
+          }
+        };
     Creature creature1 = new Creature("X", point1, 10, 10., 0, dice1);
-    Creature creature2 = new Creature("Y", point2, 10, 10., 0, dice1);
+    Creature creature2 = new Creature("Y", point2, 10, 10., 0, dice2);
     state.addCreature(creature1);
     state.addCreature(creature2);
     WeaponsLibrary.load();
@@ -67,7 +74,7 @@ public class DeathTests {
     creature1.addWeapon(dag);
     StateProcess attack = state.getPossibleAttacks(creature1, dag).stream().toList().getFirst();
     while (creature2.hitPoints != 0) attack.run();
-    for (int i = 0; i < 6; i++) state.nextTurn();
+    for (int i = 0; i < 2; i++) state.nextTurn();
     assertEquals(1, creature2.hitPoints);
     assertTrue(state.getCreatures().contains(creature2));
   }
