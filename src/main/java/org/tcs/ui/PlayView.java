@@ -41,7 +41,7 @@ public class PlayView extends Scene {
     mapView.onSubmitMoveProperty().set(model::moveSelectedCreatureTo);
 
     var creatureEdit = new CreatureEdit(creatureImages, model.creature, owner);
-    creatureEdit.setOnDelete(() -> model.removeSelectedCreature());
+    creatureEdit.setOnDelete(model::removeSelectedCreature);
     model.creature.creatureProperty().bind(mapView.selected());
     creatureEdit
         .visibleProperty()
