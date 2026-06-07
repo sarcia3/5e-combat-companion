@@ -58,6 +58,9 @@ class DrawablesView {
       newCreatures.put(creature, puppet);
     }
 
+    if (selected.get() instanceof Puppet puppet)
+      if (!newCreatures.containsKey(puppet.creature)) clearSelection();
+
     puppets = newCreatures;
   }
 
