@@ -19,7 +19,6 @@ import javafx.stage.Window;
 import org.tcs.model.Creature;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.ui.viewmodel.CreatureViewModel;
-import org.tcs.ui.viewmodel.ViewModel;
 
 public class CreatureEdit extends VBox {
   private final WeaponSelector weaponSelector;
@@ -31,14 +30,10 @@ public class CreatureEdit extends VBox {
 
   private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.Choice);
 
-  public CreatureEdit(
-      Map<Creature, Image> creatureImages,
-      CreatureViewModel creatureViewModel,
-      Window owner,
-      ViewModel viewModel) {
+  public CreatureEdit(Map<Creature, Image> creatureImages, CreatureViewModel model, Window owner) {
     weaponSelector = new WeaponSelector(owner);
 
-    creatureViewModel
+    model
         .creatureProperty()
         .addListener(
             (_, _, new_c) -> {
@@ -46,7 +41,7 @@ public class CreatureEdit extends VBox {
             });
 
     var name = new Label();
-    name.textProperty().bind(creatureViewModel.creatureProperty().map(Creature::name));
+    name.textProperty().bind(model.creatureProperty().map(Creature::name));
     name.setTextAlignment(TextAlignment.CENTER);
     name.setStyle("-fx-font-weight: bold; -fx-font-size: 24px;");
 
@@ -56,19 +51,18 @@ public class CreatureEdit extends VBox {
     portrait
         .imageProperty()
         .bind(
-            creatureViewModel
+            model
                 .creatureProperty()
                 .map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
 
-    getChildren()
-        .addAll(name, portrait, weapons(creatureViewModel), choices(viewModel, creatureViewModel));
+    getChildren().addAll(name, portrait, weapons(model), choices(model));
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
     setPadding(new Insets(8.0));
   }
 
-  private Node choices(ViewModel viewModel, CreatureViewModel creature) {
+  private Node choices(CreatureViewModel creature) {
     var weapons = new Button("Edit weapons");
     weapons.setOnAction(
         _ -> {
@@ -76,10 +70,9 @@ public class CreatureEdit extends VBox {
         });
 
     var deletion = new Button("Delete the creature");
-    deletion.setOnAction(
-        _ -> {
-          viewModel.removeCreature(creature.creatureProperty().get());
-        });
+    // TODO add deletion in viewModel
+
+    // deletion.setOnAction(_ -> {viewModel.removeCreature(creature.creatureProperty().get());});
 
     var choices = new VBox();
     choices.getChildren().addAll(weapons, deletion);
