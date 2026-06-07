@@ -30,7 +30,12 @@ public class ViewModel {
 
     model.setOnRemoveCreature(creatures::remove);
     model.setOnAddCreature(creatures::add);
-    creatures.addListener((ListChangeListener<Creature>) _ -> update());
+    creatures.addListener(
+        (ListChangeListener<Creature>)
+            _ -> {
+              update();
+              creature.reloadNavMap();
+            });
 
     creatures.setAll(model.getCreatures());
   }
@@ -65,7 +70,6 @@ public class ViewModel {
     try {
       model.setCreaturePosition(creature, position);
       creatures.setAll(model.getCreatures());
-      this.creature.reloadNavMap();
     } catch (IllegalArgumentException _) {
     }
   }
@@ -94,6 +98,7 @@ public class ViewModel {
     if (currentCreature.get() != null) {
       Creature actor = creature.creatureProperty().get();
       model.moveCreature(actor, point);
+      creatures.setAll(model.getCreatures());
     }
   }
 
