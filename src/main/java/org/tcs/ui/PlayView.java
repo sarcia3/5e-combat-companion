@@ -120,7 +120,7 @@ public class PlayView extends Scene {
           if (imageName == null) return;
 
           // Listeners will be notified soon after, so we can safely mutate here
-          var creature = model.creatureWizard.makeCreature(target);
+          var creature = model.creatureWizard.makeCreature(target, new WindowDiceRoller(owner));
           var image = Assets.images.get(imageName);
           creatureImages.put(creature, image);
           model.setCreatureName(creature, creature.name());
