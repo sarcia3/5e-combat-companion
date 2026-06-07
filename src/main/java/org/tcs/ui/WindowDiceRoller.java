@@ -2,6 +2,7 @@ package org.tcs.ui;
 
 import java.util.Random;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,6 +23,8 @@ import org.tcs.ui.util.BetterTextField;
 public class WindowDiceRoller extends Stage implements DiceRoller {
   private final IntegerProperty numberOfSides = new SimpleIntegerProperty(20);
   private final IntegerProperty rollResult = new SimpleIntegerProperty(1);
+  private final BooleanBinding isValid =
+      rollResult.greaterThanOrEqualTo(1).and(rollResult.lessThanOrEqualTo(numberOfSides));
   private final BooleanProperty inputChanged = new SimpleBooleanProperty(false);
   private final ObjectProperty<RollInformation> info = new SimpleObjectProperty<>();
   private final Random random = new Random();
@@ -67,8 +70,6 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
         resultField.textProperty(), rollResult, new NumberStringConverter("0"));
     rollResult.addListener(_ -> inputChanged.set(true));
 
-    var isValid =
-        rollResult.greaterThanOrEqualTo(1).and(rollResult.lessThanOrEqualTo(numberOfSides));
     var rollError = isValid.map(b -> b ? "" : "Invalid value");
     var rollErrorLabel = new Label();
     rollErrorLabel.setTextFill(Color.RED);
@@ -98,11 +99,16 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
   @Override
   public int roll(int numberOfSides, RollInformation information) {
     this.numberOfSides.set(numberOfSides);
-    rollResult.set(0);
+    rollResult.set(random.nextInt(numberOfSides) + 1);
     info.set(information);
     inputChanged.set(false);
 
     showAndWait();
+
+    // If the window simply closes, substitute a random number
+    if (!isValid.get()) {
+      return random.nextInt(numberOfSides) + 1;
+    }
     return rollResult.get();
   }
 }
