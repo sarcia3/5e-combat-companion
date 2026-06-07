@@ -24,7 +24,7 @@ class MeleeWeaponAttackTest {
     }
 
     @Override
-    public int roll(int numberOfSides) {
+    public int roll(int numberOfSides, RollInformation information) {
       if (numberOfSides < 1) throw new IllegalArgumentException();
       return values.poll();
     }
