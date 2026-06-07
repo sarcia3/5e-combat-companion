@@ -14,7 +14,8 @@ public class CreatureViewModel {
   private final State model;
   private final ObjectProperty<Creature> creature = new SimpleObjectProperty<>();
   private final BooleanProperty isCurrent = new SimpleBooleanProperty(false);
-  private final ObservableList<Weapon> weapons = FXCollections.observableArrayList();
+  private final ObservableList<Weapon> carriedWeapons = FXCollections.observableArrayList();
+  private final ObservableList<Weapon> wieldedWeapons = FXCollections.observableArrayList();
   private final ObservableList<StateProcess> attacks = FXCollections.observableArrayList();
   private final SimpleDoubleProperty movementLeft = new SimpleDoubleProperty(0.0);
   private NavMap navMap;
@@ -26,8 +27,7 @@ public class CreatureViewModel {
     creature.addListener(
         _ -> {
           if (creature.get() == null) return;
-
-          weapons.setAll(creature.get().getWeapons());
+          refreshWeapons();
           reloadNavMap();
         });
     isCurrent.bind(creature.isEqualTo(current));
@@ -37,9 +37,26 @@ public class CreatureViewModel {
     attacks.setAll(model.getPossibleAttacks(creature.get(), weapon));
   }
 
-  public void addWeapon(Weapon weapon) {
-    creature.get().addWeapon(weapon);
-    weapons.setAll(creature.get().getWeapons());
+  public boolean addCarriedWeapon(Weapon weapon) {
+    return creature.get().inventory().addCarriedWeapon(weapon);
+  }
+
+  /** Tries to wield a carried weapon. Returns false if there are not enough free hands. */
+  public boolean wield(Weapon weapon) {
+    boolean wielded = creature.get().inventory().wieldWeapon(weapon);
+    if (wielded) refreshWeapons();
+    return wielded;
+  }
+
+  /** Unwields a wielded weapon, freeing its hand(s). */
+  public void unwield(Weapon weapon) {
+    creature.get().inventory().unwieldWeapon(weapon);
+    refreshWeapons();
+  }
+
+  private void refreshWeapons() {
+    carriedWeapons.setAll(creature.get().inventory().getCarriedWeapons());
+    wieldedWeapons.setAll(creature.get().inventory().getWieldedWeapons());
   }
 
   public void pass() {
@@ -67,8 +84,12 @@ public class CreatureViewModel {
     return creature;
   }
 
-  public ObservableList<Weapon> weaponsProperty() {
-    return weapons;
+  public ObservableList<Weapon> carriedWeaponsProperty() {
+    return carriedWeapons;
+  }
+
+  public ObservableList<Weapon> wieldedWeaponsProperty() {
+    return wieldedWeapons;
   }
 
   public ObservableList<StateProcess> attacksProperty() {

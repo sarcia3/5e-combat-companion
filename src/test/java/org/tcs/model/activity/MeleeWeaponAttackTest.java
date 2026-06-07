@@ -36,7 +36,7 @@ class MeleeWeaponAttackTest {
     Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(15, 5));
     Creature target = creature("Goblin", 10, 2, new QueuedDiceRoller());
     Weapon weapon = longsword();
-    attacker.addWeapon(weapon);
+    attacker.inventory().addCarriedWeapon(weapon);
     WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
 
     attack.resolve(null, target);
@@ -50,7 +50,7 @@ class MeleeWeaponAttackTest {
     Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(1));
     Creature target = creature("Goblin", 10, 2, new QueuedDiceRoller());
     Weapon weapon = longsword();
-    attacker.addWeapon(weapon);
+    attacker.inventory().addCarriedWeapon(weapon);
     WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
 
     attack.resolve(null, target);
@@ -64,7 +64,7 @@ class MeleeWeaponAttackTest {
     Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(5));
     Creature target = creature("Goblin", 10, 2, new QueuedDiceRoller());
     Weapon weapon = longsword();
-    attacker.addWeapon(weapon);
+    attacker.inventory().addCarriedWeapon(weapon);
     WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
 
     attack.resolve(null, target);
@@ -79,7 +79,7 @@ class MeleeWeaponAttackTest {
     Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(20, 6));
     Creature target = creatureWithArmorClass("Stone Golem", 30, 2, 25, new QueuedDiceRoller());
     Weapon weapon = longsword();
-    attacker.addWeapon(weapon);
+    attacker.inventory().addCarriedWeapon(weapon);
     WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
     attack.resolve(null, target);
 
