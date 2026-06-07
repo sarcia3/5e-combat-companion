@@ -4,6 +4,8 @@ import static org.tcs.ui.map.MapView.PIXELS_PER_FOOT;
 
 import java.util.List;
 import java.util.function.Consumer;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -18,13 +20,12 @@ public class PathView {
   private final WorldMap worldMap;
   private List<Point> currentPath;
   private Point target;
-  private final Consumer<Point> onSubmit;
+  private final ObjectProperty<Consumer<Point>> onSubmit = new SimpleObjectProperty<>(_ -> {});
+  private final ObjectProperty<Runnable> onCancel = new SimpleObjectProperty<>(() -> {});
 
-  public PathView(
-      CreatureViewModel creatureViewModel, WorldMap worldMap, Consumer<Point> onSubmit) {
+  public PathView(CreatureViewModel creatureViewModel, WorldMap worldMap) {
     this.creatureViewModel = creatureViewModel;
     this.worldMap = worldMap;
-    this.onSubmit = onSubmit;
   }
 
   void setTarget(Point target) {
@@ -32,14 +33,18 @@ public class PathView {
     currentPath = creatureViewModel.navMap().pathTo(target);
   }
 
-  void onMouseReleased(MouseEvent event) {
+  void onMouseClicked(MouseEvent event) {
     if (event.getButton().equals(MouseButton.PRIMARY)) {
       if (currentPath != null && !currentPath.isEmpty()) {
         // Copy just in case. Let's not leak mutable state
-        onSubmit.accept(target);
+        onSubmit.get().accept(target);
         currentPath = null;
         target = null;
       }
+    } else if (event.getButton().equals(MouseButton.SECONDARY)) {
+      currentPath = null;
+      target = null;
+      onCancel.get().run();
     }
   }
 
@@ -66,5 +71,13 @@ public class PathView {
       RealPoint real = worldMap.pointToRealPoint(abstractPoint).multiply(PIXELS_PER_FOOT);
       gc.fillOval(real.x() - 3, real.y() - 3, 6, 6);
     }
+  }
+
+  ObjectProperty<Consumer<Point>> onSubmitProperty() {
+    return onSubmit;
+  }
+
+  ObjectProperty<Runnable> onCancelProperty() {
+    return onCancel;
   }
 }
