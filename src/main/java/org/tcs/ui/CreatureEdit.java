@@ -3,7 +3,6 @@ package org.tcs.ui;
 import java.util.Map;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -42,10 +41,9 @@ public class CreatureEdit extends VBox {
     creatureViewModel
         .creatureProperty()
         .addListener(
-            (ChangeListener<Creature>)
-                (c, old_c, new_c) -> {
-                  if (new_c != null) nav.set(Nav.Choice);
-                });
+            (_, _, new_c) -> {
+              if (new_c != null) nav.set(Nav.Choice);
+            });
 
     var name = new Label();
     name.textProperty().bind(creatureViewModel.creatureProperty().map(Creature::name));
