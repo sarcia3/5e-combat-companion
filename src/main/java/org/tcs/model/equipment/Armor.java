@@ -1,6 +1,6 @@
 package org.tcs.model.equipment;
 
-public record Armor(int base, Category category) {
+public record Armor(String name, int base, Category category) {
   public enum Category {
     LIGHT,
     MEDIUM,
