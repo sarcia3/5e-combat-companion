@@ -9,8 +9,8 @@ public class Inventory {
   private Armor wornArmor;
   private Shield wieldedShield;
 
-  public int AC(int dexMod) {
-    return (wornArmor == null ? 10 + dexMod : wornArmor.AC(dexMod))
+  public int armorClass(int dexMod) {
+    return (wornArmor == null ? 10 + dexMod : wornArmor.armorClass(dexMod))
         + (wieldedShield == null ? 0 : 2);
   }
 
