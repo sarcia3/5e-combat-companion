@@ -60,6 +60,14 @@ public class ViewModel {
     update();
   }
 
+  public void removeCreature(Creature creature) {
+    if (model.removeCreature(creature)) {
+      creatures.remove(creature);
+    }
+
+    update();
+  }
+
   public void setCreaturePosition(Creature creature, Point position) {
     // Simply ignore failures to move
     try {
