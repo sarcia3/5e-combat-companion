@@ -21,14 +21,14 @@ public class DeathTests {
     DiceRoller dice1 =
         new DiceRoller() {
           @Override
-          public int roll(int numberOfSides) {
+          public int roll(int numberOfSides, RollInformation information) {
             return 19 % numberOfSides;
           }
         };
     DiceRoller dice2 =
         new DiceRoller() {
           @Override
-          public int roll(int numberOfSides) {
+          public int roll(int numberOfSides, RollInformation information) {
             return 2 % numberOfSides;
           }
         };
@@ -54,14 +54,14 @@ public class DeathTests {
     DiceRoller dice1 =
         new DiceRoller() {
           @Override
-          public int roll(int numberOfSides) {
+          public int roll(int numberOfSides, RollInformation information) {
             return 19 % numberOfSides;
           }
         };
     DiceRoller dice2 =
         new DiceRoller() {
           @Override
-          public int roll(int numberOfSides) {
+          public int roll(int numberOfSides, RollInformation information) {
             return 19 % numberOfSides + 1;
           }
         };
@@ -88,7 +88,7 @@ public class DeathTests {
     DiceRoller dice1 =
         new DiceRoller() {
           @Override
-          public int roll(int numberOfSides) {
+          public int roll(int numberOfSides, RollInformation information) {
             return 19 % numberOfSides;
           }
         };
@@ -113,14 +113,14 @@ public class DeathTests {
     DiceRoller dice1 =
         new DiceRoller() {
           @Override
-          public int roll(int numberOfSides) {
+          public int roll(int numberOfSides, RollInformation information) {
             return 19 % numberOfSides;
           }
         };
     DiceRoller dice2 =
         new DiceRoller() {
           @Override
-          public int roll(int numberOfSides) {
+          public int roll(int numberOfSides, RollInformation information) {
             return 2 % numberOfSides;
           }
         };

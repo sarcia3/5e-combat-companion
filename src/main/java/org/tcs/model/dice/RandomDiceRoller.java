@@ -7,7 +7,7 @@ public class RandomDiceRoller implements DiceRoller {
   Random random = new Random();
 
   @Override
-  public int roll(int numberOfSides) {
+  public int roll(int numberOfSides, RollInformation information) {
     if (numberOfSides < 1) throw new IllegalArgumentException();
 
     return random.nextInt(1, numberOfSides + 1);
