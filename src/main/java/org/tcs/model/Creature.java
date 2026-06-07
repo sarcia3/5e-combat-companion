@@ -22,7 +22,8 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
 
-  double movementSpeed = 0;
+  double movementLeft = 0.0;
+  double movementSpeed = 0.0;
 
   /** Creates a new creature. Random dice rolling by default. */
   public Creature(String name, Point position, int hitPointMaximum, double movementSpeed) {
@@ -42,6 +43,7 @@ public class Creature implements HasInitiative, HasHitPoints {
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
     this.proficiencyBonus = proficiencyBonus;
     this.movementSpeed = movementSpeed;
+    this.movementLeft = movementSpeed;
 
     for (Ability ability : Ability.values()) abilityScores.put(ability, 10);
 
@@ -104,6 +106,14 @@ public class Creature implements HasInitiative, HasHitPoints {
         hitPoints = 0;
       }
     }
+  }
+
+  public void move(double distance) {
+    movementLeft -= distance;
+  }
+
+  public double movementLeft() {
+    return movementLeft;
   }
 
   public double movementSpeed() {
