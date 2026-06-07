@@ -87,12 +87,12 @@ public class CreatureEdit extends VBox {
   private Node weapons(CreatureViewModel model) {
     var owned = new VBox();
     model
-        .carriedWeaponsProperty()
+        .storedWeaponsProperty()
         .addListener(
             (ListChangeListener<? super Weapon>)
                 _ -> {
                   owned.getChildren().clear();
-                  for (Weapon weapon : model.carriedWeaponsProperty()) {
+                  for (Weapon weapon : model.storedWeaponsProperty()) {
                     owned.getChildren().add(new WeaponEntry(weapon));
                   }
                 });
@@ -103,7 +103,7 @@ public class CreatureEdit extends VBox {
           Weapon weapon = weaponSelector.showAndWait();
 
           if (weapon != null) {
-            model.addCarriedWeapon(weapon);
+            model.addStoredWeapon(weapon);
           }
         });
 

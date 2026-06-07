@@ -7,54 +7,54 @@ import java.util.List;
 /** Class to store creature's inventory */
 public class Inventory {
   private Armor wornArmor;
-  private Shield wieldedShield;
+  private Shield equippedShield;
 
   public int armorClass(int dexMod) {
     return (wornArmor == null ? 10 + dexMod : wornArmor.armorClass(dexMod))
-        + (wieldedShield == null ? 0 : 2);
+        + (equippedShield == null ? 0 : 2);
   }
 
-  /** wielded weapons don't count towards carriedWeapons */
-  private final List<Weapon> carriedWeapons = new ArrayList<>();
+  /** equipped weapons don't count towards storedWeapons */
+  private final List<Weapon> storedWeapons = new ArrayList<>();
 
-  private final List<Weapon> wieldedWeapons = new ArrayList<>();
+  private final List<Weapon> equippedWeapons = new ArrayList<>();
 
-  public boolean addCarriedWeapon(Weapon weapon) {
-    return carriedWeapons.add(weapon);
+  public boolean addStoredWeapon(Weapon weapon) {
+    return storedWeapons.add(weapon);
   }
 
-  public Collection<Weapon> getWieldedWeapons() {
-    return List.copyOf(wieldedWeapons);
+  public Collection<Weapon> getEquippedWeapons() {
+    return List.copyOf(equippedWeapons);
   }
 
-  public Collection<Weapon> getCarriedWeapons() {
-    return List.copyOf(carriedWeapons);
+  public Collection<Weapon> getStoredWeapons() {
+    return List.copyOf(storedWeapons);
   }
 
   public int handsOccupied() {
-    return wieldedWeapons.stream().mapToInt(Weapon::handsOccupied).sum()
-        + (wieldedShield == null ? 0 : 1);
+    return equippedWeapons.stream().mapToInt(Weapon::handsOccupied).sum()
+        + (equippedShield == null ? 0 : 1);
   }
 
-  public boolean wieldWeapon(Weapon weapon) {
+  public boolean equipWeapon(Weapon weapon) {
     if (handsOccupied() + weapon.handsOccupied() > 2) {
       return false;
       // this might happen in normal code
     }
 
-    if (!carriedWeapons.remove(weapon)) {
+    if (!storedWeapons.remove(weapon)) {
       throw new IllegalArgumentException();
       // if this happens, we have a problem.
     }
 
-    return wieldedWeapons.add(weapon);
+    return equippedWeapons.add(weapon);
   }
 
-  public boolean unwieldWeapon(Weapon weapon) {
-    if (!(wieldedWeapons.contains(weapon))) throw new IllegalArgumentException();
+  public boolean unequipWeapon(Weapon weapon) {
+    if (!(equippedWeapons.contains(weapon))) throw new IllegalArgumentException();
 
-    wieldedWeapons.remove(weapon);
-    carriedWeapons.add(weapon);
+    equippedWeapons.remove(weapon);
+    storedWeapons.add(weapon);
     return true;
   }
 }
