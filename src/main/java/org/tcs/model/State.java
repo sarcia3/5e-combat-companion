@@ -12,8 +12,8 @@ public class State {
   InitiativeTracker initiative;
   List<Creature> creatures;
   WorldMap worldMap;
-  Consumer<Creature> onRemove = (_) -> {};
-  Consumer<Creature> onAdd = (_) -> {};
+  Consumer<Creature> onRemoveCreature = (_) -> {};
+  Consumer<Creature> onAddCreature = (_) -> {};
 
   public State(WorldMap worldMap) {
     creatures = new ArrayList<>();
@@ -41,7 +41,7 @@ public class State {
     if (!worldMap.occupyPoint(creature.position(), OccupyReason.Creature)) return false;
     creatures.add(creature);
     initiative.add(creature);
-    onAdd.accept(creature);
+    onAddCreature.accept(creature);
     return true;
   }
 
@@ -55,7 +55,7 @@ public class State {
     creatures.remove(creature);
     worldMap.freePoint(creature.position());
     initiative.remove(creature);
-    onRemove.accept(creature);
+    onRemoveCreature.accept(creature);
     return true;
   }
 
@@ -165,11 +165,11 @@ public class State {
     }
   }
 
-  public void setOnRemove(Consumer<Creature> onRemove) {
-    this.onRemove = onRemove;
+  public void setOnRemoveCreature(Consumer<Creature> onRemoveCreature) {
+    this.onRemoveCreature = onRemoveCreature;
   }
 
-  public void setOnAdd(Consumer<Creature> onAdd) {
-    this.onAdd = onAdd;
+  public void setOnAddCreature(Consumer<Creature> onAddCreature) {
+    this.onAddCreature = onAddCreature;
   }
 }

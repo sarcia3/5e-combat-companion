@@ -28,8 +28,8 @@ public class ViewModel {
           update();
         });
 
-    model.setOnRemove(creatures::remove);
-    model.setOnAdd(creatures::add);
+    model.setOnRemoveCreature(creatures::remove);
+    model.setOnAddCreature(creatures::add);
     creatures.addListener((ListChangeListener<Creature>) _ -> update());
 
     creatures.setAll(model.getCreatures());
