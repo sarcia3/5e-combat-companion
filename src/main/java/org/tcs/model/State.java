@@ -83,13 +83,13 @@ public class State {
     if (!creatures.contains(actor)) throw new IllegalArgumentException();
 
     double distance = worldMap.getDistance(start, target);
-    if (distance > actor.movementSpeed) return false;
+    if (distance > actor.movementLeft()) return false;
     // We should never move to an occupied or non-existent point
     if (!worldMap.occupyPoint(target, OccupyReason.Creature)) return false;
 
     worldMap.freePoint(start);
     actor.setPosition(target);
-    actor.movementSpeed -= distance;
+    actor.movementLeft -= distance;
 
     return true;
   }
