@@ -3,6 +3,7 @@ package org.tcs.ui;
 import java.util.Map;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,8 +27,7 @@ public class CreatureEdit extends VBox {
 
   private enum Nav {
     Choice,
-    Weapons,
-    Deleted
+    Weapons
   }
 
   private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.Choice);
@@ -38,6 +38,14 @@ public class CreatureEdit extends VBox {
       Window owner,
       ViewModel viewModel) {
     weaponSelector = new WeaponSelector(owner);
+
+    creatureViewModel
+        .creatureProperty()
+        .addListener(
+            (ChangeListener<Creature>)
+                (c, old_c, new_c) -> {
+                  if (new_c != null) nav.set(Nav.Choice);
+                });
 
     var name = new Label();
     name.textProperty().bind(creatureViewModel.creatureProperty().map(Creature::name));
