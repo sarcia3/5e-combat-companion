@@ -8,6 +8,7 @@ import org.tcs.model.Creature;
 import org.tcs.model.State;
 import org.tcs.model.StateProcess;
 import org.tcs.model.equipment.Weapon;
+import org.tcs.model.geometry.NavMap;
 
 public class CreatureViewModel {
   private final State model;
@@ -15,6 +16,7 @@ public class CreatureViewModel {
   private final BooleanProperty isCurrent = new SimpleBooleanProperty(false);
   private final ObservableList<Weapon> weapons = FXCollections.observableArrayList();
   private final ObservableList<StateProcess> attacks = FXCollections.observableArrayList();
+  private NavMap navMap;
   private Runnable onPass = () -> {};
 
   public CreatureViewModel(State model, ObservableObjectValue<Creature> current) {
@@ -25,6 +27,7 @@ public class CreatureViewModel {
           if (creature.get() == null) return;
 
           weapons.setAll(creature.get().getWeapons());
+          reloadNavMap();
         });
     isCurrent.bind(creature.isEqualTo(current));
   }
@@ -44,6 +47,14 @@ public class CreatureViewModel {
 
   public void setOnPass(Runnable onPass) {
     this.onPass = onPass;
+  }
+
+  public NavMap navMap() {
+    return navMap;
+  }
+
+  void reloadNavMap() {
+    navMap = model.getMap().navMap(creature.get().position(), creature.get().movementSpeed());
   }
 
   public ObjectProperty<Creature> creatureProperty() {

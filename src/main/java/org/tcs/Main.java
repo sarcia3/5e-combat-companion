@@ -17,13 +17,12 @@ public class Main extends Application {
     Assets.init();
     var map = new Finite2DGrid(100, 100);
     var state = new State(map);
-    var creature = new Creature("Test 1", map.realPointToPoint(new RealPoint(1.0, 1.0)), 10, 20);
+    var creature = new Creature("Test 1", map.realPointToPoint(new RealPoint(1.0, 1.0)), 10, 5);
 
     WeaponsLibrary.load();
     creature.addWeapon(WeaponsLibrary.getWeaponByName("Dagger"));
     state.addCreature(creature);
-    state.addCreature(
-        new Creature("Test 2", map.realPointToPoint(new RealPoint(3.0, 3.0)), 10, 20));
+    state.addCreature(new Creature("Test 2", map.realPointToPoint(new RealPoint(3.0, 3.0)), 10, 5));
     primaryStage.setScene(new PlayView(new ViewModel(state), primaryStage));
     primaryStage.setTitle("Drageons&Dungons 5e Combat Companion");
     primaryStage.show();

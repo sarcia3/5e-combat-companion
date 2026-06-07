@@ -65,6 +65,7 @@ public class ViewModel {
     try {
       model.setCreaturePosition(creature, position);
       creatures.setAll(model.getCreatures());
+      this.creature.reloadNavMap();
     } catch (IllegalArgumentException _) {
     }
   }
