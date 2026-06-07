@@ -1,6 +1,7 @@
 package org.tcs.model;
 
 import java.util.*;
+import java.util.function.Consumer;
 import org.tcs.model.activity.WeaponAttack;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.*;
@@ -11,6 +12,8 @@ public class State {
   InitiativeTracker initiative;
   List<Creature> creatures;
   WorldMap worldMap;
+  Consumer<Creature> onRemove = (_) -> {};
+  Consumer<Creature> onAdd = (_) -> {};
 
   public State(WorldMap worldMap) {
     creatures = new ArrayList<>();
@@ -38,6 +41,7 @@ public class State {
     if (!worldMap.occupyPoint(creature.position(), OccupyReason.Creature)) return false;
     creatures.add(creature);
     initiative.add(creature);
+    onAdd.accept(creature);
     return true;
   }
 
@@ -51,6 +55,7 @@ public class State {
     creatures.remove(creature);
     worldMap.freePoint(creature.position());
     initiative.remove(creature);
+    onRemove.accept(creature);
     return true;
   }
 
@@ -158,5 +163,13 @@ public class State {
         if (creature.isDead()) removeCreature(creature);
       }
     }
+  }
+
+  public void setOnRemove(Consumer<Creature> onRemove) {
+    this.onRemove = onRemove;
+  }
+
+  public void setOnAdd(Consumer<Creature> onAdd) {
+    this.onAdd = onAdd;
   }
 }
