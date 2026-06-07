@@ -14,8 +14,14 @@ class StateTest {
 
   @Test
   void canCreateGameStateWithGivenCreatures() {
-    Creature first = new Creature("Boring commoner", null, 4, 30);
-    Creature second = new Creature("Cool commoner", null, 5, 30);
+    Creature first =
+        new Creature.Builder()
+            .name("Boring commoner")
+            .proficiencyBonus(4)
+            .movementSpeed(30)
+            .build();
+    Creature second =
+        new Creature.Builder().name("Cool commoner").proficiencyBonus(5).movementSpeed(30).build();
     ArrayList<Creature> commoners = new ArrayList<>();
     commoners.add(first);
     commoners.add(second);
@@ -41,9 +47,27 @@ class StateTest {
       Point point3 = worldMap.realPointToPoint(new RealPoint(0, 1));
       Point checkingPoint = worldMap.realPointToPoint(new RealPoint(1, 1));
 
-      Creature creature1 = new Creature("Creature", point1, 10, 2);
-      Creature creature2 = new Creature("Creature", point2, 10, 2);
-      Creature creature3 = new Creature("Creature", point3, 10, 2);
+      Creature creature1 =
+          new Creature.Builder()
+              .name("Creature")
+              .position(point1)
+              .hitPointMaximum(10)
+              .movementSpeed(2)
+              .build();
+      Creature creature2 =
+          new Creature.Builder()
+              .name("Creature")
+              .position(point2)
+              .hitPointMaximum(10)
+              .movementSpeed(2)
+              .build();
+      Creature creature3 =
+          new Creature.Builder()
+              .name("Creature")
+              .position(point3)
+              .hitPointMaximum(10)
+              .movementSpeed(2)
+              .build();
       state.addCreature(creature1);
       state.addCreature(creature2);
       state.addCreature(creature3);
@@ -66,7 +90,13 @@ class StateTest {
       List<Creature> list = new ArrayList<>();
       for (int i = 0; i < 5; i++) {
         Point point = map.realPointToPoint(new RealPoint(i, i));
-        list.add(new Creature("Commoner " + i, point, 10, 10));
+        list.add(
+            new Creature.Builder()
+                .name("Commoner " + i)
+                .position(point)
+                .hitPointMaximum(10)
+                .movementSpeed(10)
+                .build());
         list.getLast().inventory().addStoredWeapon(dagger);
         list.getLast().inventory().equipWeapon(dagger);
       }
@@ -87,8 +117,20 @@ class StateTest {
       Point point1 = map.realPointToPoint(new RealPoint(0, 0));
       Point point2 = map.realPointToPoint(new RealPoint(2, 2));
       Weapon dagger = WeaponsLibrary.get("Dagger");
-      Creature creature1 = new Creature("Commoner 1", point1, 10, 10);
-      Creature creature2 = new Creature("Commoner 2", point2, 10, 10);
+      Creature creature1 =
+          new Creature.Builder()
+              .name("Commoner 1")
+              .position(point1)
+              .hitPointMaximum(10)
+              .movementSpeed(10)
+              .build();
+      Creature creature2 =
+          new Creature.Builder()
+              .name("Commoner 2")
+              .position(point2)
+              .hitPointMaximum(10)
+              .movementSpeed(10)
+              .build();
       State state = new State(List.of(creature1, creature2), map);
       creature1.inventory().addStoredWeapon(dagger);
       creature1.inventory().equipWeapon(dagger);
@@ -108,8 +150,19 @@ class StateTest {
       WorldMap map = new Finite2DGrid(3, 3);
       Weapon dagger = WeaponsLibrary.get("Dagger");
       Creature attacker =
-          new Creature("Attacker", map.realPointToPoint(new RealPoint(0, 0)), 10, 10);
-      Creature target = new Creature("Target", map.realPointToPoint(new RealPoint(1, 0)), 10, 10);
+          new Creature.Builder()
+              .name("Attacker")
+              .position(map.realPointToPoint(new RealPoint(0, 0)))
+              .hitPointMaximum(10)
+              .movementSpeed(10)
+              .build();
+      Creature target =
+          new Creature.Builder()
+              .name("Target")
+              .position(map.realPointToPoint(new RealPoint(1, 0)))
+              .hitPointMaximum(10)
+              .movementSpeed(10)
+              .build();
       State state = new State(List.of(attacker, target), map);
 
       attacker.inventory().addStoredWeapon(dagger); // stored only, never equipped
@@ -124,8 +177,19 @@ class StateTest {
       WorldMap map = new Finite2DGrid(3, 3);
       Weapon dagger = WeaponsLibrary.get("Dagger");
       Creature attacker =
-          new Creature("Attacker", map.realPointToPoint(new RealPoint(0, 0)), 10, 10);
-      Creature target = new Creature("Target", map.realPointToPoint(new RealPoint(1, 0)), 10, 10);
+          new Creature.Builder()
+              .name("Attacker")
+              .position(map.realPointToPoint(new RealPoint(0, 0)))
+              .hitPointMaximum(10)
+              .movementSpeed(10)
+              .build();
+      Creature target =
+          new Creature.Builder()
+              .name("Target")
+              .position(map.realPointToPoint(new RealPoint(1, 0)))
+              .hitPointMaximum(10)
+              .movementSpeed(10)
+              .build();
       State state = new State(List.of(attacker, target), map);
 
       attacker.inventory().addStoredWeapon(dagger);

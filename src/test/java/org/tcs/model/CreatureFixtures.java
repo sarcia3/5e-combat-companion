@@ -8,7 +8,13 @@ public final class CreatureFixtures {
 
   public static Creature creature(
       String name, int hitPointMaximum, int proficiencyBonus, DiceRoller diceRoller) {
-    return new Creature(name, null, hitPointMaximum, 30, proficiencyBonus, diceRoller);
+    return new Creature.Builder()
+        .name(name)
+        .hitPointMaximum(hitPointMaximum)
+        .movementSpeed(30)
+        .proficiencyBonus(proficiencyBonus)
+        .diceRoller(diceRoller)
+        .build();
   }
 
   /** Variant whose {@link Creature#armorClass()} returns a custom value. */
@@ -18,11 +24,13 @@ public final class CreatureFixtures {
       int proficiencyBonus,
       int armorClass,
       DiceRoller diceRoller) {
-    return new Creature(name, null, hitPointMaximum, 30, proficiencyBonus, diceRoller) {
-      @Override
-      public int armorClass() {
-        return armorClass;
-      }
-    };
+    return new Creature.Builder()
+        .name(name)
+        .hitPointMaximum(hitPointMaximum)
+        .movementSpeed(30)
+        .proficiencyBonus(proficiencyBonus)
+        .diceRoller(diceRoller)
+        .overrideArmorClass(armorClass)
+        .build();
   }
 }

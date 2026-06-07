@@ -32,8 +32,24 @@ public class DeathTests {
             return 2 % numberOfSides;
           }
         };
-    Creature creature1 = new Creature("X", point1, 10, 10., 0, dice1);
-    Creature creature2 = new Creature("Y", point2, 10, 10., 0, dice2);
+    Creature creature1 =
+        new Creature.Builder()
+            .name("X")
+            .position(point1)
+            .hitPointMaximum(10)
+            .movementSpeed(10.)
+            .proficiencyBonus(0)
+            .diceRoller(dice1)
+            .build();
+    Creature creature2 =
+        new Creature.Builder()
+            .name("Y")
+            .position(point2)
+            .hitPointMaximum(10)
+            .movementSpeed(10.)
+            .proficiencyBonus(0)
+            .diceRoller(dice2)
+            .build();
     state.addCreature(creature1);
     state.addCreature(creature2);
     WeaponsLibrary.load();
@@ -66,8 +82,24 @@ public class DeathTests {
             return 19 % numberOfSides + 1;
           }
         };
-    Creature creature1 = new Creature("X", point1, 10, 10., 0, dice1);
-    Creature creature2 = new Creature("Y", point2, 10, 10., 0, dice2);
+    Creature creature1 =
+        new Creature.Builder()
+            .name("X")
+            .position(point1)
+            .hitPointMaximum(10)
+            .movementSpeed(10.)
+            .proficiencyBonus(0)
+            .diceRoller(dice1)
+            .build();
+    Creature creature2 =
+        new Creature.Builder()
+            .name("Y")
+            .position(point2)
+            .hitPointMaximum(10)
+            .movementSpeed(10.)
+            .proficiencyBonus(0)
+            .diceRoller(dice2)
+            .build();
     state.addCreature(creature1);
     state.addCreature(creature2);
     WeaponsLibrary.load();
@@ -94,8 +126,22 @@ public class DeathTests {
             return 19 % numberOfSides;
           }
         };
-    Creature creature1 = new Creature("X", point1, 10, 10., 0, dice1);
-    Creature creature2 = new Creature("Y", point2, 1, 10.);
+    Creature creature1 =
+        new Creature.Builder()
+            .name("X")
+            .position(point1)
+            .hitPointMaximum(10)
+            .movementSpeed(10.)
+            .proficiencyBonus(0)
+            .diceRoller(dice1)
+            .build();
+    Creature creature2 =
+        new Creature.Builder()
+            .name("Y")
+            .position(point2)
+            .hitPointMaximum(1)
+            .movementSpeed(10.)
+            .build();
     state.addCreature(creature1);
     state.addCreature(creature2);
     WeaponsLibrary.load();
@@ -127,8 +173,24 @@ public class DeathTests {
             return 2 % numberOfSides;
           }
         };
-    Creature creature1 = new Creature("X", point1, 10, 10., 0, dice1);
-    Creature creature2 = new Creature("Y", point2, 10, 10., 0, dice2);
+    Creature creature1 =
+        new Creature.Builder()
+            .name("X")
+            .position(point1)
+            .hitPointMaximum(10)
+            .movementSpeed(10.)
+            .proficiencyBonus(0)
+            .diceRoller(dice1)
+            .build();
+    Creature creature2 =
+        new Creature.Builder()
+            .name("Y")
+            .position(point2)
+            .hitPointMaximum(10)
+            .movementSpeed(10.)
+            .proficiencyBonus(0)
+            .diceRoller(dice2)
+            .build();
     state.addCreature(creature1);
     state.addCreature(creature2);
     WeaponsLibrary.load();

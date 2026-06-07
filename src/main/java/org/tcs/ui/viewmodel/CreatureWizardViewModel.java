@@ -84,7 +84,14 @@ public class CreatureWizardViewModel {
 
       resetCreatureData();
 
-      return new Creature(name, position, hitPoints, movement, 2, diceRoller);
+      return new Creature.Builder()
+          .name(name)
+          .position(position)
+          .hitPointMaximum(hitPoints)
+          .movementSpeed(movement)
+          .proficiencyBonus(2)
+          .diceRoller(diceRoller)
+          .build();
     } catch (NumberFormatException e) {
       throw new IllegalStateException("Invalid creature data");
     }
