@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -21,24 +22,16 @@ import org.tcs.model.equipment.Weapon;
 import org.tcs.ui.viewmodel.CreatureViewModel;
 
 public class CreatureEdit extends VBox {
-  private final WeaponSelector weaponSelector;
-
   private enum Nav {
-    Choice,
-    Weapons
+    All,
+    Weapons,
   }
 
-  private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.Choice);
+  private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.All);
+  private final WeaponSelector weaponSelector;
 
   public CreatureEdit(Map<Creature, Image> creatureImages, CreatureViewModel model, Window owner) {
     weaponSelector = new WeaponSelector(owner);
-
-    model
-        .creatureProperty()
-        .addListener(
-            (_, _, new_c) -> {
-              if (new_c != null) nav.set(Nav.Choice);
-            });
 
     var name = new Label();
     name.textProperty().bind(model.creatureProperty().map(Creature::name));
@@ -55,36 +48,30 @@ public class CreatureEdit extends VBox {
                 .creatureProperty()
                 .map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
 
-    getChildren().addAll(name, portrait, weapons(model), choices(model));
+    getChildren().addAll(name, portrait, topLevel(), weapons(model));
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
     setPadding(new Insets(8.0));
   }
 
-  private Node choices(CreatureViewModel creature) {
-    var weapons = new Button("Edit weapons");
-    weapons.setOnAction(
-        _ -> {
-          nav.set(Nav.Weapons);
-        });
+  private Node topLevel() {
+    var weapons = new Button("Weapons");
+    weapons.setOnAction(_ -> nav.set(Nav.Weapons));
 
-    var deletion = new Button("Delete the creature");
-    // TODO add deletion in viewModel
+    var topLevel = new VBox();
+    topLevel.getChildren().addAll(weapons);
+    topLevel.setAlignment(Pos.CENTER);
+    topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All));
+    topLevel.managedProperty().bind(nav.isEqualTo(Nav.All));
 
-    // deletion.setOnAction(_ -> {viewModel.removeCreature(creature.creatureProperty().get());});
-
-    var choices = new VBox();
-    choices.getChildren().addAll(weapons, deletion);
-    choices.setAlignment(Pos.CENTER);
-
-    choices.visibleProperty().bind(nav.isEqualTo(Nav.Choice));
-    choices.managedProperty().bind(nav.isEqualTo(Nav.Choice));
-
-    return choices;
+    return topLevel;
   }
 
   private Node weapons(CreatureViewModel model) {
+    var back = new Button("Back");
+    back.setOnAction(_ -> nav.set(Nav.All));
+
     var owned = new VBox();
     model
         .weaponsProperty()
@@ -107,18 +94,11 @@ public class CreatureEdit extends VBox {
           }
         });
 
-    var back = new Button("Go back");
-    back.setOnAction(
-        _ -> {
-          nav.set(Nav.Choice);
-        });
-
     var weapons = new VBox();
-    weapons.getChildren().addAll(owned, add, back);
-    weapons.setAlignment(Pos.CENTER);
-
     weapons.visibleProperty().bind(nav.isEqualTo(Nav.Weapons));
     weapons.managedProperty().bind(nav.isEqualTo(Nav.Weapons));
+    weapons.getChildren().addAll(back, new Separator(), owned, add);
+    weapons.setAlignment(Pos.CENTER);
 
     return weapons;
   }
