@@ -116,6 +116,10 @@ public class State {
 
   public Collection<StateProcess> getPossibleAttacks(Creature actor, Weapon weapon) {
     // Maybe we should check here whether the actor has the weapon?
+    // I think yes ~ Sara
+    if (!actor.inventory().getWieldedWeapons().contains(weapon))
+      throw new IllegalArgumentException();
+
     // Ditto for actor being the current player (that is actor.equals(initiative.getFirst())
 
     Collection<WeaponAttack> attacks = weapon.generateAttacks(actor);
@@ -147,7 +151,7 @@ public class State {
 
                 @Override
                 public String toString() {
-                  return attack.toString() + " targeting " + target.toString();
+                  return attack + " targeting " + target.toString();
                 }
               });
         }

@@ -20,7 +20,8 @@ public class Main extends Application {
     var creature = new Creature("Test 1", map.realPointToPoint(new RealPoint(1.0, 1.0)), 10, 5);
 
     WeaponsLibrary.load();
-    creature.addWeapon(WeaponsLibrary.getWeaponByName("Dagger"));
+    creature.inventory().addCarriedWeapon(WeaponsLibrary.getWeaponByName("Dagger"));
+    creature.inventory().wieldWeapon(WeaponsLibrary.getWeaponByName("Dagger"));
     state.addCreature(creature);
     state.addCreature(new Creature("Test 2", map.realPointToPoint(new RealPoint(3.0, 3.0)), 10, 5));
     primaryStage.setScene(new PlayView(new ViewModel(state), primaryStage));

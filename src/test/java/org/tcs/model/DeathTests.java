@@ -38,7 +38,8 @@ public class DeathTests {
     state.addCreature(creature2);
     WeaponsLibrary.load();
     Weapon dag = WeaponsLibrary.getWeaponByName("Dagger");
-    creature1.addWeapon(dag);
+    creature1.inventory().addCarriedWeapon(dag);
+    creature1.inventory().wieldWeapon(dag);
     StateProcess attack = state.getPossibleAttacks(creature1, dag).stream().toList().getFirst();
     while (creature2.hitPoints != 0) attack.run();
     for (int i = 0; i < 6; i++) state.nextTurn();
@@ -71,7 +72,8 @@ public class DeathTests {
     state.addCreature(creature2);
     WeaponsLibrary.load();
     Weapon dag = WeaponsLibrary.getWeaponByName("Dagger");
-    creature1.addWeapon(dag);
+    creature1.inventory().addCarriedWeapon(dag);
+    creature1.inventory().wieldWeapon(dag);
     StateProcess attack = state.getPossibleAttacks(creature1, dag).stream().toList().getFirst();
     while (creature2.hitPoints != 0) attack.run();
     for (int i = 0; i < 2; i++) state.nextTurn();
@@ -98,7 +100,8 @@ public class DeathTests {
     state.addCreature(creature2);
     WeaponsLibrary.load();
     Weapon dag = WeaponsLibrary.getWeaponByName("Dagger");
-    creature1.addWeapon(dag);
+    creature1.inventory().addCarriedWeapon(dag);
+    creature1.inventory().wieldWeapon(dag);
     StateProcess attack = state.getPossibleAttacks(creature1, dag).stream().toList().getFirst();
     attack.run();
     assertFalse(state.getCreatures().contains(creature2));
@@ -130,7 +133,8 @@ public class DeathTests {
     state.addCreature(creature2);
     WeaponsLibrary.load();
     Weapon dag = WeaponsLibrary.getWeaponByName("Dagger");
-    creature1.addWeapon(dag);
+    creature1.inventory().addCarriedWeapon(dag);
+    creature1.inventory().wieldWeapon(dag);
     StateProcess attack = state.getPossibleAttacks(creature1, dag).stream().toList().getFirst();
     while (creature2.hitPoints != 0) attack.run();
     attack.run();

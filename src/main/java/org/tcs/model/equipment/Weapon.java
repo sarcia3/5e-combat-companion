@@ -34,4 +34,8 @@ public record Weapon(String name, List<Mode> possibleAttacks) {
       this(DamageRoll.parse(damageRollStr), ability, isRanged);
     }
   }
+
+  public int handsOccupied() {
+    return 1; // temporary. Some weapons are gonna have that equal to 0 (e.g. spider's teeth)
+  }
 }

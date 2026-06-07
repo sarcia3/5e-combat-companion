@@ -67,7 +67,8 @@ class StateTest {
       for (int i = 0; i < 5; i++) {
         Point point = map.realPointToPoint(new RealPoint(i, i));
         list.add(new Creature("Commoner " + i, point, 10, 10));
-        list.getLast().addWeapon(dagger);
+        list.getLast().inventory().addCarriedWeapon(dagger);
+        list.getLast().inventory().wieldWeapon(dagger);
       }
 
       State state = new State(list, map);
@@ -89,14 +90,48 @@ class StateTest {
       Creature creature1 = new Creature("Commoner 1", point1, 10, 10);
       Creature creature2 = new Creature("Commoner 2", point2, 10, 10);
       State state = new State(List.of(creature1, creature2), map);
-      creature1.addWeapon(dagger);
-      creature2.addWeapon(dagger);
+      creature1.inventory().addCarriedWeapon(dagger);
+      creature1.inventory().wieldWeapon(dagger);
+      creature2.inventory().addCarriedWeapon(dagger);
+      creature2.inventory().wieldWeapon(dagger);
       for (int i = 0; i < 3; i++) {
         Point point = map.realPointToPoint(new RealPoint(1, i));
         map.occupyPoint(point, OccupyReason.Terrain);
       }
       assertEquals(0, state.getPossibleAttacks(creature1, dagger).size());
       assertEquals(0, state.getPossibleAttacks(creature2, dagger).size());
+    }
+
+    @Test
+    public void carriedButNotWieldedWeaponCannotBeUsedToAttack() {
+      WeaponsLibrary.load();
+      WorldMap map = new Finite2DGrid(3, 3);
+      Weapon dagger = WeaponsLibrary.getWeaponByName("Dagger");
+      Creature attacker =
+          new Creature("Attacker", map.realPointToPoint(new RealPoint(0, 0)), 10, 10);
+      Creature target = new Creature("Target", map.realPointToPoint(new RealPoint(1, 0)), 10, 10);
+      State state = new State(List.of(attacker, target), map);
+
+      attacker.inventory().addCarriedWeapon(dagger); // carried only, never wielded
+
+      assertThrows(
+          IllegalArgumentException.class, () -> state.getPossibleAttacks(attacker, dagger));
+    }
+
+    @Test
+    public void wieldedWeaponCanBeUsedToAttack() {
+      WeaponsLibrary.load();
+      WorldMap map = new Finite2DGrid(3, 3);
+      Weapon dagger = WeaponsLibrary.getWeaponByName("Dagger");
+      Creature attacker =
+          new Creature("Attacker", map.realPointToPoint(new RealPoint(0, 0)), 10, 10);
+      Creature target = new Creature("Target", map.realPointToPoint(new RealPoint(1, 0)), 10, 10);
+      State state = new State(List.of(attacker, target), map);
+
+      attacker.inventory().addCarriedWeapon(dagger);
+      attacker.inventory().wieldWeapon(dagger);
+
+      assertFalse(state.getPossibleAttacks(attacker, dagger).isEmpty());
     }
   }
 }

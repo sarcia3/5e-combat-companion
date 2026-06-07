@@ -4,7 +4,6 @@ import java.util.*;
 import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.dice.RandomDiceRoller;
 import org.tcs.model.equipment.Inventory;
-import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.Point;
 
 /** Player, monster, summon etc. Basically anything that exists, has hp and takes actions */
@@ -17,8 +16,6 @@ public class Creature implements HasInitiative, HasHitPoints {
   DiceRoller diceRoller;
   int proficiencyBonus = 2;
   private Point position;
-
-  List<Weapon> weapons = new ArrayList<>();
   Inventory inventory = new Inventory();
 
   DeathTracker deathTracker = new DeathTracker();
@@ -120,6 +117,10 @@ public class Creature implements HasInitiative, HasHitPoints {
     return movementSpeed;
   }
 
+  public Inventory inventory() {
+    return inventory;
+  }
+
   @Override
   public int armorClass() {
     return inventory.AC(abilityModifier(Ability.DEX));
@@ -137,14 +138,6 @@ public class Creature implements HasInitiative, HasHitPoints {
     // there are some features that make it 19. Very rare, but no reason not to add it at this stage
     // as well.
     return 20;
-  }
-
-  public boolean addWeapon(Weapon weapon) {
-    return weapons.add(weapon);
-  }
-
-  public Collection<Weapon> getWeapons() {
-    return List.copyOf(weapons);
   }
 
   public boolean isDead() {
