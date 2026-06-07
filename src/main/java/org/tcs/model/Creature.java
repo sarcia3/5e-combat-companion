@@ -3,6 +3,7 @@ package org.tcs.model;
 import java.util.*;
 import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.dice.RandomDiceRoller;
+import org.tcs.model.equipment.Inventory;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.Point;
 
@@ -16,7 +17,10 @@ public class Creature implements HasInitiative, HasHitPoints {
   DiceRoller diceRoller;
   int proficiencyBonus = 2;
   private Point position;
+
   List<Weapon> weapons = new ArrayList<>();
+  Inventory inventory = new Inventory();
+
   DeathTracker deathTracker = new DeathTracker();
   boolean isDead = false;
 
@@ -118,8 +122,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public int armorClass() {
-    // TODO implement
-    return 10;
+    return inventory.AC(abilityModifier(Ability.DEX));
   }
 
   public int proficiencyBonus() {
