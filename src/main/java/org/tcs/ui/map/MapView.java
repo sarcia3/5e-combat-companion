@@ -5,6 +5,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
@@ -40,14 +42,17 @@ public class MapView extends Canvas {
   private final ObservableObjectValue<PlayView.Mode> modeProperty;
   private Consumer<Point> onAddCreature = _ -> {};
   private Consumer<RealPoint> onAddDecoration = _ -> {};
-  private Consumer<Point> onSubmitMove = _ -> {};
+  private final ObjectProperty<Consumer<Point>> onSubmitMove = new SimpleObjectProperty<>(_ -> {});
+  private final ObjectProperty<Runnable> onCancelMove = new SimpleObjectProperty<>(() -> {});
 
   public MapView(
       ViewModel model,
       ObservableObjectValue<PlayView.Mode> modeProperty,
       Map<Creature, Image> creatureImages) {
     drawables = new DrawablesView(creatureImages, model);
-    pathView = new PathView(model.creature, model.getMap(), path -> onSubmitMove.accept(path));
+    pathView = new PathView(model.creature, model.getMap());
+    pathView.onSubmitProperty().bind(onSubmitMove);
+    pathView.onCancelProperty().bind(onCancelMove);
     this.modeProperty = modeProperty;
     this.model = model;
     // TODO: handle starting & stopping of the rendering
@@ -189,7 +194,7 @@ public class MapView extends Canvas {
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
         contextMenu.targetProperty().set(new ContextTarget(world, tile));
       } else if (modeProperty.get().equals(PlayView.Mode.PATHING)) {
-        pathView.onMouseReleased(event);
+        pathView.onMouseClicked(event);
       }
     }
   }
@@ -327,8 +332,12 @@ public class MapView extends Canvas {
     this.onAddDecoration = onAddDecoration;
   }
 
-  public void setOnSubmitMove(Consumer<Point> onSubmitMove) {
-    this.onSubmitMove = onSubmitMove;
+  public ObjectProperty<Consumer<Point>> onSubmitMoveProperty() {
+    return onSubmitMove;
+  }
+
+  public ObjectProperty<Runnable> onCancelMoveProperty() {
+    return onCancelMove;
   }
 
   public void addDecoration(Decoration decoration) {

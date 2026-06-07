@@ -31,7 +31,7 @@ public class PlayView extends Scene {
 
     ObjectProperty<Mode> currentMode = new SimpleObjectProperty<>(Mode.PLAY);
     var mapView = getMapView(model, owner, currentMode);
-    mapView.setOnSubmitMove(model::moveSelectedCreatureTo);
+    mapView.onSubmitMoveProperty().set(model::moveSelectedCreatureTo);
 
     var creatureEdit = new CreatureEdit(creatureImages, model.creature, owner);
     model.creature.creatureProperty().bind(mapView.selected());
@@ -73,6 +73,7 @@ public class PlayView extends Scene {
     var creatureView = new CreatureView(creatureImages, model.creature);
     creatureView.setOnStartMoving(() -> currentMode.set(Mode.PATHING));
     creatureView.setOnStopMoving(() -> currentMode.set(Mode.PLAY));
+    mapView.onCancelMoveProperty().set(creatureView::stopMoving);
     model.creature.creatureProperty().bind(mapView.selected());
     var visible =
         currentMode
