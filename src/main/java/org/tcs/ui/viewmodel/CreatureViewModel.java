@@ -27,7 +27,7 @@ public class CreatureViewModel {
     creature.addListener(
         _ -> {
           if (creature.get() == null) return;
-          refreshWeapons();
+          reloadWeapons();
           reloadNavMap();
         });
     isCurrent.bind(creature.isEqualTo(current));
@@ -44,17 +44,17 @@ public class CreatureViewModel {
   /** Tries to wield a carried weapon. Returns false if there are not enough free hands. */
   public boolean wield(Weapon weapon) {
     boolean wielded = creature.get().inventory().wieldWeapon(weapon);
-    if (wielded) refreshWeapons();
+    if (wielded) reloadWeapons();
     return wielded;
   }
 
   /** Unwields a wielded weapon, freeing its hand(s). */
   public void unwield(Weapon weapon) {
     creature.get().inventory().unwieldWeapon(weapon);
-    refreshWeapons();
+    reloadWeapons();
   }
 
-  private void refreshWeapons() {
+  private void reloadWeapons() {
     carriedWeapons.setAll(creature.get().inventory().getCarriedWeapons());
     wieldedWeapons.setAll(creature.get().inventory().getWieldedWeapons());
   }
