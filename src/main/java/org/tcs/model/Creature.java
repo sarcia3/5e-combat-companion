@@ -108,10 +108,6 @@ public class Creature implements HasInitiative, HasHitPoints {
     }
   }
 
-  public void move(double distance) {
-    movementLeft -= distance;
-  }
-
   public double movementLeft() {
     return movementLeft;
   }

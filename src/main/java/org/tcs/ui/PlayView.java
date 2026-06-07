@@ -30,6 +30,13 @@ public class PlayView extends Scene {
     super(new StackPane(), 1200, 900);
 
     ObjectProperty<Mode> currentMode = new SimpleObjectProperty<>(Mode.PLAY);
+    currentMode.addListener(
+        _ -> {
+          if (currentMode.get() == Mode.PLAY) {
+            model.updateGeometry();
+          }
+        });
+
     var mapView = getMapView(model, owner, currentMode);
     mapView.onSubmitMoveProperty().set(model::moveSelectedCreatureTo);
 
