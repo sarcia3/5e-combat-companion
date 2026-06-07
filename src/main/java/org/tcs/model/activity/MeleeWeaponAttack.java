@@ -2,6 +2,7 @@ package org.tcs.model.activity;
 
 import org.tcs.model.*;
 import org.tcs.model.dice.DamageRoll;
+import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.equipment.Weapon;
 
 /**
@@ -24,7 +25,13 @@ public final class MeleeWeaponAttack implements WeaponAttack {
 
   @Override
   public AttackRoll attackRoll() {
-    int roll = attacker.diceRoller().roll(20);
+    int roll =
+        attacker
+            .diceRoller()
+            .roll(
+                20,
+                new DiceRoller.RollInformation(
+                    attacker.name(), "rolls to hit with " + weapon.name()));
     // TODO add proficiencies and prof bonus
     int modifier = attacker.abilityModifier(ability);
     return new AttackRoll(roll, modifier);
