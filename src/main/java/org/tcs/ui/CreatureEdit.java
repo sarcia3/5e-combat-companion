@@ -54,6 +54,8 @@ public class CreatureEdit extends VBox {
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
     setPadding(new Insets(8.0));
+
+    model.creatureProperty().addListener(_ -> nav.set(Nav.All));
   }
 
   private Node topLevel() {
