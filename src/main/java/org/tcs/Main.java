@@ -19,26 +19,22 @@ public class Main extends Application {
     var map = new Finite2DGrid(100, 100);
     var state = new State(map);
     var creature =
-        new Creature(
-            "Test 1",
-            map.realPointToPoint(new RealPoint(1.0, 1.0)),
-            10,
-            5,
-            2,
-            new WindowDiceRoller(primaryStage));
+        new Creature.Builder()
+            .name("Test 1")
+            .position(map.realPointToPoint(new RealPoint(1.0, 1.0)))
+            .diceRoller(new WindowDiceRoller(primaryStage))
+            .build();
 
     WeaponsLibrary.load();
     creature.inventory().addStoredWeapon(WeaponsLibrary.get("Dagger"));
     creature.inventory().equipWeapon(WeaponsLibrary.get("Dagger"));
     state.addCreature(creature);
     state.addCreature(
-        new Creature(
-            "Test 2",
-            map.realPointToPoint(new RealPoint(3.0, 3.0)),
-            10,
-            5,
-            2,
-            new WindowDiceRoller(primaryStage)));
+        new Creature.Builder()
+            .name("Test 2")
+            .position(map.realPointToPoint(new RealPoint(3.0, 3.0)))
+            .diceRoller(new WindowDiceRoller(primaryStage))
+            .build());
     primaryStage.setScene(new PlayView(new ViewModel(state), primaryStage));
     primaryStage.setTitle("Drageons&Dungons 5e Combat Companion");
     primaryStage.show();

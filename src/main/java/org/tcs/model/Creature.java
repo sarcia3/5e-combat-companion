@@ -8,13 +8,14 @@ import org.tcs.model.geometry.Point;
 
 /** Player, monster, summon etc. Basically anything that exists, has hp and takes actions */
 public class Creature implements HasInitiative, HasHitPoints {
-
   String name;
-  int hitPoints = 0;
-  int hitPointMaximum = 0;
+  int hitPoints;
+  int hitPointMaximum;
   int temporaryHitPoints = 0;
   DiceRoller diceRoller;
-  int proficiencyBonus = 2;
+  int proficiencyBonus;
+  // Allow overriding the armor class for testing purposes
+  Integer overrideArmorClass;
   private Point position;
   Inventory inventory = new Inventory();
 
@@ -23,22 +24,16 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
 
-  double movementLeft = 0.0;
-  double movementSpeed = 0.0;
+  double movementLeft;
+  double movementSpeed;
 
-  /** Creates a new creature. Random dice rolling by default. */
-  public Creature(String name, Point position, int hitPointMaximum, double movementSpeed) {
-    this(name, position, hitPointMaximum, movementSpeed, 2, new RandomDiceRoller());
-  }
-
-  public Creature(
+  private Creature(
       String name,
       Point position,
       int hitPointMaximum,
       double movementSpeed,
       int proficiencyBonus,
       DiceRoller diceRoller) {
-    // this constructor should be deleted later. This is for the minimal working example
     this.name = name;
     this.position = position;
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
@@ -123,6 +118,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public int armorClass() {
+    if (overrideArmorClass != null) return overrideArmorClass;
     return inventory.armorClass(abilityModifier(Ability.DEX));
   }
 
@@ -161,5 +157,55 @@ public class Creature implements HasInitiative, HasHitPoints {
   @Override
   public String toString() {
     return name;
+  }
+
+  public static class Builder {
+    private String name = "";
+    private Point position;
+    private int hitPointMaximum = 20;
+    private double movementSpeed = 5.0;
+    private int proficiencyBonus = 2;
+    private DiceRoller diceRoller = new RandomDiceRoller();
+    Integer overrideArmorClass;
+
+    public Builder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder position(Point position) {
+      this.position = position;
+      return this;
+    }
+
+    public Builder hitPointMaximum(int hitPointMaximum) {
+      this.hitPointMaximum = hitPointMaximum;
+      return this;
+    }
+
+    public Builder movementSpeed(double movementSpeed) {
+      this.movementSpeed = movementSpeed;
+      return this;
+    }
+
+    public Builder proficiencyBonus(int proficiencyBonus) {
+      this.proficiencyBonus = proficiencyBonus;
+      return this;
+    }
+
+    public Builder diceRoller(DiceRoller diceRoller) {
+      this.diceRoller = diceRoller;
+      return this;
+    }
+
+    public Builder overrideArmorClass(Integer overrideArmorClass) {
+      this.overrideArmorClass = overrideArmorClass;
+      return this;
+    }
+
+    public Creature build() {
+      return new Creature(
+          name, position, hitPointMaximum, movementSpeed, proficiencyBonus, diceRoller);
+    }
   }
 }
