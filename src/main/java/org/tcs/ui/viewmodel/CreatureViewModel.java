@@ -16,6 +16,7 @@ public class CreatureViewModel {
   private final BooleanProperty isCurrent = new SimpleBooleanProperty(false);
   private final ObservableList<Weapon> weapons = FXCollections.observableArrayList();
   private final ObservableList<StateProcess> attacks = FXCollections.observableArrayList();
+  private final SimpleDoubleProperty movementLeft = new SimpleDoubleProperty(0.0);
   private NavMap navMap;
   private Runnable onPass = () -> {};
 
@@ -54,7 +55,12 @@ public class CreatureViewModel {
   }
 
   void reloadNavMap() {
+    movementLeft.set(creature.get().movementLeft());
     navMap = model.getMap().navMap(creature.get().position(), creature.get().movementLeft());
+  }
+
+  public DoubleProperty movementLeftProperty() {
+    return movementLeft;
   }
 
   public ObjectProperty<Creature> creatureProperty() {
