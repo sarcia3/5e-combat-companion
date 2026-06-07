@@ -14,8 +14,8 @@ public class CreatureViewModel {
   private final State model;
   private final ObjectProperty<Creature> creature = new SimpleObjectProperty<>();
   private final BooleanProperty isCurrent = new SimpleBooleanProperty(false);
-  private final ObservableList<Weapon> carriedWeapons = FXCollections.observableArrayList();
-  private final ObservableList<Weapon> wieldedWeapons = FXCollections.observableArrayList();
+  private final ObservableList<Weapon> storedWeapons = FXCollections.observableArrayList();
+  private final ObservableList<Weapon> equippedWeapons = FXCollections.observableArrayList();
   private final ObservableList<StateProcess> attacks = FXCollections.observableArrayList();
   private final SimpleDoubleProperty movementLeft = new SimpleDoubleProperty(0.0);
   private NavMap navMap;
@@ -37,26 +37,26 @@ public class CreatureViewModel {
     attacks.setAll(model.getPossibleAttacks(creature.get(), weapon));
   }
 
-  public boolean addCarriedWeapon(Weapon weapon) {
-    return creature.get().inventory().addCarriedWeapon(weapon);
+  public boolean addStoredWeapon(Weapon weapon) {
+    return creature.get().inventory().addStoredWeapon(weapon);
   }
 
-  /** Tries to wield a carried weapon. Returns false if there are not enough free hands. */
-  public boolean wield(Weapon weapon) {
-    boolean wielded = creature.get().inventory().wieldWeapon(weapon);
-    if (wielded) reloadWeapons();
-    return wielded;
+  /** Tries to equip a stored weapon. Returns false if there are not enough free hands. */
+  public boolean equip(Weapon weapon) {
+    boolean equipped = creature.get().inventory().equipWeapon(weapon);
+    if (equipped) reloadWeapons();
+    return equipped;
   }
 
-  /** Unwields a wielded weapon, freeing its hand(s). */
-  public void unwield(Weapon weapon) {
-    creature.get().inventory().unwieldWeapon(weapon);
+  /** Unequips an equipped weapon, freeing its hand(s). */
+  public void unequip(Weapon weapon) {
+    creature.get().inventory().unequipWeapon(weapon);
     reloadWeapons();
   }
 
   private void reloadWeapons() {
-    carriedWeapons.setAll(creature.get().inventory().getCarriedWeapons());
-    wieldedWeapons.setAll(creature.get().inventory().getWieldedWeapons());
+    storedWeapons.setAll(creature.get().inventory().getStoredWeapons());
+    equippedWeapons.setAll(creature.get().inventory().getEquippedWeapons());
   }
 
   public void pass() {
@@ -84,12 +84,12 @@ public class CreatureViewModel {
     return creature;
   }
 
-  public ObservableList<Weapon> carriedWeaponsProperty() {
-    return carriedWeapons;
+  public ObservableList<Weapon> storedWeaponsProperty() {
+    return storedWeapons;
   }
 
-  public ObservableList<Weapon> wieldedWeaponsProperty() {
-    return wieldedWeapons;
+  public ObservableList<Weapon> equippedWeaponsProperty() {
+    return equippedWeapons;
   }
 
   public ObservableList<StateProcess> attacksProperty() {

@@ -25,8 +25,8 @@ public class CreatureView extends VBox {
   private enum Nav {
     All,
     Weapons,
-    Wield,
-    Unwield,
+    Equip,
+    Unequip,
     Attacks,
     Movement
   }
@@ -60,8 +60,8 @@ public class CreatureView extends VBox {
             portrait,
             nothingToDo,
             topLevel(model),
-            wieldSelection(model),
-            unwieldSelection(model),
+            equipSelection(model),
+            unequipSelection(model),
             weaponSelection(model),
             targetSelection(model),
             movement(model));
@@ -77,11 +77,11 @@ public class CreatureView extends VBox {
     var attack = new Button("Attack");
     attack.setOnAction(_ -> nav.set(Nav.Weapons));
 
-    var wield = new Button("Wield");
-    wield.setOnAction(_ -> nav.set(Nav.Wield));
+    var equip = new Button("Equip");
+    equip.setOnAction(_ -> nav.set(Nav.Equip));
 
-    var unwield = new Button("Unwield");
-    unwield.setOnAction(_ -> nav.set(Nav.Unwield));
+    var unequip = new Button("Unequip");
+    unequip.setOnAction(_ -> nav.set(Nav.Unequip));
 
     var move = new Button("Move");
     move.setOnAction(
@@ -94,7 +94,7 @@ public class CreatureView extends VBox {
     pass.setOnAction(_ -> model.pass());
 
     var topLevel = new VBox();
-    topLevel.getChildren().addAll(attack, wield, unwield, move, pass);
+    topLevel.getChildren().addAll(attack, equip, unequip, move, pass);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
     topLevel.managedProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
@@ -108,12 +108,12 @@ public class CreatureView extends VBox {
 
     var buttons = new VBox();
     model
-        .wieldedWeaponsProperty()
+        .equippedWeaponsProperty()
         .addListener(
             (ListChangeListener<? super Weapon>)
                 _ -> {
                   buttons.getChildren().clear();
-                  for (Weapon weapon : model.wieldedWeaponsProperty()) {
+                  for (Weapon weapon : model.equippedWeaponsProperty()) {
                     var btn = new Button(weapon.name());
                     btn.setOnAction(
                         _ -> {
@@ -132,7 +132,7 @@ public class CreatureView extends VBox {
     return selection;
   }
 
-  private Node wieldSelection(CreatureViewModel model) {
+  private Node equipSelection(CreatureViewModel model) {
     var cancel = new Button("Cancel");
     cancel.setOnAction(_ -> nav.set(Nav.All));
 
@@ -143,16 +143,16 @@ public class CreatureView extends VBox {
 
     var buttons = new VBox();
     model
-        .carriedWeaponsProperty()
+        .storedWeaponsProperty()
         .addListener(
             (ListChangeListener<? super Weapon>)
                 _ -> {
                   buttons.getChildren().clear();
-                  for (Weapon weapon : model.carriedWeaponsProperty()) {
+                  for (Weapon weapon : model.storedWeaponsProperty()) {
                     var btn = new Button(weapon.name());
                     btn.setOnAction(
                         _ -> {
-                          if (model.wield(weapon)) {
+                          if (model.equip(weapon)) {
                             message.setVisible(false);
                           } else {
                             message.setText("No free hand for " + weapon.name());
@@ -164,34 +164,34 @@ public class CreatureView extends VBox {
                 });
 
     var selection = new VBox();
-    selection.visibleProperty().bind(nav.isEqualTo(Nav.Wield));
-    selection.managedProperty().bind(nav.isEqualTo(Nav.Wield));
+    selection.visibleProperty().bind(nav.isEqualTo(Nav.Equip));
+    selection.managedProperty().bind(nav.isEqualTo(Nav.Equip));
     selection.getChildren().addAll(cancel, new Separator(), message, buttons);
 
     return selection;
   }
 
-  private Node unwieldSelection(CreatureViewModel model) {
+  private Node unequipSelection(CreatureViewModel model) {
     var cancel = new Button("Cancel");
     cancel.setOnAction(_ -> nav.set(Nav.All));
 
     var buttons = new VBox();
     model
-        .wieldedWeaponsProperty()
+        .equippedWeaponsProperty()
         .addListener(
             (ListChangeListener<? super Weapon>)
                 _ -> {
                   buttons.getChildren().clear();
-                  for (Weapon weapon : model.wieldedWeaponsProperty()) {
+                  for (Weapon weapon : model.equippedWeaponsProperty()) {
                     var btn = new Button(weapon.name());
-                    btn.setOnAction(_ -> model.unwield(weapon));
+                    btn.setOnAction(_ -> model.unequip(weapon));
                     buttons.getChildren().add(btn);
                   }
                 });
 
     var selection = new VBox();
-    selection.visibleProperty().bind(nav.isEqualTo(Nav.Unwield));
-    selection.managedProperty().bind(nav.isEqualTo(Nav.Unwield));
+    selection.visibleProperty().bind(nav.isEqualTo(Nav.Unequip));
+    selection.managedProperty().bind(nav.isEqualTo(Nav.Unequip));
     selection.getChildren().addAll(cancel, new Separator(), buttons);
 
     return selection;

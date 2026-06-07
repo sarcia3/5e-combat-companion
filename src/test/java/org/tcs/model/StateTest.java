@@ -67,8 +67,8 @@ class StateTest {
       for (int i = 0; i < 5; i++) {
         Point point = map.realPointToPoint(new RealPoint(i, i));
         list.add(new Creature("Commoner " + i, point, 10, 10));
-        list.getLast().inventory().addCarriedWeapon(dagger);
-        list.getLast().inventory().wieldWeapon(dagger);
+        list.getLast().inventory().addStoredWeapon(dagger);
+        list.getLast().inventory().equipWeapon(dagger);
       }
 
       State state = new State(list, map);
@@ -90,10 +90,10 @@ class StateTest {
       Creature creature1 = new Creature("Commoner 1", point1, 10, 10);
       Creature creature2 = new Creature("Commoner 2", point2, 10, 10);
       State state = new State(List.of(creature1, creature2), map);
-      creature1.inventory().addCarriedWeapon(dagger);
-      creature1.inventory().wieldWeapon(dagger);
-      creature2.inventory().addCarriedWeapon(dagger);
-      creature2.inventory().wieldWeapon(dagger);
+      creature1.inventory().addStoredWeapon(dagger);
+      creature1.inventory().equipWeapon(dagger);
+      creature2.inventory().addStoredWeapon(dagger);
+      creature2.inventory().equipWeapon(dagger);
       for (int i = 0; i < 3; i++) {
         Point point = map.realPointToPoint(new RealPoint(1, i));
         map.occupyPoint(point, OccupyReason.Terrain);
@@ -103,7 +103,7 @@ class StateTest {
     }
 
     @Test
-    public void carriedButNotWieldedWeaponCannotBeUsedToAttack() {
+    public void storedButNotEquippedWeaponCannotBeUsedToAttack() {
       WeaponsLibrary.load();
       WorldMap map = new Finite2DGrid(3, 3);
       Weapon dagger = WeaponsLibrary.get("Dagger");
@@ -112,14 +112,14 @@ class StateTest {
       Creature target = new Creature("Target", map.realPointToPoint(new RealPoint(1, 0)), 10, 10);
       State state = new State(List.of(attacker, target), map);
 
-      attacker.inventory().addCarriedWeapon(dagger); // carried only, never wielded
+      attacker.inventory().addStoredWeapon(dagger); // stored only, never equipped
 
       assertThrows(
           IllegalArgumentException.class, () -> state.getPossibleAttacks(attacker, dagger));
     }
 
     @Test
-    public void wieldedWeaponCanBeUsedToAttack() {
+    public void equippedWeaponCanBeUsedToAttack() {
       WeaponsLibrary.load();
       WorldMap map = new Finite2DGrid(3, 3);
       Weapon dagger = WeaponsLibrary.get("Dagger");
@@ -128,8 +128,8 @@ class StateTest {
       Creature target = new Creature("Target", map.realPointToPoint(new RealPoint(1, 0)), 10, 10);
       State state = new State(List.of(attacker, target), map);
 
-      attacker.inventory().addCarriedWeapon(dagger);
-      attacker.inventory().wieldWeapon(dagger);
+      attacker.inventory().addStoredWeapon(dagger);
+      attacker.inventory().equipWeapon(dagger);
 
       assertFalse(state.getPossibleAttacks(attacker, dagger).isEmpty());
     }
