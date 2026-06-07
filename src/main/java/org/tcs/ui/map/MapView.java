@@ -34,6 +34,7 @@ public class MapView extends Canvas {
   private Point selectedTile = null;
   private final CollisionView collision = new CollisionView();
   private final DrawablesView drawables;
+  private final PathView pathView;
 
   private final EditorContextMenu contextMenu;
   private final ObservableObjectValue<PlayView.Mode> modeProperty;
@@ -45,6 +46,8 @@ public class MapView extends Canvas {
       ObservableObjectValue<PlayView.Mode> modeProperty,
       Map<Creature, Image> creatureImages) {
     drawables = new DrawablesView(creatureImages, model);
+    pathView =
+        new PathView(model.creature, model.getMap(), path -> System.out.println(path.toString()));
     this.modeProperty = modeProperty;
     this.model = model;
     // TODO: handle starting & stopping of the rendering
@@ -130,6 +133,9 @@ public class MapView extends Canvas {
   private void updateSelectedTile(MouseEvent event) {
     RealPoint world = screenToReal(event.getX(), event.getY());
     selectedTile = model.getMap().realPointToPoint(world.divide(PIXELS_PER_FOOT));
+    if (modeProperty.get().equals(PlayView.Mode.PATHING)) {
+      pathView.setTarget(selectedTile);
+    }
   }
 
   private void onMousePressed(MouseEvent event) {
@@ -143,9 +149,9 @@ public class MapView extends Canvas {
     }
 
     PlayView.Mode mode = modeProperty.get();
-    if (Objects.requireNonNull(mode) == PlayView.Mode.EDIT_COLLISION) {
+    if (mode.equals(PlayView.Mode.EDIT_COLLISION)) {
       collision.onMousePressed(event.getButton(), world, model.getMap());
-    } else {
+    } else if (!mode.equals(PlayView.Mode.PATHING)) {
       drawables.onMousePressed(world, event.getButton());
     }
   }
@@ -182,6 +188,8 @@ public class MapView extends Canvas {
         contextMenu.hide();
         contextMenu.show(this, event.getScreenX(), event.getScreenY());
         contextMenu.targetProperty().set(new ContextTarget(world, tile));
+      } else if (modeProperty.get().equals(PlayView.Mode.PATHING)) {
+        pathView.onMouseReleased(event);
       }
     }
   }
@@ -260,7 +268,11 @@ public class MapView extends Canvas {
     drawables.drawPuppets(gc);
     gc.setGlobalAlpha(1.0);
 
-    drawables.drawSelection(gc);
+    if (modeProperty.get().equals(PlayView.Mode.PATHING)) {
+      pathView.draw(gc);
+    } else {
+      drawables.drawSelection(gc);
+    }
 
     // Highlight selected square
     if (selectedTile != null) {

@@ -106,6 +106,10 @@ public class Creature implements HasInitiative, HasHitPoints {
     }
   }
 
+  public double movementSpeed() {
+    return movementSpeed;
+  }
+
   @Override
   public int armorClass() {
     // TODO implement

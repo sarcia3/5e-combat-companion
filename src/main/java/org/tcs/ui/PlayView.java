@@ -20,7 +20,8 @@ public class PlayView extends Scene {
   public enum Mode {
     PLAY,
     EDIT_PIECES,
-    EDIT_COLLISION
+    EDIT_COLLISION,
+    PATHING
   }
 
   private final Map<Creature, Image> creatureImages = new HashMap<>();
@@ -54,6 +55,8 @@ public class PlayView extends Scene {
     var buttonBox = new HBox(playButton, editPiecesButton, editCollisionButton);
     buttonBox.setMaxHeight(Region.USE_PREF_SIZE);
     buttonBox.setAlignment(Pos.CENTER);
+    buttonBox.visibleProperty().bind(currentMode.isNotEqualTo(Mode.PATHING));
+    buttonBox.managedProperty().bind(currentMode.isNotEqualTo(Mode.PATHING));
     StackPane.setAlignment(buttonBox, Pos.TOP_CENTER);
 
     var initiativeQueue = new InitiativeQueue(model, creatureImages);
@@ -67,12 +70,16 @@ public class PlayView extends Scene {
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
     var creatureView = new CreatureView(creatureImages, model.creature);
-    creatureView
-        .visibleProperty()
-        .bind(currentMode.isEqualTo(Mode.PLAY).and(model.creature.creatureProperty().isNotNull()));
-    creatureView
-        .managedProperty()
-        .bind(currentMode.isEqualTo(Mode.PLAY).and(model.creature.creatureProperty().isNotNull()));
+    creatureView.setOnStartMoving(() -> currentMode.set(Mode.PATHING));
+    creatureView.setOnStopMoving(() -> currentMode.set(Mode.PLAY));
+    model.creature.creatureProperty().bind(mapView.selected());
+    var visible =
+        currentMode
+            .isEqualTo(Mode.PLAY)
+            .or(currentMode.isEqualTo(Mode.PATHING))
+            .and(model.creature.creatureProperty().isNotNull());
+    creatureView.visibleProperty().bind(visible);
+    creatureView.managedProperty().bind(visible);
     StackPane.setAlignment(creatureView, Pos.TOP_RIGHT);
 
     var pane = new StackPane();
