@@ -4,6 +4,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
 import org.tcs.model.Creature;
+import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.geometry.Point;
 
 public class CreatureWizardViewModel {
@@ -71,7 +72,7 @@ public class CreatureWizardViewModel {
     creatureMovement.set(0.0);
   }
 
-  public Creature makeCreature(Point position) {
+  public Creature makeCreature(Point position, DiceRoller diceRoller) {
     try {
       String name = creatureName.get();
       int hitPoints = creatureHitpoints.get();
@@ -83,7 +84,7 @@ public class CreatureWizardViewModel {
 
       resetCreatureData();
 
-      return new Creature(name, position, hitPoints, movement);
+      return new Creature(name, position, hitPoints, movement, 2, diceRoller);
     } catch (NumberFormatException e) {
       throw new IllegalStateException("Invalid creature data");
     }
