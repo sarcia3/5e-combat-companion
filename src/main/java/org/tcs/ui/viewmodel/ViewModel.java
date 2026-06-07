@@ -3,6 +3,7 @@ package org.tcs.ui.viewmodel;
 import java.util.ArrayList;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.tcs.model.Creature;
 import org.tcs.model.HasInitiative;
@@ -24,9 +25,17 @@ public class ViewModel {
     creature.setOnPass(
         () -> {
           model.nextTurn();
-          update();
+          if (!creatures.equals(model.getCreatures())) creatures.setAll(model.getCreatures());
+          else update();
+        });
+    creature.setOnAction(
+        () -> {
+          // Checking if somebody has
+          if (!creatures.equals(model.getCreatures())) creatures.setAll(model.getCreatures());
         });
     creatures.setAll(model.getCreatures());
+
+    creatures.addListener((ListChangeListener<Creature>) _ -> update());
 
     update();
   }

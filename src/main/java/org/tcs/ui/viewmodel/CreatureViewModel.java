@@ -19,6 +19,7 @@ public class CreatureViewModel {
   private final SimpleDoubleProperty movementLeft = new SimpleDoubleProperty(0.0);
   private NavMap navMap;
   private Runnable onPass = () -> {};
+  private Runnable onAction = () -> {};
 
   public CreatureViewModel(State model, ObservableObjectValue<Creature> current) {
     this.model = model;
@@ -48,6 +49,14 @@ public class CreatureViewModel {
 
   public void setOnPass(Runnable onPass) {
     this.onPass = onPass;
+  }
+
+  public void setOnAction(Runnable onAction) {
+    this.onAction = onAction;
+  }
+
+  public void onAction() {
+    onAction.run();
   }
 
   public NavMap navMap() {

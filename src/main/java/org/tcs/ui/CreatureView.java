@@ -135,9 +135,13 @@ public class CreatureView extends VBox {
                   buttons.getChildren().clear();
                   for (StateProcess a : model.attacksProperty()) {
                     var attackBtn = new Button(a.toString());
-                    attackBtn.setOnAction(_ -> a.run());
+                    attackBtn.setOnAction(
+                        _ -> {
+                          a.run();
+                          nav.set(Nav.All);
+                          model.onAction();
+                        });
                     buttons.getChildren().add(attackBtn);
-                    nav.set(Nav.Attacks);
                   }
                 });
 
