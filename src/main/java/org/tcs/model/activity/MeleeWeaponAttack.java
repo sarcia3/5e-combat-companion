@@ -38,7 +38,7 @@ public final class MeleeWeaponAttack implements WeaponAttack {
 
   @Override
   public Damage damageRoll() {
-    return damageRoll.resolve(attacker.diceRoller());
+    return damageRoll.resolve(attacker.diceRoller(), attacker);
   }
 
   @Override
