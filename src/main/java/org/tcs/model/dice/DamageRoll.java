@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.tcs.model.Creature;
 import org.tcs.model.Damage;
 
 /**
@@ -50,7 +51,7 @@ public record DamageRoll(List<Component> components) {
             .toList());
   }
 
-  public Damage resolve(DiceRoller diceRoller) {
+  public Damage resolve(DiceRoller diceRoller, Creature actor) {
     Damage result = new Damage();
     for (var component : components) {
       result.add(
@@ -58,7 +59,7 @@ public record DamageRoll(List<Component> components) {
           diceRoller.roll(
                   component.numberOfDice,
                   component.numberOfSides,
-                  new DiceRoller.RollInformation("Attacker", component.type + " damage"))
+                  new DiceRoller.RollInformation(actor.name(), component.type + " damage"))
               + component.bonus);
     }
     return result;
