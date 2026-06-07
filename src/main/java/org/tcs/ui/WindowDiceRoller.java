@@ -2,10 +2,7 @@ package org.tcs.ui;
 
 import java.util.Random;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,6 +23,7 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
   private final IntegerProperty numberOfSides = new SimpleIntegerProperty(20);
   private final IntegerProperty rollResult = new SimpleIntegerProperty(1);
   private final BooleanProperty inputChanged = new SimpleBooleanProperty(false);
+  private final ObjectProperty<RollInformation> info = new SimpleObjectProperty<>();
   private final Random random = new Random();
 
   public WindowDiceRoller(Window owner) {
@@ -36,6 +34,20 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
 
     Label sidesLabel = new Label();
     sidesLabel.textProperty().bind(numberOfSides.asString("Rolling d%d"));
+
+    Label infoLabel = new Label();
+    infoLabel
+        .textProperty()
+        .bind(
+            info.map(
+                    v -> {
+                      if (v.origin().isEmpty() || v.reason().isEmpty()) {
+                        return "";
+                      }
+
+                      return v.origin() + " is rolling: " + v.reason();
+                    })
+                .orElse(""));
 
     Label instructionLabel = new Label("Enter dice roll result:");
 
@@ -75,7 +87,8 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     okButton.disableProperty().bind(isValid.not());
     okButton.setOnAction(_ -> hide());
 
-    VBox layout = new VBox(15, sidesLabel, instructionLabel, inputBox, rollErrorLabel, okButton);
+    VBox layout =
+        new VBox(15, sidesLabel, infoLabel, instructionLabel, inputBox, rollErrorLabel, okButton);
     layout.setPadding(new Insets(20));
     layout.setAlignment(Pos.CENTER);
 
@@ -86,6 +99,7 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
   public int roll(int numberOfSides, RollInformation information) {
     this.numberOfSides.set(numberOfSides);
     rollResult.set(0);
+    info.set(information);
     inputChanged.set(false);
 
     showAndWait();
