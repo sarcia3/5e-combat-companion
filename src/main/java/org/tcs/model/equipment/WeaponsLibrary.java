@@ -11,7 +11,7 @@ public class WeaponsLibrary {
   private static final Map<String, Weapon> weapons = new HashMap<>();
 
   public static void load() {
-    addWeapon(
+    add(
         new Weapon(
             "Dagger",
             List.of(
@@ -19,19 +19,19 @@ public class WeaponsLibrary {
                 new Weapon.Mode("1d4 PIERCING", Ability.STR, false))));
     // new Weapon.Mode("1d4 PIERCING", Ability.DEX, true) when we add ranged weapons
 
-    addWeapon(new Weapon("Club", "1d4 BLUDGEONING", Ability.STR, false));
+    add(new Weapon("Club", "1d4 BLUDGEONING", Ability.STR, false));
 
-    addWeapon(new Weapon("Mace", "1d6 BLUDGEONING", Ability.STR, false));
+    add(new Weapon("Mace", "1d6 BLUDGEONING", Ability.STR, false));
 
     // See https://5e.tools/variantrules.html#unarmed%20strike_xphb
-    addWeapon(new Weapon("Fist", "1d1 BLUDGEONING", Ability.STR, false));
+    add(new Weapon("Fist", "1d1 BLUDGEONING", Ability.STR, false));
   }
 
   public static Collection<Weapon> getWeapons() {
     return List.copyOf(weapons.values());
   }
 
-  public static void addWeapon(Weapon weapon) {
+  public static void add(Weapon weapon) {
     weapons.put(weapon.name(), weapon);
   }
 
@@ -39,7 +39,7 @@ public class WeaponsLibrary {
    * @return A weapon associated with the given name.
    * @throws IllegalArgumentException if there is no item with this name.
    */
-  public static Weapon getWeaponByName(String name) {
+  public static Weapon get(String name) {
     if (weapons.containsKey(name)) return weapons.get(name);
     throw new IllegalArgumentException("There is no weapon with name " + name + ".");
   }

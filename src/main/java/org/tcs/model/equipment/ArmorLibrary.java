@@ -14,29 +14,29 @@ public class ArmorLibrary {
 
   public static void load() {
     // Light armor: AC = base + full Dex modifier
-    addArmor(new Armor("Padded", 11, Category.LIGHT));
-    addArmor(new Armor("Leather", 11, Category.LIGHT));
-    addArmor(new Armor("Studded Leather", 12, Category.LIGHT));
+    add(new Armor("Padded", 11, Category.LIGHT));
+    add(new Armor("Leather", 11, Category.LIGHT));
+    add(new Armor("Studded Leather", 12, Category.LIGHT));
 
     // Medium armor: AC = base + Dex modifier (max +2)
-    addArmor(new Armor("Hide", 12, Category.MEDIUM));
-    addArmor(new Armor("Chain Shirt", 13, Category.MEDIUM));
-    addArmor(new Armor("Scale Mail", 14, Category.MEDIUM));
-    addArmor(new Armor("Breastplate", 14, Category.MEDIUM));
-    addArmor(new Armor("Half Plate", 15, Category.MEDIUM));
+    add(new Armor("Hide", 12, Category.MEDIUM));
+    add(new Armor("Chain Shirt", 13, Category.MEDIUM));
+    add(new Armor("Scale Mail", 14, Category.MEDIUM));
+    add(new Armor("Breastplate", 14, Category.MEDIUM));
+    add(new Armor("Half Plate", 15, Category.MEDIUM));
 
     // Heavy armor: AC = base (Dex ignored)
-    addArmor(new Armor("Ring Mail", 14, Category.HEAVY));
-    addArmor(new Armor("Chain Mail", 16, Category.HEAVY));
-    addArmor(new Armor("Splint", 17, Category.HEAVY));
-    addArmor(new Armor("Plate", 18, Category.HEAVY));
+    add(new Armor("Ring Mail", 14, Category.HEAVY));
+    add(new Armor("Chain Mail", 16, Category.HEAVY));
+    add(new Armor("Splint", 17, Category.HEAVY));
+    add(new Armor("Plate", 18, Category.HEAVY));
   }
 
   public static Collection<Armor> getArmors() {
     return List.copyOf(armors.values());
   }
 
-  public static void addArmor(Armor armor) {
+  public static void add(Armor armor) {
     armors.put(armor.name(), armor);
   }
 
@@ -44,7 +44,7 @@ public class ArmorLibrary {
    * @return An armor associated with the given name.
    * @throws IllegalArgumentException if there is no item with this name.
    */
-  public static Armor getArmorByName(String name) {
+  public static Armor get(String name) {
     if (armors.containsKey(name)) return armors.get(name);
     throw new IllegalArgumentException("There is no armor with name " + name + ".");
   }
