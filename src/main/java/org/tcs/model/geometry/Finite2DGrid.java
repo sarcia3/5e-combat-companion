@@ -238,7 +238,8 @@ public class Finite2DGrid implements WorldMap {
       for (int j = -1; j <= 1; j++)
         if (i != 0 || j != 0) {
           GridPoint2D prospect = new GridPoint2D(gridPoint2D.x + i, gridPoint2D.y + j);
-          if (checkInBounds(prospect)) list.add(new Pair<>(prospect, i * j > 0 ? 1.42 : 1));
+          double distance = primitiveDistance(gridPoint2D, prospect);
+          if (checkInBounds(prospect)) list.add(new Pair<>(prospect, distance));
         }
     return list;
   }
