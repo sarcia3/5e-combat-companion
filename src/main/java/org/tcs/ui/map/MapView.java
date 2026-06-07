@@ -38,16 +38,16 @@ public class MapView extends Canvas {
 
   private final EditorContextMenu contextMenu;
   private final ObservableObjectValue<PlayView.Mode> modeProperty;
-  private Consumer<Point> onAddCreature = null;
-  private Consumer<RealPoint> onAddDecoration = null;
+  private Consumer<Point> onAddCreature = _ -> {};
+  private Consumer<RealPoint> onAddDecoration = _ -> {};
+  private Consumer<Point> onSubmitMove = _ -> {};
 
   public MapView(
       ViewModel model,
       ObservableObjectValue<PlayView.Mode> modeProperty,
       Map<Creature, Image> creatureImages) {
     drawables = new DrawablesView(creatureImages, model);
-    pathView =
-        new PathView(model.creature, model.getMap(), path -> System.out.println(path.toString()));
+    pathView = new PathView(model.creature, model.getMap(), path -> onSubmitMove.accept(path));
     this.modeProperty = modeProperty;
     this.model = model;
     // TODO: handle starting & stopping of the rendering
@@ -325,6 +325,10 @@ public class MapView extends Canvas {
 
   public void setOnAddDecoration(Consumer<RealPoint> onAddDecoration) {
     this.onAddDecoration = onAddDecoration;
+  }
+
+  public void setOnSubmitMove(Consumer<Point> onSubmitMove) {
+    this.onSubmitMove = onSubmitMove;
   }
 
   public void addDecoration(Decoration decoration) {

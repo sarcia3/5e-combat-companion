@@ -90,6 +90,17 @@ public class ViewModel {
     }
   }
 
+  public void moveSelectedCreatureTo(Point point) {
+    if (currentCreature.get() != null) {
+      Creature actor = creature.creatureProperty().get();
+      double dst = creature.navMap().distanceTo(point);
+      if (dst > actor.movementLeft()) return;
+
+      actor.move(dst);
+      setCreaturePosition(currentCreature.get(), point);
+    }
+  }
+
   public ObservableList<Creature> creaturesProperty() {
     return creatures;
   }

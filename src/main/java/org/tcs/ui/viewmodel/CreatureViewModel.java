@@ -54,7 +54,7 @@ public class CreatureViewModel {
   }
 
   void reloadNavMap() {
-    navMap = model.getMap().navMap(creature.get().position(), creature.get().movementSpeed());
+    navMap = model.getMap().navMap(creature.get().position(), creature.get().movementLeft());
   }
 
   public ObjectProperty<Creature> creatureProperty() {

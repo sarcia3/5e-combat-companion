@@ -17,16 +17,18 @@ public class PathView {
   private final CreatureViewModel creatureViewModel;
   private final WorldMap worldMap;
   private List<Point> currentPath;
-  private final Consumer<List<Point>> onSubmit;
+  private Point target;
+  private final Consumer<Point> onSubmit;
 
   public PathView(
-      CreatureViewModel creatureViewModel, WorldMap worldMap, Consumer<List<Point>> onSubmit) {
+      CreatureViewModel creatureViewModel, WorldMap worldMap, Consumer<Point> onSubmit) {
     this.creatureViewModel = creatureViewModel;
     this.worldMap = worldMap;
     this.onSubmit = onSubmit;
   }
 
   void setTarget(Point target) {
+    this.target = target;
     currentPath = creatureViewModel.navMap().pathTo(target);
   }
 
@@ -34,7 +36,9 @@ public class PathView {
     if (event.getButton().equals(MouseButton.PRIMARY)) {
       if (currentPath != null && !currentPath.isEmpty()) {
         // Copy just in case. Let's not leak mutable state
-        onSubmit.accept(List.copyOf(currentPath));
+        onSubmit.accept(target);
+        currentPath = null;
+        target = null;
       }
     }
   }

@@ -31,6 +31,7 @@ public class PlayView extends Scene {
 
     ObjectProperty<Mode> currentMode = new SimpleObjectProperty<>(Mode.PLAY);
     var mapView = getMapView(model, owner, currentMode);
+    mapView.setOnSubmitMove(model::moveSelectedCreatureTo);
 
     var creatureEdit = new CreatureEdit(creatureImages, model.creature, owner);
     model.creature.creatureProperty().bind(mapView.selected());
