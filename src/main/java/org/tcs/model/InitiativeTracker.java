@@ -82,7 +82,16 @@ public class InitiativeTracker {
     return combatQueue.size();
   }
 
-  void remove(HasInitiative entry) {
-    combatQueue.remove(new InitiativeEntry(entry));
+  void remove(HasInitiative entity) {
+    if (combatQueue.isEmpty()) return;
+
+    ListIterator<InitiativeEntry> iterator = combatQueue.listIterator();
+    while (iterator.hasNext()) {
+      InitiativeEntry entry = iterator.next();
+      if (entry.actor.equals(entity)) {
+        iterator.remove();
+        break;
+      }
+    }
   }
 }
