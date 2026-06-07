@@ -29,6 +29,7 @@ public class CreatureEdit extends VBox {
 
   private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.All);
   private final WeaponSelector weaponSelector;
+  private Runnable onDelete = () -> {};
 
   public CreatureEdit(Map<Creature, Image> creatureImages, CreatureViewModel model, Window owner) {
     weaponSelector = new WeaponSelector(owner);
@@ -56,11 +57,14 @@ public class CreatureEdit extends VBox {
   }
 
   private Node topLevel() {
+    var delete = new Button("Delete this creature");
+    delete.setOnAction(_ -> onDelete.run());
+
     var weapons = new Button("Weapons");
     weapons.setOnAction(_ -> nav.set(Nav.Weapons));
 
     var topLevel = new VBox();
-    topLevel.getChildren().addAll(weapons);
+    topLevel.getChildren().addAll(delete, weapons);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All));
     topLevel.managedProperty().bind(nav.isEqualTo(Nav.All));
@@ -101,5 +105,9 @@ public class CreatureEdit extends VBox {
     weapons.setAlignment(Pos.CENTER);
 
     return weapons;
+  }
+
+  public void setOnDelete(Runnable onDelete) {
+    this.onDelete = onDelete;
   }
 }

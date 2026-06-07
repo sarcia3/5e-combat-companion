@@ -105,6 +105,13 @@ public class ViewModel {
     creature.reloadNavMap();
   }
 
+  public void removeSelectedCreature() {
+    if (currentCreature.get() != null) {
+      model.removeCreature(currentCreature.get());
+      creatures.setAll(model.getCreatures());
+    }
+  }
+
   public ObservableList<Creature> creaturesProperty() {
     return creatures;
   }
