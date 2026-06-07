@@ -15,7 +15,7 @@ public record Armor(String name, int base, Category category) {
     }
   }
 
-  int AC(int dexMod) {
+  int armorClass(int dexMod) {
     return base + category.dexBonus(dexMod);
   }
 }

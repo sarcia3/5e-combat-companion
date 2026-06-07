@@ -123,7 +123,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public int armorClass() {
-    return inventory.AC(abilityModifier(Ability.DEX));
+    return inventory.armorClass(abilityModifier(Ability.DEX));
   }
 
   public int proficiencyBonus() {
