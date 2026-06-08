@@ -202,9 +202,9 @@ public class Creature implements HasInitiative, HasHitPoints {
     private DiceRoller diceRoller = new RandomDiceRoller();
     Integer overrideArmorClass;
     private EnumSet<Damage.Type> resistances = EnumSet.noneOf(Damage.Type.class);
-    private EnumSet<Damage.Type> vulnerability = EnumSet.noneOf(Damage.Type.class);
+    private EnumSet<Damage.Type> vulnerabilities = EnumSet.noneOf(Damage.Type.class);
     private EnumSet<Damage.Type> immunities = EnumSet.noneOf(Damage.Type.class);
-    TurnTracker turnTracker = new TurnTracker(1, 1, 1, 1, 10.0);
+    TurnTracker turnTracker = new TurnTracker(1, 1, 1, 1, 0, 10.0);
 
     public Builder name(String name) {
       this.name = name;
@@ -246,8 +246,8 @@ public class Creature implements HasInitiative, HasHitPoints {
       return this;
     }
 
-    public Builder vulnerability(EnumSet<Damage.Type> vulnerability) {
-      this.vulnerability = vulnerability;
+    public Builder vulnerabilities(EnumSet<Damage.Type> vulnerabilities) {
+      this.vulnerabilities = vulnerabilities;
       return this;
     }
 
@@ -290,7 +290,7 @@ public class Creature implements HasInitiative, HasHitPoints {
           proficiencyBonus,
           diceRoller,
           resistances,
-          vulnerability,
+          vulnerabilities,
           immunities,
           turnTracker);
     }

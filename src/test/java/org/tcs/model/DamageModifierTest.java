@@ -45,7 +45,7 @@ public class DamageModifierTest {
 
   @Test
   public void vulnerabilityDoublesDamage() {
-    Creature creature = builder().vulnerability(EnumSet.of(Damage.Type.FIRE)).build();
+    Creature creature = builder().vulnerabilities(EnumSet.of(Damage.Type.FIRE)).build();
     creature.takeDamage(damage(Damage.Type.FIRE, 7));
     assertEquals(100 - 14, creature.hitPoints);
   }
@@ -63,7 +63,7 @@ public class DamageModifierTest {
     Creature creature =
         builder()
             .resistances(EnumSet.of(Damage.Type.FIRE))
-            .vulnerability(EnumSet.of(Damage.Type.FIRE))
+            .vulnerabilities(EnumSet.of(Damage.Type.FIRE))
             .build();
     // Odd amount proves the order matters: double-then-halve (7*2/2 == 7),
     // not halve-then-double (7/2*2 == 6).
@@ -76,7 +76,7 @@ public class DamageModifierTest {
     Creature creature =
         builder()
             .immunities(EnumSet.of(Damage.Type.FIRE))
-            .vulnerability(EnumSet.of(Damage.Type.FIRE))
+            .vulnerabilities(EnumSet.of(Damage.Type.FIRE))
             .build();
     creature.takeDamage(damage(Damage.Type.FIRE, 7));
     assertEquals(100, creature.hitPoints);
@@ -87,7 +87,7 @@ public class DamageModifierTest {
     Creature creature =
         builder()
             .resistances(EnumSet.of(Damage.Type.FIRE))
-            .vulnerability(EnumSet.of(Damage.Type.COLD))
+            .vulnerabilities(EnumSet.of(Damage.Type.COLD))
             .build();
     Damage mixed = new Damage();
     mixed.add(Damage.Type.FIRE, 8); // resisted -> 4
