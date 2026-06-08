@@ -104,7 +104,7 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
             currentMode.map(
                 val -> {
                   if (val == Nav.Normal) return "Manual input";
-                  else return "Go back";
+                  else return "Normal input";
                 }));
 
     // Current mode shenanigans
@@ -143,10 +143,8 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     for (int i = 0; i < numberOfDice; i++) rollResults.add(new SimpleIntegerProperty(1));
     generateManualRolls();
     generateNormalRolls();
-    updateHeight();
 
-    // values guessed by trial and error
-    setHeight(numberOfDice * 28 + 240);
+    updateHeight();
     showAndWait();
 
     // If the window simply closes, substitute a random number
