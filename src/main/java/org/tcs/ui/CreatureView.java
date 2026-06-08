@@ -1,7 +1,10 @@
 package org.tcs.ui;
 
 import java.util.Map;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
@@ -31,10 +34,16 @@ public class CreatureView extends VBox {
   }
 
   private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.All);
+  private final BooleanProperty editMode = new SimpleBooleanProperty(false);
+  private final BooleanBinding currentOrEdit;
+  private final BooleanBinding playOnly;
   private Runnable onStartMoving = () -> {};
   private Runnable onStopMoving = () -> {};
 
   public CreatureView(Map<Creature, Image> creatureImages, CreatureViewModel model) {
+    currentOrEdit = model.isCurrentProperty().or(editMode);
+    playOnly = model.isCurrentProperty().and(editMode.not());
+
     var name = new Label();
     name.textProperty().bind(model.creatureProperty().map(Creature::name));
     name.setTextAlignment(TextAlignment.CENTER);
@@ -51,14 +60,15 @@ public class CreatureView extends VBox {
                 .map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
 
     var nothingToDo = new Label("Not this creature's turn");
-    nothingToDo.visibleProperty().bind(model.isCurrentProperty().not());
-    nothingToDo.managedProperty().bind(model.isCurrentProperty().not());
+    nothingToDo.visibleProperty().bind(model.isCurrentProperty().not().and(editMode.not()));
+    nothingToDo.managedProperty().bind(model.isCurrentProperty().not().and(editMode.not()));
     getChildren()
         .addAll(
             name,
             portrait,
             nothingToDo,
-            topLevel(model),
+            topLevelPlay(model),
+            topLevelEdit(),
             weaponsView(model),
             targetSelection(model),
             movement(model));
@@ -70,7 +80,7 @@ public class CreatureView extends VBox {
     model.creatureProperty().addListener(_ -> nav.set(Nav.All));
   }
 
-  private Node topLevel(CreatureViewModel model) {
+  private Node topLevelPlay(CreatureViewModel model) {
     var weapons = new Button("Weapons");
     weapons.setOnAction(_ -> nav.set(Nav.Weapons));
 
@@ -87,8 +97,21 @@ public class CreatureView extends VBox {
     var topLevel = new VBox();
     topLevel.getChildren().addAll(weapons, move, pass);
     topLevel.setAlignment(Pos.CENTER);
-    topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
-    topLevel.managedProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
+    topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(playOnly));
+    topLevel.managedProperty().bind(topLevel.visibleProperty());
+
+    return topLevel;
+  }
+
+  private Node topLevelEdit() {
+    var weapons = new Button("Weapons");
+    weapons.setOnAction(_ -> nav.set(Nav.Weapons));
+
+    var topLevel = new VBox();
+    topLevel.getChildren().addAll(weapons);
+    topLevel.setAlignment(Pos.CENTER);
+    topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(editMode));
+    topLevel.managedProperty().bind(topLevel.visibleProperty());
 
     return topLevel;
   }
@@ -153,9 +176,9 @@ public class CreatureView extends VBox {
     return selection;
   }
 
-  private static HBox storedWeaponEntry(CreatureViewModel model, Weapon weapon, Label message) {
+  private HBox storedWeaponEntry(CreatureViewModel model, Weapon weapon, Label message) {
     var weaponBox = new HBox(4.0);
-    weaponBox.setAlignment(Pos.CENTER);
+    weaponBox.setAlignment(Pos.CENTER_LEFT);
 
     var nameLabel = new Label(weapon.name());
 
@@ -169,6 +192,7 @@ public class CreatureView extends VBox {
             message.setVisible(true);
           }
         });
+    equipBtn.visibleProperty().bind(currentOrEdit);
 
     weaponBox.getChildren().addAll(nameLabel, equipBtn);
     return weaponBox;
@@ -187,9 +211,13 @@ public class CreatureView extends VBox {
           model.loadAttacks(weapon);
           nav.set(Nav.Attacks);
         });
+    attackBtn.visibleProperty().bind(playOnly);
+    attackBtn.managedProperty().bind(attackBtn.visibleProperty());
 
     var unequipBtn = new Button("Unequip");
     unequipBtn.setOnAction(_ -> model.unequip(weapon));
+    unequipBtn.visibleProperty().bind(currentOrEdit);
+    unequipBtn.managedProperty().bind(unequipBtn.visibleProperty());
 
     buttonBox.getChildren().addAll(attackBtn, unequipBtn);
     weaponBox.getChildren().addAll(nameLabel, buttonBox);
@@ -253,5 +281,9 @@ public class CreatureView extends VBox {
 
   public void setOnStartMoving(Runnable onStartMoving) {
     this.onStartMoving = onStartMoving;
+  }
+
+  public BooleanProperty editModeProperty() {
+    return editMode;
   }
 }

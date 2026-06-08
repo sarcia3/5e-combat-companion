@@ -40,22 +40,22 @@ public class PlayView extends Scene {
     var mapView = getMapView(model, owner, currentMode);
     mapView.onSubmitMoveProperty().set(model::moveSelectedCreatureTo);
 
-    var creatureEdit = new CreatureEdit(creatureImages, model.creature, owner);
-    creatureEdit.setOnDelete(model::removeSelectedCreature);
-    model.creature.creatureProperty().bind(mapView.selected());
-    creatureEdit
-        .visibleProperty()
-        .bind(
-            currentMode
-                .isEqualTo(Mode.EDIT_PIECES)
-                .and(model.creature.creatureProperty().isNotNull()));
-    creatureEdit
-        .managedProperty()
-        .bind(
-            currentMode
-                .isEqualTo(Mode.EDIT_PIECES)
-                .and(model.creature.creatureProperty().isNotNull()));
-    StackPane.setAlignment(creatureEdit, Pos.TOP_RIGHT);
+    //    var creatureEdit = new CreatureEdit(creatureImages, model.creature, owner);
+    //    creatureEdit.setOnDelete(model::removeSelectedCreature);
+    //    model.creature.creatureProperty().bind(mapView.selected());
+    //    creatureEdit
+    //        .visibleProperty()
+    //        .bind(
+    //            currentMode
+    //                .isEqualTo(Mode.EDIT_PIECES)
+    //                .and(model.creature.creatureProperty().isNotNull()));
+    //    creatureEdit
+    //        .managedProperty()
+    //        .bind(
+    //            currentMode
+    //                .isEqualTo(Mode.EDIT_PIECES)
+    //                .and(model.creature.creatureProperty().isNotNull()));
+    //    StackPane.setAlignment(creatureEdit, Pos.TOP_RIGHT);
 
     var playButton = modeTab(Mode.PLAY, "Play", currentMode);
     var editPiecesButton = modeTab(Mode.EDIT_PIECES, "Edit pieces", currentMode);
@@ -79,21 +79,21 @@ public class PlayView extends Scene {
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
     var creatureView = new CreatureView(creatureImages, model.creature);
+    creatureView.editModeProperty().bind(currentMode.isEqualTo(Mode.EDIT_PIECES));
     creatureView.setOnStartMoving(() -> currentMode.set(Mode.PATHING));
     creatureView.setOnStopMoving(() -> currentMode.set(Mode.PLAY));
     mapView.onCancelMoveProperty().set(creatureView::stopMoving);
     model.creature.creatureProperty().bind(mapView.selected());
     var visible =
         currentMode
-            .isEqualTo(Mode.PLAY)
-            .or(currentMode.isEqualTo(Mode.PATHING))
+            .isNotEqualTo(Mode.EDIT_COLLISION)
             .and(model.creature.creatureProperty().isNotNull());
     creatureView.visibleProperty().bind(visible);
     creatureView.managedProperty().bind(visible);
     StackPane.setAlignment(creatureView, Pos.TOP_RIGHT);
 
     var pane = new StackPane();
-    pane.getChildren().addAll(mapView, buttonBox, creatureEdit, initiativeQueue, creatureView);
+    pane.getChildren().addAll(mapView, buttonBox, initiativeQueue, creatureView);
     mapView.widthProperty().bind(pane.widthProperty());
     mapView.heightProperty().bind(pane.heightProperty());
 
