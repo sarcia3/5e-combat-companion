@@ -6,19 +6,21 @@ public class TurnTracker {
   int actions, maxActions;
   int bonusActions, maxBonusActions;
   int attackActions;
-  // To how many attack actions does the action translate
-  int attacksInAction;
+  int spellSlots;
+  int attacksPerAction;
 
   public TurnTracker(
       int maxActions,
       int maxBonusActions,
       int maxReactions,
       int attacksInAction,
+      int spellSlots,
       double maxMovement) {
     this.maxReactions = maxReactions;
     this.maxActions = maxActions;
     this.maxBonusActions = maxBonusActions;
-    this.attacksInAction = attacksInAction;
+    this.attacksPerAction = attacksInAction;
+    this.spellSlots = spellSlots;
     this.maxMovement = maxMovement;
   }
 
@@ -47,15 +49,31 @@ public class TurnTracker {
   }
 
   boolean hasAttackAction() {
-    return (actions > 0 && attacksInAction > 0) || attackActions > 0;
+    return (actions > 0 && attacksPerAction > 0) || attackActions > 0;
   }
 
   void makeAttackAction() {
     if (attackActions == 0) {
-      attackActions = attacksInAction;
+      attackActions = attacksPerAction;
       actions--;
     }
     attackActions--;
+  }
+
+  boolean hasReaction() {
+    return reactions > 0;
+  }
+
+  void makeReaction() {
+    reactions--;
+  }
+
+  boolean canCastSpell() {
+    return spellSlots > 0;
+  }
+
+  void casSpell() {
+    spellSlots--;
   }
 
   void reset() {
@@ -64,6 +82,5 @@ public class TurnTracker {
     bonusActions = maxBonusActions;
     attackActions = 0;
     movement = maxMovement;
-    System.out.println(actions);
   }
 }

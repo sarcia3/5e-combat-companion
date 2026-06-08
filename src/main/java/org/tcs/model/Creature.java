@@ -114,6 +114,10 @@ public class Creature implements HasInitiative, HasHitPoints {
       actualDamage += effectiveDamage;
     }
 
+    int mitigatedDamage = Math.min(actualDamage, temporaryHitPoints);
+    temporaryHitPoints -= mitigatedDamage;
+    actualDamage -= mitigatedDamage;
+
     if (hitPoints == 0 && actualDamage > 0) {
       if (actualDamage <= hitPointMaximum) {
         isDead = true;
@@ -264,6 +268,16 @@ public class Creature implements HasInitiative, HasHitPoints {
 
     public Builder reactionsPerTurn(Integer reactionsPerTurn) {
       turnTracker.maxReactions = reactionsPerTurn;
+      return this;
+    }
+
+    public Builder attacksPerAction(Integer attacksPerAction) {
+      turnTracker.attacksPerAction = attacksPerAction;
+      return this;
+    }
+
+    public Builder spellSlots(Integer spellSlots) {
+      turnTracker.spellSlots = spellSlots;
       return this;
     }
 
