@@ -39,6 +39,7 @@ public class CreatureView extends VBox {
   private final BooleanBinding playOnly;
   private Runnable onStartMoving = () -> {};
   private Runnable onStopMoving = () -> {};
+  private Runnable onDelete = () -> {};
 
   public CreatureView(Map<Creature, Image> creatureImages, CreatureViewModel model) {
     currentOrEdit = model.isCurrentProperty().or(editMode);
@@ -104,11 +105,14 @@ public class CreatureView extends VBox {
   }
 
   private Node topLevelEdit() {
+    var delete = new Button("Delete this creature");
+    delete.setOnAction(_ -> onDelete.run());
+
     var weapons = new Button("Weapons");
     weapons.setOnAction(_ -> nav.set(Nav.Weapons));
 
     var topLevel = new VBox();
-    topLevel.getChildren().addAll(weapons);
+    topLevel.getChildren().addAll(delete, weapons);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(editMode));
     topLevel.managedProperty().bind(topLevel.visibleProperty());
@@ -281,6 +285,10 @@ public class CreatureView extends VBox {
 
   public void setOnStartMoving(Runnable onStartMoving) {
     this.onStartMoving = onStartMoving;
+  }
+
+  public void setOnDelete(Runnable onDelete) {
+    this.onDelete = onDelete;
   }
 
   public BooleanProperty editModeProperty() {
