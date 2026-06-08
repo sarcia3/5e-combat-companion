@@ -95,7 +95,7 @@ public class Creature implements HasInitiative, HasHitPoints {
         return;
       }
       // TODO implement catching critical throws
-      DeathTracker.Result result = deathTracker.takingDamage(false);
+      DeathTracker.Result result = deathTracker.takingDamage(damage.isCritical());
       if (result == DeathTracker.Result.DEATH) isDead = true;
     } else {
       hitPoints -= actualDamage;

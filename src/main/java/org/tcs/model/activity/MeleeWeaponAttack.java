@@ -37,7 +37,8 @@ public final class MeleeWeaponAttack implements WeaponAttack {
   }
 
   @Override
-  public Damage damageRoll() {
+  public Damage damageRoll(boolean isCritical) {
+    if (isCritical) damageRoll.critical().resolve(attacker.diceRoller(), attacker);
     return damageRoll.resolve(attacker.diceRoller(), attacker);
   }
 
