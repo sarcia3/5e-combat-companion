@@ -14,7 +14,7 @@ public class DamageModifierTest {
       new DiceRoller() {
         @Override
         public int roll(int numberOfSides, RollInformation information) {
-          return 0;
+          throw new UnsupportedOperationException();
         }
       };
 
@@ -23,7 +23,6 @@ public class DamageModifierTest {
     return new Creature.Builder()
         .name("Target")
         .hitPointMaximum(100)
-        .proficiencyBonus(2)
         .diceRoller(NO_ROLL);
   }
 
