@@ -40,23 +40,6 @@ public class PlayView extends Scene {
     var mapView = getMapView(model, owner, currentMode);
     mapView.onSubmitMoveProperty().set(model::moveSelectedCreatureTo);
 
-    //    var creatureEdit = new CreatureEdit(creatureImages, model.creature, owner);
-    //    creatureEdit.setOnDelete(model::removeSelectedCreature);
-    //    model.creature.creatureProperty().bind(mapView.selected());
-    //    creatureEdit
-    //        .visibleProperty()
-    //        .bind(
-    //            currentMode
-    //                .isEqualTo(Mode.EDIT_PIECES)
-    //                .and(model.creature.creatureProperty().isNotNull()));
-    //    creatureEdit
-    //        .managedProperty()
-    //        .bind(
-    //            currentMode
-    //                .isEqualTo(Mode.EDIT_PIECES)
-    //                .and(model.creature.creatureProperty().isNotNull()));
-    //    StackPane.setAlignment(creatureEdit, Pos.TOP_RIGHT);
-
     var playButton = modeTab(Mode.PLAY, "Play", currentMode);
     var editPiecesButton = modeTab(Mode.EDIT_PIECES, "Edit pieces", currentMode);
     var editCollisionButton = modeTab(Mode.EDIT_COLLISION, "Edit collision", currentMode);
@@ -82,6 +65,7 @@ public class PlayView extends Scene {
     creatureView.editModeProperty().bind(currentMode.isEqualTo(Mode.EDIT_PIECES));
     creatureView.setOnStartMoving(() -> currentMode.set(Mode.PATHING));
     creatureView.setOnStopMoving(() -> currentMode.set(Mode.PLAY));
+    creatureView.setOnDelete(model::removeSelectedCreature);
     mapView.onCancelMoveProperty().set(creatureView::stopMoving);
     model.creature.creatureProperty().bind(mapView.selected());
     var visible =
