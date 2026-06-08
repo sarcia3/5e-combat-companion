@@ -21,6 +21,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   DiceRoller diceRoller;
   int proficiencyBonus;
+  // Allow overriding the armor class for testing purposes
   Integer overrideArmorClass;
   private Point position;
   Inventory inventory = new Inventory();
@@ -95,19 +96,19 @@ public class Creature implements HasInitiative, HasHitPoints {
     //int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
     int actualDamage=0;
     for(var entry : damage.byType.entrySet()){
-      int effectiveDamagve = entry.getValue();
+      int effectiveDamage = entry.getValue();
       if(immunities.contains(entry.getKey()))
-        effectiveDamagve = 0;
+        effectiveDamage = 0;
 
       if(vulnerability.contains(entry.getKey()))
-        effectiveDamagve *= 2;
+        effectiveDamage *= 2;
 
       if(resistances.contains(entry.getKey()))
-        effectiveDamagve /= 2;
+        effectiveDamage /= 2;
 
       //the order is important, so rounding works properly. (res + vuln cancel each other)
-      
-      actualDamage += effectiveDamagve;
+
+      actualDamage += effectiveDamage;
     }
 
     if (hitPoints == 0 && actualDamage > 0) {
