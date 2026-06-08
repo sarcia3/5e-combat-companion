@@ -81,6 +81,7 @@ public class CreatureView extends VBox {
     setBackground(Background.fill(Color.WHITE));
     setPadding(new Insets(8.0));
 
+    setStyle(getStyle() + "-fx-background-color: -dnd-bg-colour;");
     model.creatureProperty().addListener(_ -> nav.set(Nav.All));
   }
 

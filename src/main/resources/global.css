@@ -18,12 +18,13 @@
     -dnd-gold:        #c8961e;
     -dnd-gold-lit:    #e8b830;
     -dnd-gold-dark:   #8a6410;
+    -dnd-bg-colour:   #7a7060;
 
     /* Some global settings so that it looks nice */
     -fx-font-size:         14px;
     -fx-text-fill: -stone-light;
     -fx-font-family: "Palatino Linotype", "Book Antiqua", "Georgia", serif;
-    -fx-background-color: #7a7060;
+    -fx-background-color: -dnd-bg-colour;
 }
 
 
