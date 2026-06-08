@@ -1,6 +1,7 @@
 package org.tcs.ui;
 
 import java.util.Map;
+import java.util.Objects;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -70,7 +71,11 @@ public class AssetSelector {
     root.setCenter(scrollPane);
     root.setBottom(buttonBox);
 
-    popup.setScene(new Scene(root, 600, 600));
+    Scene scene = new Scene(root, 600, 600);
+    scene
+        .getStylesheets()
+        .add(Objects.requireNonNull(getClass().getResource("/global.css")).toExternalForm());
+    popup.setScene(scene);
   }
 
   private VBox createImageCell(String key, Image image) {

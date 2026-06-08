@@ -32,7 +32,7 @@ public class InitiativeQueue extends VBox {
     var firstName = new SimpleStringProperty();
     var label = new Label();
     label.textProperty().bind(firstName.map(v -> "Next: " + v).orElse("No creatures"));
-    label.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 18px;");
+    label.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
 
     entries.addListener(
         (ListChangeListener<Creature>)

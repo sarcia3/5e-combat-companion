@@ -98,7 +98,7 @@ public class CreatureView extends VBox {
     var pass = new Button("Pass");
     pass.setOnAction(_ -> model.pass());
 
-    var topLevel = new VBox();
+    var topLevel = new VBox(8);
     topLevel.getChildren().addAll(weapons, move, pass);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(playOnly));
@@ -114,7 +114,7 @@ public class CreatureView extends VBox {
     var weapons = new Button("Weapons");
     weapons.setOnAction(_ -> nav.set(Nav.Weapons));
 
-    var topLevel = new VBox();
+    var topLevel = new VBox(8);
     topLevel.getChildren().addAll(delete, weapons);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(editMode));
@@ -128,7 +128,7 @@ public class CreatureView extends VBox {
     cancel.setOnAction(_ -> nav.set(Nav.All));
 
     var message = new Label();
-    message.setStyle("-fx-text-fill: red;");
+    message.setStyle("-fx-text-fill: -dnd-redLike;");
     message.setVisible(false);
     message.managedProperty().bind(message.visibleProperty());
 
@@ -267,7 +267,7 @@ public class CreatureView extends VBox {
                   }
                 });
 
-    var selection = new VBox();
+    var selection = new VBox(8);
     selection.visibleProperty().bind(nav.isEqualTo(Nav.Attacks));
     selection.managedProperty().bind(nav.isEqualTo(Nav.Attacks));
     selection.getChildren().addAll(cancel, new Separator(), buttons);
