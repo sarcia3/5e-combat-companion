@@ -10,6 +10,7 @@ import org.tcs.model.geometry.Point;
 public class Creature implements HasInitiative, HasHitPoints {
   String name;
   int hitPoints;
+  int temporaryHitPoints;
   int hitPointMaximum;
   int temporaryHitPoints = 0;
 
@@ -85,7 +86,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public int hitPoints() {
-    return hitPoints + temporaryHitPoints;
+    return hitPoints;
   }
 
   @Override
