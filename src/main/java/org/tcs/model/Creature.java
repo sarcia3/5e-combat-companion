@@ -97,7 +97,6 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public void takeDamage(Damage damage) {
-    // int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
     int actualDamage = 0;
     for (var entry : damage.byType.entrySet()) {
       int effectiveDamage = entry.getValue();
