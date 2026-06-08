@@ -44,18 +44,18 @@ public class Creature implements HasInitiative, HasHitPoints {
       double movementSpeed,
       int proficiencyBonus,
       DiceRoller diceRoller,
-      EnumSet<Damage.Type> resistances,
-      EnumSet<Damage.Type> vulnerability,
-      EnumSet<Damage.Type> immunities) {
+      Collection<Damage.Type> resistances,
+      Collection<Damage.Type> vulnerabilities,
+      Collection<Damage.Type> immunities) {
     this.name = name;
     this.position = position;
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
     this.proficiencyBonus = proficiencyBonus;
     this.movementSpeed = movementSpeed;
     this.movementLeft = movementSpeed;
-    this.resistances = resistances;
-    this.vulnerabilities = vulnerability;
-    this.immunities = immunities;
+    this.resistances = EnumSet.copyOf(resistances);
+    this.vulnerabilities = EnumSet.copyOf(vulnerabilities);
+    this.immunities = EnumSet.copyOf(immunities);
 
     for (Ability ability : Ability.values()) abilityScores.put(ability, 10);
 
