@@ -138,9 +138,10 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     this.numberOfSides.set(numberOfSides);
     this.numberOfDice.set(numberOfDice);
     info.set(information);
+    currentMode.set(Nav.Normal);
 
     rollResults.clear();
-    for (int i = 0; i < numberOfDice; i++) rollResults.add(new SimpleIntegerProperty(1));
+    for (int i = 0; i < numberOfDice; i++) rollResults.add(new SimpleIntegerProperty(0));
     generateManualRolls();
     generateNormalRolls();
 
@@ -292,7 +293,7 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     int diceHeight =
         switch (currentMode.get()) {
           case Normal -> rows * 70; // dice buttons are 60px + gaps
-          case Manual -> numberOfDice.get() * 30 + 30;
+          case Manual -> numberOfDice.get() * 35 + 45;
         };
 
     setHeight(baseHeight + diceHeight);
