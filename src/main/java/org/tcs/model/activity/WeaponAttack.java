@@ -16,19 +16,18 @@ public sealed interface WeaponAttack permits MeleeWeaponAttack, RangedWeaponAtta
     }
 
     // TODO allow for custom thresholds for given attacker
-    boolean automaticHit = attackRollGenerated.naturalDice() == 20;
-    if (!automaticHit && attackRollGenerated.total() < target.armorClass()) {
+    boolean criticalHit = attackRollGenerated.naturalDice() == 20;
+    if (!criticalHit && attackRollGenerated.total() < target.armorClass()) {
       // attack didn't meet AC
       return;
     }
 
-    // TODO after converting weapons to use DamageRoll double the dice for critical roll
-    target.takeDamage(damageRoll());
+    target.takeDamage(damageRoll(criticalHit));
   }
 
   AttackRoll attackRoll();
 
-  Damage damageRoll();
+  Damage damageRoll(boolean isCritical);
 
   double getRange();
 }

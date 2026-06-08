@@ -5,6 +5,16 @@ import java.util.Map;
 
 public class Damage {
   // TODO how would magical vs nonmagical dmg work?
+  private final boolean isCritical;
+
+  public Damage() {
+    isCritical = false;
+  }
+
+  public Damage(boolean isCritical) {
+    this.isCritical = isCritical;
+  }
+
   public enum Type {
     ACID,
     BLUDGEONING,
@@ -19,6 +29,10 @@ public class Damage {
     RADIANT,
     SLASHING,
     THUNDER
+  }
+
+  public boolean isCritical() {
+    return isCritical;
   }
 
   Map<Type, Integer> byType = new EnumMap<>(Type.class);

@@ -10,7 +10,7 @@ public final class RangedWeaponAttack implements WeaponAttack {
   }
 
   @Override
-  public Damage damageRoll() {
+  public Damage damageRoll(boolean isCritical) {
     // TODO implement
     throw new UnsupportedOperationException();
   }

@@ -13,17 +13,26 @@ import org.tcs.model.Damage;
  *
  * <p>It's a utility which is meant to store things like 2d4 piercing + 1d8 bludgeoning
  */
-public record DamageRoll(List<Component> components) {
+public record DamageRoll(List<Component> components, boolean isCritical) {
 
   public record Component(int numberOfDice, int numberOfSides, int bonus, Damage.Type type) {}
 
-  public DamageRoll(List<Component> components) {
+  public DamageRoll(List<Component> components, boolean isCritical) {
     if (components == null) this.components = new ArrayList<>();
     else this.components = components;
+    this.isCritical = isCritical;
+  }
+
+  public DamageRoll(List<Component> components) {
+    this(components, false);
+  }
+
+  public DamageRoll(Component component, boolean isCritical) {
+    this(List.of(component), isCritical);
   }
 
   public DamageRoll(Component component) {
-    this(List.of(component));
+    this(List.of(component), false);
   }
 
   /**
@@ -39,20 +48,21 @@ public record DamageRoll(List<Component> components) {
   }
 
   /** Creates a roll that is the concatenation of the rolls passed in the constructor */
-  DamageRoll(Collection<? extends DamageRoll> rolls) {
+  public DamageRoll(Collection<? extends DamageRoll> rolls) {
     this(rolls.stream().flatMap(r -> r.components().stream()).toList());
   }
 
   /** Doubles the number of dice. */
-  DamageRoll critical() {
+  public DamageRoll critical() {
     return new DamageRoll(
         components.stream()
             .map((r) -> new Component(2 * r.numberOfDice, r.numberOfSides, r.bonus, r.type))
-            .toList());
+            .toList(),
+        true);
   }
 
   public Damage resolve(DiceRoller diceRoller, Creature actor) {
-    Damage result = new Damage();
+    Damage result = new Damage(isCritical);
     for (var component : components) {
       result.add(
           component.type,
