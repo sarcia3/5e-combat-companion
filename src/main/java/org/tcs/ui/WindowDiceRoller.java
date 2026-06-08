@@ -72,21 +72,20 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
                     })
                 .orElse(""));
 
-    Label instructionLabel = new Label();
-    instructionLabel
-        .textProperty()
-        .bind(
-            numberOfDice.map(
-                n -> {
-                  if (n.equals(1)) return "Enter dice roll result:";
-                  else return "Enter dice roll results:";
-                }));
+    Button rollAll = new Button("Roll all");
+    rollAll.setPrefWidth(80);
+    rollAll.setOnAction(
+        _ -> {
+          for (var val : rollResults) {
+            val.set(random.nextInt(1, numberOfSides.get()));
+          }
+        });
 
     Button okButton = new Button("Submit");
     okButton.disableProperty().bind(isValid.not());
     okButton.setOnAction(_ -> hide());
 
-    VBox layout = new VBox(15, sidesLabel, infoLabel, instructionLabel, rolls, okButton);
+    VBox layout = new VBox(15, sidesLabel, infoLabel, rollAll, rolls, okButton);
     layout.setPadding(new Insets(20));
     layout.setAlignment(Pos.CENTER);
 
@@ -113,7 +112,7 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     generateRolls();
 
     // values guessed by trial and error
-    setHeight(numberOfDice * 28 + 180);
+    setHeight(numberOfDice * 28 + 220);
     showAndWait();
 
     // If the window simply closes, substitute a random number
@@ -127,7 +126,22 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
 
   private void generateRolls() {
     rolls.getChildren().clear();
+
+    Label instructionLabel = new Label();
+    instructionLabel
+        .textProperty()
+        .bind(
+            numberOfDice.map(
+                n -> {
+                  if (n.equals(1)) return "Enter dice roll result:";
+                  else return "Enter dice roll results:";
+                }));
+
+    rolls.getChildren().add(instructionLabel);
+
     for (int i = 0; i < numberOfDice.get(); i++) rolls.getChildren().add(generateRoll(i));
+
+    rolls.setAlignment(Pos.CENTER);
   }
 
   private Node generateRoll(int i) {
