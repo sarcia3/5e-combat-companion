@@ -185,7 +185,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   }
 
   @Override
-  public void turnReset() {
+  public void onTurnReset() {
     turnTracker.reset();
   }
 

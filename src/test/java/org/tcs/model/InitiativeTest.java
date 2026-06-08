@@ -15,7 +15,7 @@ class InitiativeTest {
       }
 
       @Override
-      public void turnReset() {}
+      public void onTurnReset() {}
     };
   }
 
