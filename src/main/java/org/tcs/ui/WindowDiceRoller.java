@@ -1,11 +1,16 @@
 package org.tcs.ui;
 
 import java.util.Random;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableIntegerValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,12 +27,25 @@ import org.tcs.ui.util.BetterTextField;
 
 public class WindowDiceRoller extends Stage implements DiceRoller {
   private final IntegerProperty numberOfSides = new SimpleIntegerProperty(20);
-  private final IntegerProperty rollResult = new SimpleIntegerProperty(1);
+  private final IntegerProperty numberOfDice = new SimpleIntegerProperty(1);
+  private final ObservableList<IntegerProperty> rollResults =
+      FXCollections.observableArrayList(prop -> new Observable[] {prop});
+  private final VBox rolls = new VBox();
   private final BooleanBinding isValid =
-      rollResult.greaterThanOrEqualTo(1).and(rollResult.lessThanOrEqualTo(numberOfSides));
-  private final BooleanProperty inputChanged = new SimpleBooleanProperty(false);
+      new BooleanBinding() {
+        {
+          super.bind(rollResults, numberOfSides); // register dependencies here
+        }
+
+        @Override
+        protected boolean computeValue() {
+          return rollResults.stream()
+              .allMatch(roll -> roll.get() > 0 && roll.get() <= numberOfSides.get());
+        }
+      };
   private final ObjectProperty<RollInformation> info = new SimpleObjectProperty<>();
   private final Random random = new Random();
+  private double layoutHeight;
 
   public WindowDiceRoller(Window owner) {
     super();
@@ -36,7 +54,9 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     initModality(Modality.APPLICATION_MODAL);
 
     Label sidesLabel = new Label();
-    sidesLabel.textProperty().bind(numberOfSides.asString("Rolling d%d"));
+    sidesLabel
+        .textProperty()
+        .bind(numberOfDice.asString("Rolling %d").concat(numberOfSides.asString("d%d")));
 
     Label infoLabel = new Label();
     infoLabel
@@ -52,10 +72,69 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
                     })
                 .orElse(""));
 
-    Label instructionLabel = new Label("Enter dice roll result:");
+    Label instructionLabel = new Label();
+    instructionLabel
+        .textProperty()
+        .bind(
+            numberOfDice.map(
+                n -> {
+                  if (n.equals(1)) return "Enter dice roll result:";
+                  else return "Enter dice roll results:";
+                }));
 
+    Button okButton = new Button("Submit");
+    okButton.disableProperty().bind(isValid.not());
+    okButton.setOnAction(_ -> hide());
+
+    VBox layout = new VBox(15, sidesLabel, infoLabel, instructionLabel, rolls, okButton);
+    layout.setPadding(new Insets(20));
+    layout.setAlignment(Pos.CENTER);
+
+    layoutHeight = layout.heightProperty().get();
+
+    setScene(new Scene(layout, 350, 180));
+  }
+
+  @Override
+  public int roll(int numberOfSides, RollInformation information) {
+    return roll(1, numberOfSides, information);
+  }
+
+  @Override
+  public int roll(int numberOfDice, int numberOfSides, RollInformation information) {
+    if (numberOfSides < 1 || numberOfDice < 1) throw new IllegalArgumentException();
+
+    this.numberOfSides.set(numberOfSides);
+    this.numberOfDice.set(numberOfDice);
+    info.set(information);
+
+    rollResults.clear();
+    for (int i = 0; i < numberOfDice; i++) rollResults.add(new SimpleIntegerProperty(1));
+    generateRolls();
+
+    // values guessed by trial and error
+    setHeight(numberOfDice * 28 + 180);
+    showAndWait();
+
+    // If the window simply closes, substitute a random number
+    if (!isValid.get()) {
+      int sum = 0;
+      for (int i = 0; i < numberOfDice; i++) sum += random.nextInt(numberOfSides) + 1;
+      return sum;
+    }
+    return rollResults.stream().mapToInt(ObservableIntegerValue::get).sum();
+  }
+
+  private void generateRolls() {
+    rolls.getChildren().clear();
+    for (int i = 0; i < numberOfDice.get(); i++) rolls.getChildren().add(generateRoll(i));
+  }
+
+  private Node generateRoll(int i) {
     var resultField = new BetterTextField();
     resultField.setPrefWidth(150);
+
+    var rollResult = rollResults.get(i);
 
     resultField.setTextFormatter(
         new TextFormatter<>(
@@ -68,13 +147,16 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
             }));
     Bindings.bindBidirectional(
         resultField.textProperty(), rollResult, new NumberStringConverter("0"));
-    rollResult.addListener(_ -> inputChanged.set(true));
 
-    var rollError = isValid.map(b -> b ? "" : "Invalid value");
+    BooleanBinding localIsValid =
+        rollResult.greaterThan(0).and(rollResult.lessThanOrEqualTo(numberOfSides));
+
+    var rollError = localIsValid.map(b -> b ? "" : "Invalid value");
     var rollErrorLabel = new Label();
     rollErrorLabel.setTextFill(Color.RED);
     rollErrorLabel.textProperty().bind(rollError);
-    var visible = isValid.not().and(inputChanged).and(resultField.focusedProperty().not());
+
+    var visible = localIsValid.not().and(resultField.focusedProperty().not());
     rollErrorLabel.visibleProperty().bind(visible);
     rollErrorLabel.managedProperty().bind(visible);
 
@@ -84,31 +166,9 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     HBox inputBox = new HBox(10, resultField, randomizeButton);
     inputBox.setAlignment(Pos.CENTER);
 
-    Button okButton = new Button("Submit");
-    okButton.disableProperty().bind(isValid.not());
-    okButton.setOnAction(_ -> hide());
+    VBox node = new VBox(inputBox, rollErrorLabel);
+    node.setAlignment(Pos.CENTER);
 
-    VBox layout =
-        new VBox(15, sidesLabel, infoLabel, instructionLabel, inputBox, rollErrorLabel, okButton);
-    layout.setPadding(new Insets(20));
-    layout.setAlignment(Pos.CENTER);
-
-    setScene(new Scene(layout, 350, 180));
-  }
-
-  @Override
-  public int roll(int numberOfSides, RollInformation information) {
-    this.numberOfSides.set(numberOfSides);
-    rollResult.set(random.nextInt(numberOfSides) + 1);
-    info.set(information);
-    inputChanged.set(false);
-
-    showAndWait();
-
-    // If the window simply closes, substitute a random number
-    if (!isValid.get()) {
-      return random.nextInt(numberOfSides) + 1;
-    }
-    return rollResult.get();
+    return node;
   }
 }
