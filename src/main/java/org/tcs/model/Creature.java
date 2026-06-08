@@ -10,6 +10,7 @@ import org.tcs.model.geometry.Point;
 public class Creature implements HasInitiative, HasHitPoints {
   String name;
   int hitPoints;
+  int temporaryHitPoints;
   int hitPointMaximum;
   DiceRoller diceRoller;
   int proficiencyBonus;
@@ -36,6 +37,7 @@ public class Creature implements HasInitiative, HasHitPoints {
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
     this.proficiencyBonus = proficiencyBonus;
     this.turnTracker = turnTracker;
+    this.temporaryHitPoints = 0;
 
     for (Ability ability : Ability.values()) abilityScores.put(ability, 10);
 
@@ -85,6 +87,11 @@ public class Creature implements HasInitiative, HasHitPoints {
     // TODO actually implement, considering resistance immunities and so on
     // currently we just subtract the sum
     int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
+
+    int mitigatedDamage = Math.min(actualDamage, temporaryHitPoints);
+    temporaryHitPoints -= mitigatedDamage;
+    actualDamage -= mitigatedDamage;
+
     if (hitPoints == 0 && actualDamage > 0) {
       if (actualDamage <= hitPointMaximum) {
         isDead = true;
@@ -168,7 +175,7 @@ public class Creature implements HasInitiative, HasHitPoints {
     private int proficiencyBonus = 2;
     private DiceRoller diceRoller = new RandomDiceRoller();
     Integer overrideArmorClass;
-    TurnTracker turnTracker = new TurnTracker(1, 1, 1, 1, 10.0);
+    TurnTracker turnTracker = new TurnTracker(1, 1, 1, 1, 0, 10.0);
 
     public Builder name(String name) {
       this.name = name;
@@ -217,6 +224,16 @@ public class Creature implements HasInitiative, HasHitPoints {
 
     public Builder reactionsPerTurn(Integer reactionsPerTurn) {
       turnTracker.maxReactions = reactionsPerTurn;
+      return this;
+    }
+
+    public Builder attacksPerAction(Integer attacksPerAction) {
+      turnTracker.attacksPerAction = attacksPerAction;
+      return this;
+    }
+
+    public Builder spellSlots(Integer spellSlots) {
+      turnTracker.spellSlots = spellSlots;
       return this;
     }
 
