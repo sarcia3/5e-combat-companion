@@ -88,13 +88,13 @@ public class State {
     if (!creatures.contains(actor)) throw new IllegalArgumentException();
 
     double distance = worldMap.getDistance(start, target);
-    if (distance > actor.movementLeft()) return false;
+    if (!actor.turnTracker.canMove(distance)) return false;
     // We should never move to an occupied or non-existent point
     if (!worldMap.occupyPoint(target, OccupyReason.Creature)) return false;
 
     worldMap.freePoint(start);
     actor.setPosition(target);
-    actor.movementLeft -= distance;
+    actor.turnTracker.move(distance);
 
     return true;
   }
@@ -125,7 +125,7 @@ public class State {
     Collection<WeaponAttack> attacks = weapon.generateAttacks(actor);
     List<StateProcess> list = new ArrayList<>();
 
-    if (actor.isUnconscious()) return list;
+    if (actor.isUnconscious() || !actor.turnTracker.hasAttackAction()) return list;
 
     for (WeaponAttack attack : attacks) {
       for (Creature target : getCreaturesWithinDistance(actor.position(), attack.getRange()))
@@ -146,6 +146,7 @@ public class State {
                 @Override
                 public void run() {
                   attack.resolve(State.this, target);
+                  actor.turnTracker.makeAttackAction();
                   if (target.isDead()) removeCreature(target);
                 }
 
@@ -160,6 +161,7 @@ public class State {
   }
 
   public void nextTurn() {
+    if (initiative.getFirst() == null) return;
     initiative.advance();
     if (initiative.getFirst() instanceof Creature creature) {
       if (creature.isUnconscious()) {
@@ -167,6 +169,7 @@ public class State {
         if (creature.isDead()) removeCreature(creature);
       }
     }
+    initiative.getFirst().turnReset();
   }
 
   public void setOnRemoveCreature(Consumer<Creature> onRemoveCreature) {

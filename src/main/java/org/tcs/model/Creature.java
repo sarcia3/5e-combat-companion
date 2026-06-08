@@ -11,7 +11,6 @@ public class Creature implements HasInitiative, HasHitPoints {
   String name;
   int hitPoints;
   int hitPointMaximum;
-  int temporaryHitPoints = 0;
   DiceRoller diceRoller;
   int proficiencyBonus;
   // Allow overriding the armor class for testing purposes
@@ -20,26 +19,23 @@ public class Creature implements HasInitiative, HasHitPoints {
   Inventory inventory = new Inventory();
 
   DeathTracker deathTracker = new DeathTracker(this);
+  TurnTracker turnTracker;
   boolean isDead = false;
 
   Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
-
-  double movementLeft;
-  double movementSpeed;
 
   private Creature(
       String name,
       Point position,
       int hitPointMaximum,
-      double movementSpeed,
       int proficiencyBonus,
-      DiceRoller diceRoller) {
+      DiceRoller diceRoller,
+      TurnTracker turnTracker) {
     this.name = name;
     this.position = position;
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
     this.proficiencyBonus = proficiencyBonus;
-    this.movementSpeed = movementSpeed;
-    this.movementLeft = movementSpeed;
+    this.turnTracker = turnTracker;
 
     for (Ability ability : Ability.values()) abilityScores.put(ability, 10);
 
@@ -72,7 +68,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public int hitPoints() {
-    return hitPoints + temporaryHitPoints;
+    return hitPoints;
   }
 
   @Override
@@ -94,7 +90,6 @@ public class Creature implements HasInitiative, HasHitPoints {
         isDead = true;
         return;
       }
-      // TODO implement catching critical throws
       DeathTracker.Result result = deathTracker.takingDamage(damage.isCritical());
       if (result == DeathTracker.Result.DEATH) isDead = true;
     } else {
@@ -107,11 +102,11 @@ public class Creature implements HasInitiative, HasHitPoints {
   }
 
   public double movementLeft() {
-    return movementLeft;
+    return turnTracker.movement;
   }
 
   public double movementSpeed() {
-    return movementSpeed;
+    return turnTracker.maxMovement;
   }
 
   public Inventory inventory() {
@@ -157,6 +152,11 @@ public class Creature implements HasInitiative, HasHitPoints {
   }
 
   @Override
+  public void turnReset() {
+    turnTracker.reset();
+  }
+
+  @Override
   public String toString() {
     return name;
   }
@@ -165,10 +165,10 @@ public class Creature implements HasInitiative, HasHitPoints {
     private String name = "";
     private Point position;
     private int hitPointMaximum = 20;
-    private double movementSpeed = 5.0;
     private int proficiencyBonus = 2;
     private DiceRoller diceRoller = new RandomDiceRoller();
     Integer overrideArmorClass;
+    TurnTracker turnTracker = new TurnTracker(1, 1, 1, 1, 10.0);
 
     public Builder name(String name) {
       this.name = name;
@@ -186,7 +186,7 @@ public class Creature implements HasInitiative, HasHitPoints {
     }
 
     public Builder movementSpeed(double movementSpeed) {
-      this.movementSpeed = movementSpeed;
+      turnTracker.maxMovement = movementSpeed;
       return this;
     }
 
@@ -205,9 +205,25 @@ public class Creature implements HasInitiative, HasHitPoints {
       return this;
     }
 
+    public Builder actionsPerTurn(Integer actionsPerTurn) {
+      turnTracker.maxActions = actionsPerTurn;
+      return this;
+    }
+
+    public Builder bonusActionsPerTurn(Integer bonusActionsPerTurn) {
+      turnTracker.maxBonusActions = bonusActionsPerTurn;
+      return this;
+    }
+
+    public Builder reactionsPerTurn(Integer reactionsPerTurn) {
+      turnTracker.maxReactions = reactionsPerTurn;
+      return this;
+    }
+
     public Creature build() {
+      turnTracker.reset();
       return new Creature(
-          name, position, hitPointMaximum, movementSpeed, proficiencyBonus, diceRoller);
+          name, position, hitPointMaximum, proficiencyBonus, diceRoller, turnTracker);
     }
   }
 }

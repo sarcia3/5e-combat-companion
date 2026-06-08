@@ -28,6 +28,7 @@ public class InitiativeTracker {
   }
 
   HasInitiative getFirst() {
+    if (combatQueue.isEmpty()) return null;
     return combatQueue.getFirst().actor;
   }
 
