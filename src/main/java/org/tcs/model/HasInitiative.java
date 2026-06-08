@@ -14,4 +14,6 @@ package org.tcs.model;
  */
 public interface HasInitiative {
   int generateInitiative();
+
+  void turnReset();
 }
