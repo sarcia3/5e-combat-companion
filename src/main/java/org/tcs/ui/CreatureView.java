@@ -64,8 +64,8 @@ public class CreatureView extends VBox {
                 .map(key -> creatureImages.getOrDefault(key, Assets.PLACEHOLDER)));
 
     var nothingToDo = new Label("Not this creature's turn");
-    nothingToDo.visibleProperty().bind(model.isCurrentProperty().not().and(editMode.not()));
-    nothingToDo.managedProperty().bind(model.isCurrentProperty().not().and(editMode.not()));
+    nothingToDo.visibleProperty().bind(currentOrEdit.not());
+    nothingToDo.managedProperty().bind(nothingToDo.visibleProperty());
     getChildren()
         .addAll(
             name,
