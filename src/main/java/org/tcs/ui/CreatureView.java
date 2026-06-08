@@ -105,8 +105,7 @@ public class CreatureView extends VBox {
     var equippedLabel = new Label("Equipped:");
     equippedLabel.setStyle("-fx-font-weight: bold;");
 
-    var equippedWeapons = new VBox();
-    equippedWeapons.setSpacing(4.0);
+    var equippedWeapons = new VBox(4.0);
     model
         .equippedWeaponsProperty()
         .addListener(
@@ -114,26 +113,7 @@ public class CreatureView extends VBox {
                 _ -> {
                   equippedWeapons.getChildren().clear();
                   for (Weapon weapon : model.equippedWeaponsProperty()) {
-                    var weaponBox = new VBox();
-                    weaponBox.setSpacing(2.0);
-
-                    var nameLabel = new Label(weapon.name());
-
-                    var buttonBox = new HBox();
-                    buttonBox.setSpacing(4.0);
-
-                    var attackBtn = new Button("Attack");
-                    attackBtn.setOnAction(
-                        _ -> {
-                          model.loadAttacks(weapon);
-                          nav.set(Nav.Attacks);
-                        });
-
-                    var unequipBtn = new Button("Unequip");
-                    unequipBtn.setOnAction(_ -> model.unequip(weapon));
-
-                    buttonBox.getChildren().addAll(attackBtn, unequipBtn);
-                    weaponBox.getChildren().addAll(nameLabel, buttonBox);
+                    var weaponBox = equippedWeaponEntry(model, weapon);
                     equippedWeapons.getChildren().add(weaponBox);
                   }
                 });
@@ -150,29 +130,12 @@ public class CreatureView extends VBox {
                 _ -> {
                   storedWeapons.getChildren().clear();
                   for (Weapon weapon : model.storedWeaponsProperty()) {
-                    var weaponBox = new HBox();
-                    weaponBox.setSpacing(4.0);
-
-                    var nameLabel = new Label(weapon.name());
-
-                    var equipBtn = new Button("Equip");
-                    equipBtn.setOnAction(
-                        _ -> {
-                          if (model.equip(weapon)) {
-                            message.setVisible(false);
-                          } else {
-                            message.setText("No free hand for " + weapon.name());
-                            message.setVisible(true);
-                          }
-                        });
-
-                    weaponBox.getChildren().addAll(nameLabel, equipBtn);
+                    var weaponBox = storedWeaponEntry(model, weapon, message);
                     storedWeapons.getChildren().add(weaponBox);
                   }
                 });
 
-    var selection = new VBox();
-    selection.setSpacing(8.0);
+    var selection = new VBox(8.0);
     selection.visibleProperty().bind(nav.isEqualTo(Nav.Weapons));
     selection.managedProperty().bind(nav.isEqualTo(Nav.Weapons));
     selection
@@ -188,6 +151,49 @@ public class CreatureView extends VBox {
             storedWeapons);
 
     return selection;
+  }
+
+  private static HBox storedWeaponEntry(CreatureViewModel model, Weapon weapon, Label message) {
+    var weaponBox = new HBox(4.0);
+    weaponBox.setAlignment(Pos.CENTER);
+
+    var nameLabel = new Label(weapon.name());
+
+    var equipBtn = new Button("Equip");
+    equipBtn.setOnAction(
+        _ -> {
+          if (model.equip(weapon)) {
+            message.setVisible(false);
+          } else {
+            message.setText("No free hand for " + weapon.name());
+            message.setVisible(true);
+          }
+        });
+
+    weaponBox.getChildren().addAll(nameLabel, equipBtn);
+    return weaponBox;
+  }
+
+  private VBox equippedWeaponEntry(CreatureViewModel model, Weapon weapon) {
+    var weaponBox = new VBox(2.0);
+
+    var nameLabel = new Label(weapon.name());
+
+    var buttonBox = new HBox(4.0);
+
+    var attackBtn = new Button("Attack");
+    attackBtn.setOnAction(
+        _ -> {
+          model.loadAttacks(weapon);
+          nav.set(Nav.Attacks);
+        });
+
+    var unequipBtn = new Button("Unequip");
+    unequipBtn.setOnAction(_ -> model.unequip(weapon));
+
+    buttonBox.getChildren().addAll(attackBtn, unequipBtn);
+    weaponBox.getChildren().addAll(nameLabel, buttonBox);
+    return weaponBox;
   }
 
   private Node targetSelection(CreatureViewModel model) {
