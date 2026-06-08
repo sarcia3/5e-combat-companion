@@ -37,8 +37,9 @@ public class CreatureViewModel {
     attacks.setAll(model.getPossibleAttacks(creature.get(), weapon));
   }
 
-  public boolean addStoredWeapon(Weapon weapon) {
-    return creature.get().inventory().addStoredWeapon(weapon);
+  public void addStoredWeapon(Weapon weapon) {
+    creature.get().inventory().addStoredWeapon(weapon);
+    reloadWeapons();
   }
 
   /** Tries to equip a stored weapon. Returns false if there are not enough free hands. */
