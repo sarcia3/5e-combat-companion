@@ -15,10 +15,8 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   /** Resistance means taking half the damage of a given type */
   EnumSet<Damage.Type> resistances;
-
   /** Vulnerability means taking double the damage of a given type */
   EnumSet<Damage.Type> vulnerabilities;
-
   /** Immunity means taking no damage of a given type */
   EnumSet<Damage.Type> immunities;
 
