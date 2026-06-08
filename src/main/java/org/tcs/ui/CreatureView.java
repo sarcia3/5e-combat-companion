@@ -13,6 +13,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
@@ -25,8 +26,6 @@ public class CreatureView extends VBox {
   private enum Nav {
     All,
     Weapons,
-    Equip,
-    Unequip,
     Attacks,
     Movement
   }
@@ -60,9 +59,7 @@ public class CreatureView extends VBox {
             portrait,
             nothingToDo,
             topLevel(model),
-            equipSelection(model),
-            unequipSelection(model),
-            weaponSelection(model),
+            weaponsView(model),
             targetSelection(model),
             movement(model));
     setMaxWidth(320.0);
@@ -74,14 +71,8 @@ public class CreatureView extends VBox {
   }
 
   private Node topLevel(CreatureViewModel model) {
-    var attack = new Button("Attack");
-    attack.setOnAction(_ -> nav.set(Nav.Weapons));
-
-    var equip = new Button("Equip");
-    equip.setOnAction(_ -> nav.set(Nav.Equip));
-
-    var unequip = new Button("Unequip");
-    unequip.setOnAction(_ -> nav.set(Nav.Unequip));
+    var weapons = new Button("Weapons");
+    weapons.setOnAction(_ -> nav.set(Nav.Weapons));
 
     var move = new Button("Move");
     move.setOnAction(
@@ -94,7 +85,7 @@ public class CreatureView extends VBox {
     pass.setOnAction(_ -> model.pass());
 
     var topLevel = new VBox();
-    topLevel.getChildren().addAll(attack, equip, unequip, move, pass);
+    topLevel.getChildren().addAll(weapons, move, pass);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
     topLevel.managedProperty().bind(nav.isEqualTo(Nav.All).and(model.isCurrentProperty()));
@@ -102,37 +93,7 @@ public class CreatureView extends VBox {
     return topLevel;
   }
 
-  private Node weaponSelection(CreatureViewModel model) {
-    var cancel = new Button("Cancel");
-    cancel.setOnAction(_ -> nav.set(Nav.All));
-
-    var buttons = new VBox();
-    model
-        .equippedWeaponsProperty()
-        .addListener(
-            (ListChangeListener<? super Weapon>)
-                _ -> {
-                  buttons.getChildren().clear();
-                  for (Weapon weapon : model.equippedWeaponsProperty()) {
-                    var btn = new Button(weapon.name());
-                    btn.setOnAction(
-                        _ -> {
-                          model.loadAttacks(weapon);
-                          nav.set(Nav.Attacks);
-                        });
-                    buttons.getChildren().add(btn);
-                  }
-                });
-
-    var selection = new VBox();
-    selection.visibleProperty().bind(nav.isEqualTo(Nav.Weapons));
-    selection.managedProperty().bind(nav.isEqualTo(Nav.Weapons));
-    selection.getChildren().addAll(cancel, new Separator(), buttons);
-
-    return selection;
-  }
-
-  private Node equipSelection(CreatureViewModel model) {
+  private Node weaponsView(CreatureViewModel model) {
     var cancel = new Button("Cancel");
     cancel.setOnAction(_ -> nav.set(Nav.All));
 
@@ -141,16 +102,61 @@ public class CreatureView extends VBox {
     message.setVisible(false);
     message.managedProperty().bind(message.visibleProperty());
 
-    var buttons = new VBox();
+    var equippedLabel = new Label("Equipped:");
+    equippedLabel.setStyle("-fx-font-weight: bold;");
+
+    var equippedWeapons = new VBox();
+    equippedWeapons.setSpacing(4.0);
+    model
+        .equippedWeaponsProperty()
+        .addListener(
+            (ListChangeListener<? super Weapon>)
+                _ -> {
+                  equippedWeapons.getChildren().clear();
+                  for (Weapon weapon : model.equippedWeaponsProperty()) {
+                    var weaponBox = new VBox();
+                    weaponBox.setSpacing(2.0);
+
+                    var nameLabel = new Label(weapon.name());
+
+                    var buttonBox = new HBox();
+                    buttonBox.setSpacing(4.0);
+
+                    var attackBtn = new Button("Attack");
+                    attackBtn.setOnAction(
+                        _ -> {
+                          model.loadAttacks(weapon);
+                          nav.set(Nav.Attacks);
+                        });
+
+                    var unequipBtn = new Button("Unequip");
+                    unequipBtn.setOnAction(_ -> model.unequip(weapon));
+
+                    buttonBox.getChildren().addAll(attackBtn, unequipBtn);
+                    weaponBox.getChildren().addAll(nameLabel, buttonBox);
+                    equippedWeapons.getChildren().add(weaponBox);
+                  }
+                });
+
+    var storedLabel = new Label("Stored:");
+    storedLabel.setStyle("-fx-font-weight: bold;");
+
+    var storedWeapons = new VBox();
+    storedWeapons.setSpacing(4.0);
     model
         .storedWeaponsProperty()
         .addListener(
             (ListChangeListener<? super Weapon>)
                 _ -> {
-                  buttons.getChildren().clear();
+                  storedWeapons.getChildren().clear();
                   for (Weapon weapon : model.storedWeaponsProperty()) {
-                    var btn = new Button(weapon.name());
-                    btn.setOnAction(
+                    var weaponBox = new HBox();
+                    weaponBox.setSpacing(4.0);
+
+                    var nameLabel = new Label(weapon.name());
+
+                    var equipBtn = new Button("Equip");
+                    equipBtn.setOnAction(
                         _ -> {
                           if (model.equip(weapon)) {
                             message.setVisible(false);
@@ -159,40 +165,27 @@ public class CreatureView extends VBox {
                             message.setVisible(true);
                           }
                         });
-                    buttons.getChildren().add(btn);
+
+                    weaponBox.getChildren().addAll(nameLabel, equipBtn);
+                    storedWeapons.getChildren().add(weaponBox);
                   }
                 });
 
     var selection = new VBox();
-    selection.visibleProperty().bind(nav.isEqualTo(Nav.Equip));
-    selection.managedProperty().bind(nav.isEqualTo(Nav.Equip));
-    selection.getChildren().addAll(cancel, new Separator(), message, buttons);
-
-    return selection;
-  }
-
-  private Node unequipSelection(CreatureViewModel model) {
-    var cancel = new Button("Cancel");
-    cancel.setOnAction(_ -> nav.set(Nav.All));
-
-    var buttons = new VBox();
-    model
-        .equippedWeaponsProperty()
-        .addListener(
-            (ListChangeListener<? super Weapon>)
-                _ -> {
-                  buttons.getChildren().clear();
-                  for (Weapon weapon : model.equippedWeaponsProperty()) {
-                    var btn = new Button(weapon.name());
-                    btn.setOnAction(_ -> model.unequip(weapon));
-                    buttons.getChildren().add(btn);
-                  }
-                });
-
-    var selection = new VBox();
-    selection.visibleProperty().bind(nav.isEqualTo(Nav.Unequip));
-    selection.managedProperty().bind(nav.isEqualTo(Nav.Unequip));
-    selection.getChildren().addAll(cancel, new Separator(), buttons);
+    selection.setSpacing(8.0);
+    selection.visibleProperty().bind(nav.isEqualTo(Nav.Weapons));
+    selection.managedProperty().bind(nav.isEqualTo(Nav.Weapons));
+    selection
+        .getChildren()
+        .addAll(
+            cancel,
+            message,
+            new Separator(),
+            equippedLabel,
+            equippedWeapons,
+            new Separator(),
+            storedLabel,
+            storedWeapons);
 
     return selection;
   }
