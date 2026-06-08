@@ -20,10 +20,7 @@ public class DamageModifierTest {
 
   /** Healthy target; tests add the modifier sets they need via the Builder. */
   private static Creature.Builder builder() {
-    return new Creature.Builder()
-        .name("Target")
-        .hitPointMaximum(100)
-        .diceRoller(NO_ROLL);
+    return new Creature.Builder().name("Target").hitPointMaximum(100).diceRoller(NO_ROLL);
   }
 
   private static Damage damage(Damage.Type type, int amount) {
