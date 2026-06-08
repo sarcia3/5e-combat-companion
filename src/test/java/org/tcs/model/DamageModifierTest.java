@@ -1,4 +1,4 @@
-//LLMed
+// LLMed
 package org.tcs.model;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,13 +18,13 @@ public class DamageModifierTest {
         }
       };
 
-  /** Healthy target with empty modifier sets; each test fills in the ones it needs. */
-  private static Creature target() {
-    Creature creature = CreatureFixtures.creature("Target", 100, 2, NO_ROLL);
-    creature.resistances = EnumSet.noneOf(Damage.Type.class);
-    creature.vulnerability = EnumSet.noneOf(Damage.Type.class);
-    creature.immunities = EnumSet.noneOf(Damage.Type.class);
-    return creature;
+  /** Healthy target; tests add the modifier sets they need via the Builder. */
+  private static Creature.Builder builder() {
+    return new Creature.Builder()
+        .name("Target")
+        .hitPointMaximum(100)
+        .proficiencyBonus(2)
+        .diceRoller(NO_ROLL);
   }
 
   private static Damage damage(Damage.Type type, int amount) {
@@ -35,31 +35,28 @@ public class DamageModifierTest {
 
   @Test
   public void noModifiersTakesFullDamage() {
-    Creature creature = target();
+    Creature creature = builder().build();
     creature.takeDamage(damage(Damage.Type.FIRE, 7));
     assertEquals(100 - 7, creature.hitPoints);
   }
 
   @Test
   public void resistanceHalvesDamageRoundingDown() {
-    Creature creature = target();
-    creature.resistances.add(Damage.Type.FIRE);
+    Creature creature = builder().resistances(EnumSet.of(Damage.Type.FIRE)).build();
     creature.takeDamage(damage(Damage.Type.FIRE, 7)); // 7 / 2 == 3, not 4
     assertEquals(100 - 3, creature.hitPoints);
   }
 
   @Test
   public void vulnerabilityDoublesDamage() {
-    Creature creature = target();
-    creature.vulnerability.add(Damage.Type.FIRE);
+    Creature creature = builder().vulnerability(EnumSet.of(Damage.Type.FIRE)).build();
     creature.takeDamage(damage(Damage.Type.FIRE, 7));
     assertEquals(100 - 14, creature.hitPoints);
   }
 
   @Test
   public void immunityNegatesDamage() {
-    Creature creature = target();
-    creature.immunities.add(Damage.Type.FIRE);
+    Creature creature = builder().immunities(EnumSet.of(Damage.Type.FIRE)).build();
     creature.takeDamage(damage(Damage.Type.FIRE, 7));
     assertEquals(100, creature.hitPoints);
   }
@@ -67,9 +64,11 @@ public class DamageModifierTest {
   /** Resistance and vulnerability on the same type cancel: full damage, with no rounding loss. */
   @Test
   public void resistanceAndVulnerabilityCancelOut() {
-    Creature creature = target();
-    creature.resistances.add(Damage.Type.FIRE);
-    creature.vulnerability.add(Damage.Type.FIRE);
+    Creature creature =
+        builder()
+            .resistances(EnumSet.of(Damage.Type.FIRE))
+            .vulnerability(EnumSet.of(Damage.Type.FIRE))
+            .build();
     // Odd amount proves the order matters: double-then-halve (7*2/2 == 7),
     // not halve-then-double (7/2*2 == 6).
     creature.takeDamage(damage(Damage.Type.FIRE, 7));
@@ -78,18 +77,22 @@ public class DamageModifierTest {
 
   @Test
   public void immunityOverridesVulnerability() {
-    Creature creature = target();
-    creature.immunities.add(Damage.Type.FIRE);
-    creature.vulnerability.add(Damage.Type.FIRE);
+    Creature creature =
+        builder()
+            .immunities(EnumSet.of(Damage.Type.FIRE))
+            .vulnerability(EnumSet.of(Damage.Type.FIRE))
+            .build();
     creature.takeDamage(damage(Damage.Type.FIRE, 7));
     assertEquals(100, creature.hitPoints);
   }
 
   @Test
   public void modifiersApplyPerType() {
-    Creature creature = target();
-    creature.resistances.add(Damage.Type.FIRE);
-    creature.vulnerability.add(Damage.Type.COLD);
+    Creature creature =
+        builder()
+            .resistances(EnumSet.of(Damage.Type.FIRE))
+            .vulnerability(EnumSet.of(Damage.Type.COLD))
+            .build();
     Damage mixed = new Damage();
     mixed.add(Damage.Type.FIRE, 8); // resisted -> 4
     mixed.add(Damage.Type.COLD, 5); // vulnerable -> 10

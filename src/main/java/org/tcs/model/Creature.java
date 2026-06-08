@@ -12,11 +12,14 @@ public class Creature implements HasInitiative, HasHitPoints {
   int hitPoints;
   int hitPointMaximum;
   int temporaryHitPoints = 0;
-  /** Resistance means taking half the damage of a given type*/
+
+  /** Resistance means taking half the damage of a given type */
   EnumSet<Damage.Type> resistances;
-  /** Vulnerability means taking double the damage of a given type*/
-  EnumSet<Damage.Type> vulnerability;
-  /** Immunity means taking no damage of a given type*/
+
+  /** Vulnerability means taking double the damage of a given type */
+  EnumSet<Damage.Type> vulnerabilities;
+
+  /** Immunity means taking no damage of a given type */
   EnumSet<Damage.Type> immunities;
 
   DiceRoller diceRoller;
@@ -40,13 +43,19 @@ public class Creature implements HasInitiative, HasHitPoints {
       int hitPointMaximum,
       double movementSpeed,
       int proficiencyBonus,
-      DiceRoller diceRoller) {
+      DiceRoller diceRoller,
+      EnumSet<Damage.Type> resistances,
+      EnumSet<Damage.Type> vulnerability,
+      EnumSet<Damage.Type> immunities) {
     this.name = name;
     this.position = position;
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
     this.proficiencyBonus = proficiencyBonus;
     this.movementSpeed = movementSpeed;
     this.movementLeft = movementSpeed;
+    this.resistances = resistances;
+    this.vulnerabilities = vulnerability;
+    this.immunities = immunities;
 
     for (Ability ability : Ability.values()) abilityScores.put(ability, 10);
 
@@ -93,20 +102,17 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public void takeDamage(Damage damage) {
-    //int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
-    int actualDamage=0;
-    for(var entry : damage.byType.entrySet()){
+    // int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
+    int actualDamage = 0;
+    for (var entry : damage.byType.entrySet()) {
       int effectiveDamage = entry.getValue();
-      if(immunities.contains(entry.getKey()))
-        effectiveDamage = 0;
+      if (immunities.contains(entry.getKey())) effectiveDamage = 0;
 
-      if(vulnerability.contains(entry.getKey()))
-        effectiveDamage *= 2;
+      if (vulnerabilities.contains(entry.getKey())) effectiveDamage *= 2;
 
-      if(resistances.contains(entry.getKey()))
-        effectiveDamage /= 2;
+      if (resistances.contains(entry.getKey())) effectiveDamage /= 2;
 
-      //the order is important, so rounding works properly. (res + vuln cancel each other)
+      // the order is important, so rounding works properly. (res + vuln cancel each other)
 
       actualDamage += effectiveDamage;
     }
@@ -191,6 +197,9 @@ public class Creature implements HasInitiative, HasHitPoints {
     private int proficiencyBonus = 2;
     private DiceRoller diceRoller = new RandomDiceRoller();
     Integer overrideArmorClass;
+    private EnumSet<Damage.Type> resistances = EnumSet.noneOf(Damage.Type.class);
+    private EnumSet<Damage.Type> vulnerability = EnumSet.noneOf(Damage.Type.class);
+    private EnumSet<Damage.Type> immunities = EnumSet.noneOf(Damage.Type.class);
 
     public Builder name(String name) {
       this.name = name;
@@ -227,9 +236,32 @@ public class Creature implements HasInitiative, HasHitPoints {
       return this;
     }
 
+    public Builder resistances(EnumSet<Damage.Type> resistances) {
+      this.resistances = resistances;
+      return this;
+    }
+
+    public Builder vulnerability(EnumSet<Damage.Type> vulnerability) {
+      this.vulnerability = vulnerability;
+      return this;
+    }
+
+    public Builder immunities(EnumSet<Damage.Type> immunities) {
+      this.immunities = immunities;
+      return this;
+    }
+
     public Creature build() {
       return new Creature(
-          name, position, hitPointMaximum, movementSpeed, proficiencyBonus, diceRoller);
+          name,
+          position,
+          hitPointMaximum,
+          movementSpeed,
+          proficiencyBonus,
+          diceRoller,
+          resistances,
+          vulnerability,
+          immunities);
     }
   }
 }
