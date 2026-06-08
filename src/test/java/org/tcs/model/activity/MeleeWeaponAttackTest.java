@@ -76,7 +76,7 @@ class MeleeWeaponAttackTest {
   void naturalTwentyHitsEvenWhenTotalIsBelowArmorClass() {
     // attacker has STR 10 (mod 0), target AC is 25; d20 = 20 → total 20 < 25
     // but nat 20 is an automatic hit; then rolls 6 damage
-    Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(20, 6));
+    Creature attacker = creature("Fighter", 20, 2, new QueuedDiceRoller(20, 3, 3));
     Creature target = creatureWithArmorClass("Stone Golem", 30, 2, 25, new QueuedDiceRoller());
     Weapon weapon = longsword();
     attacker.inventory().addStoredWeapon(weapon);
