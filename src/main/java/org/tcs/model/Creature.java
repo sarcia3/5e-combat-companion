@@ -10,8 +10,18 @@ import org.tcs.model.geometry.Point;
 public class Creature implements HasInitiative, HasHitPoints {
   String name;
   int hitPoints;
-  int temporaryHitPoints;
   int hitPointMaximum;
+  int temporaryHitPoints = 0;
+
+  /** Resistance means taking half the damage of a given type */
+  EnumSet<Damage.Type> resistances;
+
+  /** Vulnerability means taking double the damage of a given type */
+  EnumSet<Damage.Type> vulnerabilities;
+
+  /** Immunity means taking no damage of a given type */
+  EnumSet<Damage.Type> immunities;
+
   DiceRoller diceRoller;
   int proficiencyBonus;
   // Allow overriding the armor class for testing purposes
@@ -31,13 +41,18 @@ public class Creature implements HasInitiative, HasHitPoints {
       int hitPointMaximum,
       int proficiencyBonus,
       DiceRoller diceRoller,
+      Collection<Damage.Type> resistances,
+      Collection<Damage.Type> vulnerabilities,
+      Collection<Damage.Type> immunities,
       TurnTracker turnTracker) {
     this.name = name;
     this.position = position;
     this.hitPointMaximum = this.hitPoints = hitPointMaximum;
     this.proficiencyBonus = proficiencyBonus;
     this.turnTracker = turnTracker;
-    this.temporaryHitPoints = 0;
+    this.resistances = EnumSet.copyOf(resistances);
+    this.vulnerabilities = EnumSet.copyOf(vulnerabilities);
+    this.immunities = EnumSet.copyOf(immunities);
 
     for (Ability ability : Ability.values()) abilityScores.put(ability, 10);
 
@@ -84,9 +99,19 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public void takeDamage(Damage damage) {
-    // TODO actually implement, considering resistance immunities and so on
-    // currently we just subtract the sum
-    int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
+    int actualDamage = 0;
+    for (var entry : damage.byType.entrySet()) {
+      int effectiveDamage = entry.getValue();
+      if (immunities.contains(entry.getKey())) effectiveDamage = 0;
+
+      if (vulnerabilities.contains(entry.getKey())) effectiveDamage *= 2;
+
+      if (resistances.contains(entry.getKey())) effectiveDamage /= 2;
+
+      // the order is important, so rounding works properly. (res + vuln cancel each other)
+
+      actualDamage += effectiveDamage;
+    }
 
     int mitigatedDamage = Math.min(actualDamage, temporaryHitPoints);
     temporaryHitPoints -= mitigatedDamage;
@@ -175,6 +200,9 @@ public class Creature implements HasInitiative, HasHitPoints {
     private int proficiencyBonus = 2;
     private DiceRoller diceRoller = new RandomDiceRoller();
     Integer overrideArmorClass;
+    private EnumSet<Damage.Type> resistances = EnumSet.noneOf(Damage.Type.class);
+    private EnumSet<Damage.Type> vulnerabilities = EnumSet.noneOf(Damage.Type.class);
+    private EnumSet<Damage.Type> immunities = EnumSet.noneOf(Damage.Type.class);
     TurnTracker turnTracker = new TurnTracker(1, 1, 1, 1, 0, 10.0);
 
     public Builder name(String name) {
@@ -212,6 +240,21 @@ public class Creature implements HasInitiative, HasHitPoints {
       return this;
     }
 
+    public Builder resistances(EnumSet<Damage.Type> resistances) {
+      this.resistances = resistances;
+      return this;
+    }
+
+    public Builder vulnerabilities(EnumSet<Damage.Type> vulnerabilities) {
+      this.vulnerabilities = vulnerabilities;
+      return this;
+    }
+
+    public Builder immunities(EnumSet<Damage.Type> immunities) {
+      this.immunities = immunities;
+      return this;
+    }
+
     public Builder actionsPerTurn(Integer actionsPerTurn) {
       turnTracker.maxActions = actionsPerTurn;
       return this;
@@ -240,7 +283,15 @@ public class Creature implements HasInitiative, HasHitPoints {
     public Creature build() {
       turnTracker.reset();
       return new Creature(
-          name, position, hitPointMaximum, proficiencyBonus, diceRoller, turnTracker);
+          name,
+          position,
+          hitPointMaximum,
+          proficiencyBonus,
+          diceRoller,
+          resistances,
+          vulnerabilities,
+          immunities,
+          turnTracker);
     }
   }
 }
