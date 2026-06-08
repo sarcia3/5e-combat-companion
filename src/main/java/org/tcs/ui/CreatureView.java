@@ -20,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Window;
 import org.tcs.model.Creature;
 import org.tcs.model.StateProcess;
 import org.tcs.model.equipment.Weapon;
@@ -40,10 +41,12 @@ public class CreatureView extends VBox {
   private Runnable onStartMoving = () -> {};
   private Runnable onStopMoving = () -> {};
   private Runnable onDelete = () -> {};
+  private final WeaponSelector weaponSelector;
 
-  public CreatureView(Map<Creature, Image> creatureImages, CreatureViewModel model) {
+  public CreatureView(Map<Creature, Image> creatureImages, CreatureViewModel model, Window owner) {
     currentOrEdit = model.isCurrentProperty().or(editMode);
     playOnly = model.isCurrentProperty().and(editMode.not());
+    weaponSelector = new WeaponSelector(owner);
 
     var name = new Label();
     name.textProperty().bind(model.creatureProperty().map(Creature::name));
@@ -162,6 +165,18 @@ public class CreatureView extends VBox {
                   }
                 });
 
+    var add = new Button("Add a weapon");
+    add.setOnAction(
+        _ -> {
+          Weapon weapon = weaponSelector.showAndWait();
+
+          if (weapon != null) {
+            model.addStoredWeapon(weapon);
+          }
+        });
+    add.visibleProperty().bind(editMode);
+    add.managedProperty().bind(add.visibleProperty());
+
     var selection = new VBox(8.0);
     selection.visibleProperty().bind(nav.isEqualTo(Nav.Weapons));
     selection.managedProperty().bind(nav.isEqualTo(Nav.Weapons));
@@ -175,7 +190,9 @@ public class CreatureView extends VBox {
             equippedWeapons,
             new Separator(),
             storedLabel,
-            storedWeapons);
+            storedWeapons,
+            new Separator(),
+            add);
 
     return selection;
   }

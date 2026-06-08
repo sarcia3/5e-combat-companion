@@ -61,7 +61,7 @@ public class PlayView extends Scene {
         });
     StackPane.setAlignment(initiativeQueue, Pos.TOP_LEFT);
 
-    var creatureView = new CreatureView(creatureImages, model.creature);
+    var creatureView = new CreatureView(creatureImages, model.creature, owner);
     creatureView.editModeProperty().bind(currentMode.isEqualTo(Mode.EDIT_PIECES));
     creatureView.setOnStartMoving(() -> currentMode.set(Mode.PATHING));
     creatureView.setOnStopMoving(() -> currentMode.set(Mode.PLAY));
