@@ -12,9 +12,15 @@ public class Creature implements HasInitiative, HasHitPoints {
   int hitPoints;
   int hitPointMaximum;
   int temporaryHitPoints = 0;
+  /** Resistance means taking half the damage of a given type*/
+  EnumSet<Damage.Type> resistances;
+  /** Vulnerability means taking double the damage of a given type*/
+  EnumSet<Damage.Type> vulnerability;
+  /** Immunity means taking no damage of a given type*/
+  EnumSet<Damage.Type> immunities;
+
   DiceRoller diceRoller;
   int proficiencyBonus;
-  // Allow overriding the armor class for testing purposes
   Integer overrideArmorClass;
   private Point position;
   Inventory inventory = new Inventory();
@@ -86,9 +92,24 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public void takeDamage(Damage damage) {
-    // TODO actually implement, considering resistance immunities and so on
-    // currently we just subtract the sum
-    int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
+    //int actualDamage = damage.byType.values().stream().mapToInt(Integer::intValue).sum();
+    int actualDamage=0;
+    for(var entry : damage.byType.entrySet()){
+      int effectiveDamagve = entry.getValue();
+      if(immunities.contains(entry.getKey()))
+        effectiveDamagve = 0;
+
+      if(vulnerability.contains(entry.getKey()))
+        effectiveDamagve *= 2;
+
+      if(resistances.contains(entry.getKey()))
+        effectiveDamagve /= 2;
+
+      //the order is important, so rounding works properly. (res + vuln cancel each other)
+      
+      actualDamage += effectiveDamagve;
+    }
+
     if (hitPoints == 0 && actualDamage > 0) {
       if (actualDamage <= hitPointMaximum) {
         isDead = true;
