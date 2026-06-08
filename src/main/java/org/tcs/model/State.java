@@ -169,7 +169,7 @@ public class State {
         if (creature.isDead()) removeCreature(creature);
       }
     }
-    initiative.getFirst().turnReset();
+    initiative.getFirst().onTurnReset();
   }
 
   public void setOnRemoveCreature(Consumer<Creature> onRemoveCreature) {
