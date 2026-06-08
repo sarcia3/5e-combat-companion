@@ -39,4 +39,9 @@ public class Main extends Application {
     primaryStage.setTitle("Drageons&Dungons 5e Combat Companion");
     primaryStage.show();
   }
+
+  @SuppressWarnings("unused")
+  static void main(String[] args) {
+    launch(args);
+  }
 }
