@@ -2,6 +2,7 @@ package org.tcs.ui;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
@@ -44,7 +45,7 @@ public class PlayView extends Scene {
     var editPiecesButton = modeTab(Mode.EDIT_PIECES, "Edit pieces", currentMode);
     var editCollisionButton = modeTab(Mode.EDIT_COLLISION, "Edit collision", currentMode);
 
-    var buttonBox = new HBox(playButton, editPiecesButton, editCollisionButton);
+    var buttonBox = new HBox(2, playButton, editPiecesButton, editCollisionButton);
     buttonBox.setMaxHeight(Region.USE_PREF_SIZE);
     buttonBox.setAlignment(Pos.CENTER);
     buttonBox.visibleProperty().bind(currentMode.isNotEqualTo(Mode.PATHING));
@@ -82,6 +83,8 @@ public class PlayView extends Scene {
     mapView.heightProperty().bind(pane.heightProperty());
 
     setRoot(pane);
+    getStylesheets()
+        .add(Objects.requireNonNull(getClass().getResource("/global.css")).toExternalForm());
   }
 
   private MapView getMapView(ViewModel model, Window owner, ObjectProperty<Mode> currentMode) {
@@ -119,16 +122,6 @@ public class PlayView extends Scene {
     var button = new Button(text);
     button.setOnAction(_ -> currentMode.set(mode));
     button.disableProperty().bind(currentMode.isEqualTo(mode));
-    button
-        .styleProperty()
-        .bind(
-            currentMode
-                .isEqualTo(mode)
-                .map(
-                    disabled ->
-                        disabled
-                            ? "-fx-opacity: 1.0; -fx-background-color: #666;"
-                            : "-fx-background-color: #fff"));
     return button;
   }
 }

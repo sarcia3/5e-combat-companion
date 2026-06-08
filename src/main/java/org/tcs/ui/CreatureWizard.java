@@ -1,5 +1,6 @@
 package org.tcs.ui;
 
+import java.util.Objects;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -8,7 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -31,6 +31,7 @@ public class CreatureWizard {
     var nameField = new BetterTextField();
     nameField.textProperty().bindBidirectional(model.creatureNameProperty());
     HBox nameBox = new HBox(10, nameLabel, nameField);
+    nameBox.setAlignment(Pos.CENTER_LEFT);
 
     // Max Hitpoints field
     var maxHitpointsLabel = new Label("Max Hitpoints:");
@@ -49,9 +50,10 @@ public class CreatureWizard {
         model.creatureHitpointsProperty(),
         new NumberStringConverter("0"));
     var maxHitpointsError = new Label();
-    maxHitpointsError.setTextFill(Color.RED);
+    maxHitpointsError.setStyle(maxHitpointsError.getStyle() + "-fx-text-fill: -dnd-redLike;");
     maxHitpointsError.textProperty().bind(model.creatureHitpointsErrorProperty());
     HBox maxHitpointsBox = new HBox(10, maxHitpointsLabel, maxHitpointsField);
+    maxHitpointsBox.setAlignment(Pos.CENTER_LEFT);
 
     // Movement Speed field
     var movementSpeedLabel = new Label("Movement Speed:");
@@ -70,9 +72,10 @@ public class CreatureWizard {
         model.creatureMovementProperty(),
         new NumberStringConverter("0.0"));
     var movementSpeedError = new Label();
-    movementSpeedError.setTextFill(Color.RED);
+    movementSpeedError.setStyle(movementSpeedError.getStyle() + "-fx-text-fill: -dnd-redLike;");
     movementSpeedError.textProperty().bind(model.creatureMovementErrorProperty());
     HBox movementSpeedBox = new HBox(10, movementSpeedLabel, movementSpeedField);
+    movementSpeedBox.setAlignment(Pos.CENTER_LEFT);
 
     // Form layout
     VBox form = new VBox(10);
@@ -112,7 +115,11 @@ public class CreatureWizard {
     root.setCenter(form);
     root.setBottom(buttonBox);
 
-    popup.setScene(new Scene(root, 600, 600));
+    Scene scene = new Scene(root, 600, 600);
+    scene
+        .getStylesheets()
+        .add(Objects.requireNonNull(getClass().getResource("/global.css")).toExternalForm());
+    popup.setScene(scene);
   }
 
   public boolean showAndWait() {

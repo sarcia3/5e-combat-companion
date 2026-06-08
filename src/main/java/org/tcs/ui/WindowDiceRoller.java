@@ -1,5 +1,6 @@
 package org.tcs.ui;
 
+import java.util.Objects;
 import java.util.Random;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -18,7 +19,6 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -79,18 +79,26 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
                     })
                 .orElse(""));
 
+    var labelsBox = new VBox(5, sidesLabel, infoLabel);
+    labelsBox.setAlignment(Pos.CENTER);
+    labelsBox.setStyle(
+        labelsBox.getStyle()
+            + "-fx-font-weight: bold;"
+            + "-fx-font-size: 18px;"
+            + "-fx-text-fill: -ink-brown;");
+
+    Button okButton = new Button("Submit");
+    okButton.disableProperty().bind(isValid.not());
+    okButton.setOnAction(_ -> hide());
+
     Button rollAll = new Button("Roll all");
-    rollAll.setPrefWidth(80);
+    rollAll.setPrefWidth(100);
     rollAll.setOnAction(
         _ -> {
           for (var val : rollResults) {
             val.set(random.nextInt(1, numberOfSides.get()));
           }
         });
-
-    Button okButton = new Button("Submit");
-    okButton.disableProperty().bind(isValid.not());
-    okButton.setOnAction(_ -> hide());
 
     Button switchButton = new Button();
     switchButton.setOnAction(
@@ -107,6 +115,9 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
                   else return "Normal input";
                 }));
 
+    var buttonsBox = new HBox(10, rollAll, switchButton);
+    buttonsBox.setAlignment(Pos.CENTER);
+
     // Current mode shenanigans
     manualRolls.visibleProperty().bind(currentMode.isEqualTo(Nav.Manual));
     manualRolls.managedProperty().bind(currentMode.isEqualTo(Nav.Manual));
@@ -117,13 +128,15 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     currentMode.addListener((_, _, _) -> updateHeight());
     numberOfDice.addListener((_, _, _) -> updateHeight());
 
-    VBox layout =
-        new VBox(
-            15, switchButton, sidesLabel, infoLabel, rollAll, manualRolls, normalRolls, okButton);
+    VBox layout = new VBox(15, labelsBox, buttonsBox, manualRolls, normalRolls, okButton);
     layout.setPadding(new Insets(20));
     layout.setAlignment(Pos.CENTER);
 
-    setScene(new Scene(layout, 350, 180));
+    Scene scene = new Scene(layout, 350, 180);
+    scene
+        .getStylesheets()
+        .add(Objects.requireNonNull(getClass().getResource("/global.css")).toExternalForm());
+    setScene(scene);
   }
 
   @Override
@@ -201,8 +214,8 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
 
     var rollError = localIsValid.map(b -> b ? "" : "Invalid value");
     var rollErrorLabel = new Label();
-    rollErrorLabel.setTextFill(Color.RED);
     rollErrorLabel.textProperty().bind(rollError);
+    rollErrorLabel.setStyle(rollErrorLabel.getStyle() + "-fx-text-fill: -dnd-redLike;");
 
     var visible = localIsValid.not().and(resultField.focusedProperty().not());
     rollErrorLabel.visibleProperty().bind(visible);
@@ -214,7 +227,7 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     HBox inputBox = new HBox(10, resultField, randomizeButton);
     inputBox.setAlignment(Pos.CENTER);
 
-    VBox node = new VBox(inputBox, rollErrorLabel);
+    VBox node = new VBox(5, inputBox, rollErrorLabel);
     node.setAlignment(Pos.CENTER);
 
     return node;
@@ -257,11 +270,11 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     var rollResult = rollResults.get(i);
 
     Button diceButton = new Button();
-    diceButton.setPrefSize(60, 60);
+    diceButton.setPrefSize(80, 80);
     diceButton.setStyle(
         """
-            -fx-background-color: white;
-            -fx-border-color: black;
+            -fx-text-fill: -ink-brown;
+            -fx-background-color: -stone-light;
             -fx-border-width: 2;
             -fx-border-radius: 8;
             -fx-background-radius: 8;
@@ -279,21 +292,22 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     localIsValid.addListener(
         (_, _, valid) ->
             diceButton.setStyle(
-                diceButton.getStyle() + (valid ? "-fx-text-fill: black;" : "-fx-text-fill: red;")));
+                diceButton.getStyle()
+                    + (valid ? "-fx-text-fill: -ink-brown;" : "-fx-text-fill: -dnd-redLike;")));
 
     return diceButton;
   }
 
   // LLM generated
   private void updateHeight() {
-    int baseHeight = 220;
+    int baseHeight = 270;
     int cols = (int) Math.ceil(Math.sqrt(numberOfDice.get()));
     int rows = (int) Math.ceil((double) numberOfDice.get() / cols);
 
     int diceHeight =
         switch (currentMode.get()) {
-          case Normal -> rows * 70; // dice buttons are 60px + gaps
-          case Manual -> numberOfDice.get() * 35 + 45;
+          case Normal -> rows * 100;
+          case Manual -> numberOfDice.get() * 45 + 60;
         };
 
     setHeight(baseHeight + diceHeight);
