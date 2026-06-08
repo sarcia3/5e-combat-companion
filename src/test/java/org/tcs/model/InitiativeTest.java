@@ -8,7 +8,15 @@ import org.junit.jupiter.api.Test;
 class InitiativeTest {
 
   private static HasInitiative withInitiative(int value) {
-    return () -> value;
+    return new HasInitiative() {
+      @Override
+      public int generateInitiative() {
+        return value;
+      }
+
+      @Override
+      public void turnReset() {}
+    };
   }
 
   @Test
