@@ -68,11 +68,13 @@ public class TurnTracker {
     reactions--;
   }
 
-  boolean canCastSpell() {
+  boolean canCastSpell(int level) {
+    if (level == 0) return true;
     return spellSlots > 0;
   }
 
-  void casSpell() {
+  void castSpell(int level) {
+    if (level == 0) return;
     spellSlots--;
   }
 
