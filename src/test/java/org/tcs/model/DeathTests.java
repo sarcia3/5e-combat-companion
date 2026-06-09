@@ -52,7 +52,6 @@ public class DeathTests {
             .build();
     state.addCreature(creature1);
     state.addCreature(creature2);
-    WeaponsLibrary.load();
     Weapon dag = WeaponsLibrary.get("Dagger");
     creature1.inventory().addStoredWeapon(dag);
     creature1.inventory().equipWeapon(dag);
@@ -102,7 +101,6 @@ public class DeathTests {
             .build();
     state.addCreature(creature1);
     state.addCreature(creature2);
-    WeaponsLibrary.load();
     Weapon dag = WeaponsLibrary.get("Dagger");
     creature1.inventory().addStoredWeapon(dag);
     creature1.inventory().equipWeapon(dag);
@@ -144,7 +142,6 @@ public class DeathTests {
             .build();
     state.addCreature(creature1);
     state.addCreature(creature2);
-    WeaponsLibrary.load();
     Weapon dag = WeaponsLibrary.get("Dagger");
     creature1.inventory().addStoredWeapon(dag);
     creature1.inventory().equipWeapon(dag);
@@ -193,7 +190,6 @@ public class DeathTests {
             .build();
     state.addCreature(creature1);
     state.addCreature(creature2);
-    WeaponsLibrary.load();
     Weapon dag = WeaponsLibrary.get("Dagger");
     creature1.inventory().addStoredWeapon(dag);
     creature1.inventory().equipWeapon(dag);
