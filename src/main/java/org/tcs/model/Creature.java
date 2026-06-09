@@ -54,6 +54,7 @@ public class Creature implements HasInitiative, HasHitPoints {
     this.resistances = EnumSet.copyOf(resistances);
     this.vulnerabilities = EnumSet.copyOf(vulnerabilities);
     this.immunities = EnumSet.copyOf(immunities);
+    this.fixedArmorClass = fixedArmorClass;
 
     for (Ability ability : Ability.values()) abilityScores.put(ability, 10);
 
