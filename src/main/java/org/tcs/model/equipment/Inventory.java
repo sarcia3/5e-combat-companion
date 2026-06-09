@@ -1,8 +1,6 @@
 package org.tcs.model.equipment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /** Class to store creature's inventory */
 public class Inventory {
@@ -13,6 +11,8 @@ public class Inventory {
   private final List<Weapon> storedWeapons = new ArrayList<>();
 
   private final List<Weapon> equippedWeapons = new ArrayList<>();
+
+  private final Map<Ammunition, Integer> ammunition = new EnumMap<>(Ammunition.class);
 
   public boolean addStoredWeapon(Weapon weapon) {
     return storedWeapons.add(weapon);
@@ -53,9 +53,23 @@ public class Inventory {
     return true;
   }
 
+  public void addAmmunition(Ammunition type, int count) {
+    if (count < 0) throw new IllegalArgumentException();
+    ammunition.put(type, ammunition.getOrDefault(type, 0) + count);
+  }
+
+  public boolean hasAmmunition(Ammunition type) {
+    return ammunition.getOrDefault(type, 0) > 0;
+  }
+
+  public void useAmmunition(Ammunition type) {
+    if (!hasAmmunition(type)) throw new IllegalStateException();
+    else ammunition.put(type, ammunition.get(type) - 1);
+  }
+
   public int armorClass(int dexMod) {
     return (wornArmor == null ? 10 + dexMod : wornArmor.armorClass(dexMod))
-            + (equippedShield == null ? 0 : 2);
+        + (equippedShield == null ? 0 : 2);
   }
 
   public Armor wornArmor() {
