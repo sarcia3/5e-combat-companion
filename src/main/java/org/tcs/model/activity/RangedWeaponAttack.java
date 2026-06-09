@@ -27,9 +27,14 @@ public final class RangedWeaponAttack extends WeaponAttack {
   @Override
   public String toString() {
     if (mode.isThrown()) {
-      return attacker + " attacks by throwing " + weapon;
+      return " by throwing " + weapon.name() + " using " + mode.ability().toString();
     } else {
-      return attacker + " attacks by shooting " + mode.requiredAmmunition() + " from " + weapon;
+      return " by shooting "
+          + mode.requiredAmmunition()
+          + " from "
+          + weapon.name()
+          + " using "
+          + mode.ability().toString();
     }
   }
 }

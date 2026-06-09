@@ -315,6 +315,7 @@ public class CreatureView extends VBox {
                           a.run();
                           nav.set(Nav.All);
                         });
+                    attackBtn.setWrapText(true);
                     buttons.getChildren().add(attackBtn);
                   }
                 });

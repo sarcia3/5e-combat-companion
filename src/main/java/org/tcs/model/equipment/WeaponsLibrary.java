@@ -79,9 +79,8 @@ public class WeaponsLibrary {
                     "1d4 PIERCING", Ability.DEX, false, null, WeaponRange.MELEE_STANDARD),
                 new Weapon.Mode(
                     "1d4 PIERCING", Ability.STR, false, null, WeaponRange.MELEE_STANDARD),
-                new Weapon.Mode("1d4 PIERCING", Ability.DEX, true, null, new WeaponRange(20, 60)),
                 new Weapon.Mode(
-                    "1d4 PIERCING", Ability.STR, true, null, new WeaponRange(20, 60)))));
+                    "1d4 PIERCING", Ability.DEX, true, null, new WeaponRange(20, 60)))));
 
     // Heavy Martial Melee Weapons (TODO two-handed only)
     add(new Weapon("Greataxe", "1d12 SLASHING", Ability.STR, false, WeaponRange.MELEE_STANDARD));
