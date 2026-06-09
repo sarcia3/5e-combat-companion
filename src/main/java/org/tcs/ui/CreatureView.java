@@ -23,6 +23,7 @@ import org.tcs.model.equipment.Weapon;
 import org.tcs.model.magic.Spell;
 import org.tcs.ui.equipment.ArmorSelector;
 import org.tcs.ui.equipment.WeaponSelector;
+import org.tcs.ui.magic.SpellSelector;
 import org.tcs.ui.viewmodel.CreatureViewModel;
 
 public class CreatureView extends VBox {
@@ -43,12 +44,14 @@ public class CreatureView extends VBox {
   private Runnable onDelete = () -> {};
   private final WeaponSelector weaponSelector;
   private final ArmorSelector armorSelector;
+  private final SpellSelector spellSelector;
 
   public CreatureView(Map<Creature, Image> creatureImages, CreatureViewModel model, Window owner) {
     currentOrEdit = model.isCurrentProperty().or(editMode);
     playOnly = model.isCurrentProperty().and(editMode.not());
     weaponSelector = new WeaponSelector(owner);
     armorSelector = new ArmorSelector(owner);
+    spellSelector = new SpellSelector(owner);
 
     var name = new Label();
     name.textProperty().bind(model.creatureProperty().map(Creature::name));
@@ -281,6 +284,11 @@ public class CreatureView extends VBox {
   }
 
   private Node targetSelection(CreatureViewModel model) {
+    editMode.addListener(
+        _ -> {
+          if (editMode.get() && nav.isEqualTo(Nav.Process).get()) nav.set(Nav.All);
+        });
+
     var cancel = new Button("Cancel");
     cancel.setOnAction(_ -> nav.set(Nav.All));
 
@@ -327,7 +335,12 @@ public class CreatureView extends VBox {
                   }
                 });
 
-    var box = new VBox(10, cancel, spellsList);
+    var add = new Button("Add a spell");
+    add.setOnAction(_ -> model.addSpell(spellSelector.showAndWait()));
+    add.visibleProperty().bind(nav.isEqualTo(Nav.Spells).and(editMode));
+    add.managedProperty().bind(visibleProperty());
+
+    var box = new VBox(10, cancel, spellsList, add);
     box.visibleProperty().bind(nav.isEqualTo(Nav.Spells).and(currentOrEdit));
     box.managedProperty().bind(box.visibleProperty());
 
@@ -343,9 +356,12 @@ public class CreatureView extends VBox {
           model.loadSpellProcesses(spell);
           nav.set(Nav.Process);
         });
+    castButton.visibleProperty().bind(playOnly);
+    castButton.managedProperty().bind(castButton.visibleProperty());
 
     var deleteButton = new Button("Delete");
     deleteButton.managedProperty().bind(editMode);
+    deleteButton.visibleProperty().bind(editMode);
     deleteButton.setOnAction(_ -> model.removeSpell(spell));
 
     var buttonBox = new HBox(10, castButton, deleteButton);
