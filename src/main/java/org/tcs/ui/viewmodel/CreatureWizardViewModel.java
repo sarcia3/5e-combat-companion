@@ -1,11 +1,15 @@
 package org.tcs.ui.viewmodel;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableStringValue;
+import javafx.collections.*;
 import org.tcs.model.Creature;
+import org.tcs.model.Damage;
 import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.geometry.Point;
 
@@ -17,6 +21,13 @@ public class CreatureWizardViewModel {
   private final SimpleStringProperty creatureHitpointsError = new SimpleStringProperty("");
   private final SimpleDoubleProperty creatureMovement = new SimpleDoubleProperty(10.0);
   private final SimpleStringProperty creatureMovementError = new SimpleStringProperty("");
+
+  private final ObservableSet<Damage.Type> resistances =
+      FXCollections.observableSet(EnumSet.noneOf(Damage.Type.class));
+  private final ObservableSet<Damage.Type> vulnerabilities =
+      FXCollections.observableSet(EnumSet.noneOf(Damage.Type.class));
+  private final ObservableSet<Damage.Type> immunities =
+      FXCollections.observableSet(EnumSet.noneOf(Damage.Type.class));
 
   public CreatureWizardViewModel() {
     creatureName.addListener(onChange(builder::name));
@@ -46,6 +57,12 @@ public class CreatureWizardViewModel {
               return "";
             },
             creatureMovement));
+
+    resistances.addListener(onSetChange(l -> builder.resistances(new ArrayList<>(l))));
+    vulnerabilities.addListener(onSetChange(l -> builder.vulnerabilities(new ArrayList<>(l))));
+    immunities.addListener(onSetChange(l -> builder.immunities(new ArrayList<>(l))));
+
+    resetCreatureData();
   }
 
   public Property<String> creatureNameProperty() {
@@ -72,6 +89,18 @@ public class CreatureWizardViewModel {
     return creatureMovementError.get();
   }
 
+  public ObservableSet<Damage.Type> resistancesProperty() {
+    return resistances;
+  }
+
+  public ObservableSet<Damage.Type> vulnerabilitiesProperty() {
+    return vulnerabilities;
+  }
+
+  public ObservableSet<Damage.Type> immunitiesProperty() {
+    return immunities;
+  }
+
   public ObservableStringValue creatureMovementErrorProperty() {
     return creatureMovementError;
   }
@@ -80,6 +109,10 @@ public class CreatureWizardViewModel {
     creatureName.set("");
     creatureHitpoints.set(0);
     creatureMovement.set(0.0);
+
+    resistances.clear();
+    vulnerabilities.clear();
+    immunities.clear();
   }
 
   public Creature makeCreature(Point position, DiceRoller diceRoller) {
@@ -91,15 +124,21 @@ public class CreatureWizardViewModel {
         throw new IllegalStateException("Invalid creature data");
       }
 
+      Creature creature = builder.position(position).diceRoller(diceRoller).build();
+
       resetCreatureData();
 
-      return new Creature.Builder().position(position).diceRoller(diceRoller).build();
+      return creature;
     } catch (NumberFormatException e) {
       throw new IllegalStateException("Invalid creature data");
     }
   }
 
-  static <T> ChangeListener<T> onChange(Consumer<T> action) {
+  private static <T> ChangeListener<T> onChange(Consumer<T> action) {
     return (_, _, v) -> action.accept(v);
+  }
+
+  private static <T> SetChangeListener<T> onSetChange(Consumer<ObservableSet<? extends T>> action) {
+    return c -> action.accept(c.getSet());
   }
 }
