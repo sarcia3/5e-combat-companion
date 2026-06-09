@@ -7,6 +7,6 @@ public final class WeaponFixtures {
   private WeaponFixtures() {}
 
   public static Weapon longsword() {
-    return new Weapon("Longsword", "1d8 SLASHING", Ability.STR, false);
+    return new Weapon("Longsword", "1d8 SLASHING", Ability.STR, false, WeaponRange.MELEE_STANDARD);
   }
 }

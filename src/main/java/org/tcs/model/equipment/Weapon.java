@@ -23,19 +23,29 @@ public record Weapon(String name, List<Mode> possibleAttacks) {
   public Collection<WeaponAttack> generateAttacks(Creature creature) {
     List<WeaponAttack> list = new ArrayList<>();
     for (Mode mode : possibleAttacks) {
-      // TODO fill in when ranged attacks are implemented
-      //if (mode.isRanged()) list.add(new RangedWeaponAttack());
-      //else
-      list.add(new MeleeWeaponAttack(creature, mode.damageRoll(), mode.ability(), this));
+      if (mode.isRanged()) list.add(new RangedWeaponAttack(creature, this, mode));
+      else list.add(new MeleeWeaponAttack(creature, this, mode));
     }
     return list;
   }
 
   public record Mode(
-      DamageRoll damageRoll, Ability ability, boolean isRanged, Ammunition requiredAmmunition, WeaponRange range) {
+      DamageRoll damageRoll,
+      Ability ability,
+      boolean isRanged,
+      Ammunition requiredAmmunition,
+      WeaponRange range) {
     public Mode(
-        String damageRollStr, Ability ability, boolean isRanged, Ammunition requiredAmmunition, WeaponRange range) {
+        String damageRollStr,
+        Ability ability,
+        boolean isRanged,
+        Ammunition requiredAmmunition,
+        WeaponRange range) {
       this(DamageRoll.parse(damageRollStr), ability, isRanged, requiredAmmunition, range);
+    }
+
+    public boolean isThrown() {
+      return isRanged && requiredAmmunition == null;
     }
   }
 

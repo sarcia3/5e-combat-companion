@@ -2,7 +2,9 @@ package org.tcs.model;
 
 import java.util.*;
 import java.util.function.Consumer;
+import org.tcs.model.activity.RangedWeaponAttack;
 import org.tcs.model.activity.WeaponAttack;
+import org.tcs.model.dice.RollMode;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.*;
 import org.tcs.model.magic.Ranged;
@@ -131,8 +133,25 @@ public class State {
     if (actor.isUnconscious() || !actor.turnTracker.hasAttackAction()) return list;
 
     for (WeaponAttack attack : attacks) {
-      for (Creature target : getCreaturesWithinDistance(actor.position(), attack.getRange()))
+      for (Creature target :
+          getCreaturesWithinDistance(actor.position(), attack.getRange().longFt()))
         if (target != actor) {
+          RollMode rollMode;
+          if (attack instanceof RangedWeaponAttack) {
+            double dist =
+                worldMap.getDistance(
+                    actor.position(), target.position(), List.of(OccupyReason.values()));
+            if (attack.getRange().isDisadvantaged(dist)) {
+              rollMode = RollMode.DISADVANTAGE;
+            } else {
+              rollMode = RollMode.NORMAL;
+            }
+          } else {
+            rollMode = RollMode.NORMAL;
+          }
+          // todo normally we would do a scan for hostile creatures, but we don't have definition of
+          // hostile yet.
+
           list.add(
               new StateProcess() {
 
@@ -148,7 +167,7 @@ public class State {
 
                 @Override
                 public void run() {
-                  attack.resolve(State.this, target);
+                  attack.resolve(State.this, target, rollMode);
                   actor.turnTracker.makeAttackAction();
                   if (target.isDead()) removeCreature(target);
                 }
