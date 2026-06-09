@@ -155,7 +155,7 @@ public class State {
 
                 @Override
                 public String toString() {
-                  return attack + " targeting " + target;
+                  return "Attack " + target + attack;
                 }
               });
         }

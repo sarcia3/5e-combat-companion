@@ -249,18 +249,21 @@ public class Creature implements HasInitiative, HasHitPoints {
       return this;
     }
 
-    public Builder resistances(EnumSet<Damage.Type> resistances) {
-      this.resistances = resistances;
+    public Builder resistances(Collection<Damage.Type> resistances) {
+      this.resistances.clear();
+      this.resistances.addAll(resistances);
       return this;
     }
 
-    public Builder vulnerabilities(EnumSet<Damage.Type> vulnerabilities) {
-      this.vulnerabilities = vulnerabilities;
+    public Builder vulnerabilities(Collection<Damage.Type> vulnerabilities) {
+      this.vulnerabilities.clear();
+      this.vulnerabilities.addAll(vulnerabilities);
       return this;
     }
 
-    public Builder immunities(EnumSet<Damage.Type> immunities) {
-      this.immunities = immunities;
+    public Builder immunities(Collection<Damage.Type> immunities) {
+      this.immunities.clear();
+      this.immunities.addAll(immunities);
       return this;
     }
 

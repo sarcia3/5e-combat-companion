@@ -359,3 +359,82 @@
 .list-cell .label {
     -fx-text-fill: -stone-light;
 }
+
+/*----------------------------------------------------------------------*/
+/*------------------------------CHECK BOX-------------------------------*/
+/*----------------------------------------------------------------------*/
+
+.check-box .box {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 100% 100%,
+            #1a1714 0%, #3a3530 100%),
+        linear-gradient(from 0% 0% to 0% 100%,
+            #4a4540 0%, #252220 100%);
+    -fx-background-insets: 0, 2;
+    -fx-border-color:      #5a5550 #1a1714 #1a1714 #5a5550;
+    -fx-border-width:      1.5;
+    -fx-border-radius:     3;
+    -fx-background-radius: 3;
+}
+
+.check-box:hover .box {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 100% 100%,
+            #252220 0%, #4a4540 100%),
+        linear-gradient(from 0% 0% to 0% 100%,
+            #5a5550 0%, #353230 100%);
+    -fx-background-insets: 0, 2;
+}
+
+.check-box:selected .box {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 0% 100%,
+            -dnd-gold 0%, -dnd-gold-dark 100%),
+        linear-gradient(from 0% 0% to 0% 100%,
+            -dnd-gold 0%, -dnd-gold-dark 100%);
+    -fx-background-insets: 0, 2;
+    -fx-border-color: -dnd-gold-lit -dnd-gold-dark -dnd-gold-dark -dnd-gold-lit;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: -ink-dark;
+}
+
+.check-box .label {
+    -fx-text-fill: -stone-light;
+}
+
+.check-box:disabled .box {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 100% 100%,
+            #2a2826 0%, #2a2826 100%),
+        linear-gradient(from 0% 0% to 0% 100%,
+            #333130 0%, #252322 100%);
+    -fx-background-insets: 0, 2;
+    -fx-border-color:      #3a3836 #1e1c1b #1e1c1b #3a3836;
+}
+
+.check-box:disabled .label {
+    -fx-text-fill: #5a5755;
+}
+
+
+/*----------------------------------------------------------------------*/
+/*------------------------------TYPE SELECTOR LIST----------------------*/
+/*----------------------------------------------------------------------*/
+
+.type-selector-list .list-cell:selected {
+    -fx-background-color: transparent;
+}
+
+.type-selector-list .list-cell:hover {
+    -fx-background-color: transparent;
+}
+
+.type-selector-list .list-cell:selected .label {
+    -fx-text-fill: -stone-light;
+}
+
+.type-selector-list .list-cell:odd {
+    -fx-background-color: transparent;
+}

@@ -1,9 +1,11 @@
 package org.tcs.ui;
 
+import java.util.EnumSet;
 import java.util.Objects;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,10 +15,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.converter.NumberStringConverter;
+import org.tcs.model.Damage;
 import org.tcs.ui.util.BetterTextField;
 import org.tcs.ui.viewmodel.CreatureWizardViewModel;
 
 public class CreatureWizard {
+
+  private final DamageTypeSelector typeSelector;
   private final Stage popup;
   private boolean okClicked = false;
 
@@ -25,6 +30,8 @@ public class CreatureWizard {
     popup.initOwner(owner);
     popup.setTitle("Create Creature");
     popup.initModality(Modality.APPLICATION_MODAL);
+
+    typeSelector = new DamageTypeSelector(owner);
 
     // Name field
     var nameLabel = new Label("Name:");
@@ -111,6 +118,8 @@ public class CreatureWizard {
     buttonBox.setAlignment(Pos.CENTER_RIGHT);
     buttonBox.setPadding(new Insets(10));
 
+    form.getChildren().add(resistances(model));
+
     BorderPane root = new BorderPane();
     root.setCenter(form);
     root.setBottom(buttonBox);
@@ -120,6 +129,40 @@ public class CreatureWizard {
         .getStylesheets()
         .add(Objects.requireNonNull(getClass().getResource("/global.css")).toExternalForm());
     popup.setScene(scene);
+  }
+
+  public Node resistances(CreatureWizardViewModel model) {
+    var resistancesButton = new Button("Edit resistances");
+    resistancesButton.setOnAction(
+        _ -> {
+          EnumSet<Damage.Type> set = typeSelector.showAndWait(model.resistancesProperty());
+          if (set != null) {
+            model.resistancesProperty().clear();
+            model.resistancesProperty().addAll(set);
+          }
+        });
+
+    var vulnerabilitiesButton = new Button("Edit vulnerabilities");
+    vulnerabilitiesButton.setOnAction(
+        _ -> {
+          EnumSet<Damage.Type> set = typeSelector.showAndWait(model.vulnerabilitiesProperty());
+          if (set != null) {
+            model.vulnerabilitiesProperty().clear();
+            model.vulnerabilitiesProperty().addAll(set);
+          }
+        });
+
+    var immunitiesButton = new Button("Edit immunities");
+    immunitiesButton.setOnAction(
+        _ -> {
+          EnumSet<Damage.Type> set = typeSelector.showAndWait(model.immunitiesProperty());
+          if (set != null) {
+            model.immunitiesProperty().clear();
+            model.immunitiesProperty().addAll(set);
+          }
+        });
+
+    return new HBox(10, resistancesButton, vulnerabilitiesButton, immunitiesButton);
   }
 
   public boolean showAndWait() {
