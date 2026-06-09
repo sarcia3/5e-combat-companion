@@ -50,7 +50,7 @@ public class Spellcasting {
   /** Spends a spell slot for a leveled spell. Cantrips (level 0) consume no slot. */
   public void castSpell(SpellLevel level) {
     if (level.isCantrip()) return;
-    spellSlots.spendSlot(level);
+    spellSlots.expendSlot(level);
   }
 
   public List<Spell> getSpells() {
