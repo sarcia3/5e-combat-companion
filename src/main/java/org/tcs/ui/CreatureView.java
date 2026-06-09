@@ -1,7 +1,6 @@
 package org.tcs.ui;
 
 import java.util.Map;
-import java.util.function.Function;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
@@ -13,9 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Window;
@@ -23,6 +20,7 @@ import org.tcs.model.Creature;
 import org.tcs.model.StateProcess;
 import org.tcs.model.equipment.Armor;
 import org.tcs.model.equipment.Weapon;
+import org.tcs.ui.equipment.ArmorSelector;
 import org.tcs.ui.equipment.WeaponSelector;
 import org.tcs.ui.viewmodel.CreatureViewModel;
 
@@ -42,11 +40,13 @@ public class CreatureView extends VBox {
   private Runnable onStopMoving = () -> {};
   private Runnable onDelete = () -> {};
   private final WeaponSelector weaponSelector;
+  private final ArmorSelector armorSelector;
 
   public CreatureView(Map<Creature, Image> creatureImages, CreatureViewModel model, Window owner) {
     currentOrEdit = model.isCurrentProperty().or(editMode);
     playOnly = model.isCurrentProperty().and(editMode.not());
     weaponSelector = new WeaponSelector(owner);
+    armorSelector = new ArmorSelector(owner);
 
     var name = new Label();
     name.textProperty().bind(model.creatureProperty().map(Creature::name));
@@ -133,26 +133,30 @@ public class CreatureView extends VBox {
     message.setVisible(false);
     message.managedProperty().bind(message.visibleProperty());
 
-    Function<Armor, String> armorMap =
-        (Armor a) -> {
-          String base = "Equipped armor: ";
-          if (a == null) return base + "none";
-          return base + a.name();
-        };
-    var equippedArmor = new Label(armorMap.apply(model.wornArmorProperty().get()));
-    equippedArmor.textProperty().bind(model.wornArmorProperty().map(armorMap));
-    equippedArmor.setAlignment(Pos.CENTER_LEFT);
-    equippedArmor.setStyle("-fx-font-weight: bold;");
+    var armorLabel = new Label("Equipped armor:");
+    var equippedArmor = new Label();
+    equippedArmor.textProperty().bind(model.wornArmorProperty());
+
+    var changeArmorButton = new Button("Change");
+    changeArmorButton.setOnAction(
+        _ -> {
+          Armor armor = armorSelector.showAndWait();
+          model.equip(armor);
+        });
+    changeArmorButton.visibleProperty().bind(editMode);
+    changeArmorButton.managedProperty().bind(editMode);
+
+    var spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+    var armorBox = new HBox(equippedArmor, spacer, changeArmorButton);
+    armorBox.setAlignment(Pos.CENTER_LEFT);
 
     var armorClass = new Label();
     armorClass.textProperty().bind(model.armorClassProperty().asString().map(s -> "AC: " + s));
-    armorClass.setAlignment(Pos.CENTER_RIGHT);
-    armorClass.setStyle("-fx-font-weight: bold;");
 
-    var armorBox = new HBox(equippedArmor, armorClass);
+    var armorInfo = new VBox(armorLabel, armorBox, armorClass);
 
     var equippedLabel = new Label("Equipped weapons:");
-    equippedLabel.setStyle("-fx-font-weight: bold;");
 
     var equippedWeapons = new VBox(4.0);
     model
@@ -168,7 +172,6 @@ public class CreatureView extends VBox {
                 });
 
     var storedLabel = new Label("Stored:");
-    storedLabel.setStyle("-fx-font-weight: bold;");
 
     var storedWeapons = new VBox();
     storedWeapons.setSpacing(4.0);
@@ -184,8 +187,8 @@ public class CreatureView extends VBox {
                   }
                 });
 
-    var add = new Button("Add a weapon");
-    add.setOnAction(
+    var addWeapon = new Button("Add a weapon");
+    addWeapon.setOnAction(
         _ -> {
           Weapon weapon = weaponSelector.showAndWait();
 
@@ -193,19 +196,19 @@ public class CreatureView extends VBox {
             model.addStoredWeapon(weapon);
           }
         });
-    add.visibleProperty().bind(editMode);
-    add.managedProperty().bind(add.visibleProperty());
+    addWeapon.visibleProperty().bind(editMode);
+    addWeapon.managedProperty().bind(addWeapon.visibleProperty());
 
     var selection = new VBox(8.0);
-    selection.visibleProperty().bind(nav.isEqualTo(Nav.Inventory));
-    selection.managedProperty().bind(nav.isEqualTo(Nav.Inventory));
+    selection.visibleProperty().bind(nav.isEqualTo(Nav.Inventory).and(currentOrEdit));
+    selection.managedProperty().bind(nav.isEqualTo(Nav.Inventory).and(currentOrEdit));
     selection
         .getChildren()
         .addAll(
             cancel,
             message,
             new Separator(),
-            armorBox,
+            armorInfo,
             new Separator(),
             equippedLabel,
             equippedWeapons,
@@ -213,8 +216,8 @@ public class CreatureView extends VBox {
             storedLabel,
             storedWeapons,
             new Separator(),
-            add);
-
+            addWeapon);
+    selection.setStyle("-fx-font-weight: bold;");
     return selection;
   }
 

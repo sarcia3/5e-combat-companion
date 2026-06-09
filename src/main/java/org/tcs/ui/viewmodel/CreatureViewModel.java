@@ -19,7 +19,7 @@ public class CreatureViewModel {
   private final ObservableList<Weapon> equippedWeapons = FXCollections.observableArrayList();
   private final ObservableList<StateProcess> attacks = FXCollections.observableArrayList();
   private final SimpleDoubleProperty movementLeft = new SimpleDoubleProperty(0.0);
-  private final ObjectProperty<Armor> wornArmor = new SimpleObjectProperty<>();
+  private final StringProperty wornArmor = new SimpleStringProperty("none");
   private final IntegerProperty armorClass = new SimpleIntegerProperty(0);
   private NavMap navMap;
   private Runnable onPass = () -> {};
@@ -66,7 +66,8 @@ public class CreatureViewModel {
   private void reloadEquipment() {
     storedWeapons.setAll(creature.get().inventory().getStoredWeapons());
     equippedWeapons.setAll(creature.get().inventory().getEquippedWeapons());
-    wornArmor.set(creature.get().inventory().wornArmor());
+    Armor armor = creature.get().inventory().wornArmor();
+    wornArmor.set(armor != null ? armor.name() : "none");
     armorClass.set(creature.get().armorClass());
   }
 
@@ -104,7 +105,7 @@ public class CreatureViewModel {
     return equippedWeapons;
   }
 
-  public ObjectProperty<Armor> wornArmorProperty() {
+  public StringProperty wornArmorProperty() {
     return wornArmor;
   }
 
