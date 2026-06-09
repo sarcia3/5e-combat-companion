@@ -1,30 +1,40 @@
 package org.tcs.ui.viewmodel;
 
+import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableStringValue;
 import org.tcs.model.Creature;
 import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.geometry.Point;
 
 public class CreatureWizardViewModel {
+  private final Creature.Builder builder = new Creature.Builder();
+
   private final SimpleStringProperty creatureName = new SimpleStringProperty("");
-  private final SimpleIntegerProperty creatureHitpoints = new SimpleIntegerProperty(0);
+  private final SimpleIntegerProperty creatureHitpoints = new SimpleIntegerProperty(20);
   private final SimpleStringProperty creatureHitpointsError = new SimpleStringProperty("");
-  private final SimpleDoubleProperty creatureMovement = new SimpleDoubleProperty(0.0);
+  private final SimpleDoubleProperty creatureMovement = new SimpleDoubleProperty(10.0);
   private final SimpleStringProperty creatureMovementError = new SimpleStringProperty("");
 
   public CreatureWizardViewModel() {
+    creatureName.addListener(onChange(builder::name));
+
+    creatureHitpoints.addListener(onChange(v -> builder.hitPointMaximum(v.intValue())));
+
     creatureHitpointsError.bind(
         Bindings.createStringBinding(
             () -> {
-              int hitpoints = creatureHitpoints.get();
-              if (hitpoints <= 0) {
+              int hitPoints = creatureHitpoints.get();
+              if (hitPoints <= 0) {
                 return "Hitpoints must be positive";
               }
               return "";
             },
             creatureHitpoints));
+
+    creatureMovement.addListener(onChange(v -> builder.movementSpeed(v.intValue())));
 
     creatureMovementError.bind(
         Bindings.createStringBinding(
@@ -74,7 +84,6 @@ public class CreatureWizardViewModel {
 
   public Creature makeCreature(Point position, DiceRoller diceRoller) {
     try {
-      String name = creatureName.get();
       int hitPoints = creatureHitpoints.get();
       double movement = creatureMovement.get();
 
@@ -84,16 +93,13 @@ public class CreatureWizardViewModel {
 
       resetCreatureData();
 
-      return new Creature.Builder()
-          .name(name)
-          .position(position)
-          .hitPointMaximum(hitPoints)
-          .movementSpeed(movement)
-          .proficiencyBonus(2)
-          .diceRoller(diceRoller)
-          .build();
+      return new Creature.Builder().position(position).diceRoller(diceRoller).build();
     } catch (NumberFormatException e) {
       throw new IllegalStateException("Invalid creature data");
     }
+  }
+
+  static <T> ChangeListener<T> onChange(Consumer<T> action) {
+    return (_, _, v) -> action.accept(v);
   }
 }
