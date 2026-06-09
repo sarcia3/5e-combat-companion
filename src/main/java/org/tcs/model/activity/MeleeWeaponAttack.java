@@ -1,8 +1,6 @@
 package org.tcs.model.activity;
 
 import org.tcs.model.*;
-import org.tcs.model.dice.DamageRoll;
-import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.equipment.Weapon;
 
 /**
