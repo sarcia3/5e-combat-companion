@@ -9,11 +9,6 @@ public class Inventory {
   private Armor wornArmor;
   private Shield equippedShield;
 
-  public int armorClass(int dexMod) {
-    return (wornArmor == null ? 10 + dexMod : wornArmor.armorClass(dexMod))
-        + (equippedShield == null ? 0 : 2);
-  }
-
   /** equipped weapons don't count towards storedWeapons */
   private final List<Weapon> storedWeapons = new ArrayList<>();
 
@@ -56,6 +51,11 @@ public class Inventory {
     equippedWeapons.remove(weapon);
     storedWeapons.add(weapon);
     return true;
+  }
+
+  public int armorClass(int dexMod) {
+    return (wornArmor == null ? 10 + dexMod : wornArmor.armorClass(dexMod))
+            + (equippedShield == null ? 0 : 2);
   }
 
   public Armor wornArmor() {
