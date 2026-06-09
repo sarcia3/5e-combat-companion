@@ -15,25 +15,27 @@ public record Weapon(String name, List<Mode> possibleAttacks) {
     this(name, List.of(possibleAttack));
   }
 
-  public Weapon(String name, String damageRollStr, Ability ability, boolean isRanged) {
-    this(name, List.of(new Mode(damageRollStr, ability, isRanged, null)));
+  public Weapon(
+      String name, String damageRollStr, Ability ability, boolean isRanged, WeaponRange range) {
+    this(name, List.of(new Mode(damageRollStr, ability, isRanged, null, range)));
   }
 
   public Collection<WeaponAttack> generateAttacks(Creature creature) {
     List<WeaponAttack> list = new ArrayList<>();
     for (Mode mode : possibleAttacks) {
       // TODO fill in when ranged attacks are implemented
-      if (mode.isRanged()) list.add(new RangedWeaponAttack());
-      else list.add(new MeleeWeaponAttack(creature, mode.damageRoll(), mode.ability(), this));
+      //if (mode.isRanged()) list.add(new RangedWeaponAttack());
+      //else
+      list.add(new MeleeWeaponAttack(creature, mode.damageRoll(), mode.ability(), this));
     }
     return list;
   }
 
   public record Mode(
-      DamageRoll damageRoll, Ability ability, boolean isRanged, Ammunition requiredAmmunition) {
+      DamageRoll damageRoll, Ability ability, boolean isRanged, Ammunition requiredAmmunition, WeaponRange range) {
     public Mode(
-        String damageRollStr, Ability ability, boolean isRanged, Ammunition requiredAmmunition) {
-      this(DamageRoll.parse(damageRollStr), ability, isRanged, requiredAmmunition);
+        String damageRollStr, Ability ability, boolean isRanged, Ammunition requiredAmmunition, WeaponRange range) {
+      this(DamageRoll.parse(damageRollStr), ability, isRanged, requiredAmmunition, range);
     }
   }
 
