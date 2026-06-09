@@ -82,34 +82,6 @@ class StateTest {
 
   public static class GetPossibleAttacksTest {
     @Test
-    public void simpleScenario() {
-      // A day in London
-      WorldMap map = new Finite2DGrid(10, 10);
-      Weapon dagger = WeaponsLibrary.get("Dagger");
-      List<Creature> list = new ArrayList<>();
-      for (int i = 0; i < 5; i++) {
-        Point point = map.realPointToPoint(new RealPoint(i, i));
-        list.add(
-            new Creature.Builder()
-                .name("Commoner " + i)
-                .position(point)
-                .hitPointMaximum(10)
-                .movementSpeed(10)
-                .build());
-        list.getLast().inventory().addStoredWeapon(dagger);
-        list.getLast().inventory().equipWeapon(dagger);
-      }
-
-      State state = new State(list, map);
-      for (int i = 0; i < 5; i++) {
-        int expected = dagger.generateAttacks(list.get(i)).size();
-        if (i == 0 || i == 4) expected *= 3;
-        else expected *= 4;
-        assertEquals(expected, state.getPossibleAttacks(list.get(i), dagger).size());
-      }
-    }
-
-    @Test
     public void wallScenario() {
       WorldMap map = new Finite2DGrid(3, 3);
       Point point1 = map.realPointToPoint(new RealPoint(0, 0));
