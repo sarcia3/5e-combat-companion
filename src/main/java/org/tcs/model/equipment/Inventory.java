@@ -57,4 +57,12 @@ public class Inventory {
     storedWeapons.add(weapon);
     return true;
   }
+
+  public Armor wornArmor() {
+    return wornArmor;
+  }
+
+  public void setWornArmor(Armor armor) {
+    wornArmor = armor;
+  }
 }

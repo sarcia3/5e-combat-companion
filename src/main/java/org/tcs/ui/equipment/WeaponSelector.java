@@ -1,4 +1,4 @@
-package org.tcs.ui;
+package org.tcs.ui.equipment;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

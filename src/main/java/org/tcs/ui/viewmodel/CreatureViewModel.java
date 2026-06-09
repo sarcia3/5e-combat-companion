@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import org.tcs.model.Creature;
 import org.tcs.model.State;
 import org.tcs.model.StateProcess;
+import org.tcs.model.equipment.Armor;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.NavMap;
 
@@ -18,6 +19,8 @@ public class CreatureViewModel {
   private final ObservableList<Weapon> equippedWeapons = FXCollections.observableArrayList();
   private final ObservableList<StateProcess> attacks = FXCollections.observableArrayList();
   private final SimpleDoubleProperty movementLeft = new SimpleDoubleProperty(0.0);
+  private final ObjectProperty<Armor> wornArmor = new SimpleObjectProperty<>();
+  private final IntegerProperty armorClass = new SimpleIntegerProperty(0);
   private NavMap navMap;
   private Runnable onPass = () -> {};
 
@@ -27,7 +30,7 @@ public class CreatureViewModel {
     creature.addListener(
         _ -> {
           if (creature.get() == null) return;
-          reloadWeapons();
+          reloadEquipment();
           reloadNavMap();
         });
     isCurrent.bind(creature.isEqualTo(current));
@@ -39,25 +42,32 @@ public class CreatureViewModel {
 
   public void addStoredWeapon(Weapon weapon) {
     creature.get().inventory().addStoredWeapon(weapon);
-    reloadWeapons();
+    reloadEquipment();
   }
 
   /** Tries to equip a stored weapon. Returns false if there are not enough free hands. */
   public boolean equip(Weapon weapon) {
     boolean equipped = creature.get().inventory().equipWeapon(weapon);
-    if (equipped) reloadWeapons();
+    if (equipped) reloadEquipment();
     return equipped;
+  }
+
+  public void equip(Armor armor) {
+    creature.get().inventory().setWornArmor(armor);
+    reloadEquipment();
   }
 
   /** Unequips an equipped weapon, freeing its hand(s). */
   public void unequip(Weapon weapon) {
     creature.get().inventory().unequipWeapon(weapon);
-    reloadWeapons();
+    reloadEquipment();
   }
 
-  private void reloadWeapons() {
+  private void reloadEquipment() {
     storedWeapons.setAll(creature.get().inventory().getStoredWeapons());
     equippedWeapons.setAll(creature.get().inventory().getEquippedWeapons());
+    wornArmor.set(creature.get().inventory().wornArmor());
+    armorClass.set(creature.get().armorClass());
   }
 
   public void pass() {
@@ -92,6 +102,14 @@ public class CreatureViewModel {
 
   public ObservableList<Weapon> equippedWeaponsProperty() {
     return equippedWeapons;
+  }
+
+  public ObjectProperty<Armor> wornArmorProperty() {
+    return wornArmor;
+  }
+
+  public IntegerProperty armorClassProperty() {
+    return armorClass;
   }
 
   public ObservableList<StateProcess> attacksProperty() {

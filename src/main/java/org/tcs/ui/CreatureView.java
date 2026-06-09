@@ -1,11 +1,9 @@
 package org.tcs.ui;
 
 import java.util.Map;
+import java.util.function.Function;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,13 +21,15 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Window;
 import org.tcs.model.Creature;
 import org.tcs.model.StateProcess;
+import org.tcs.model.equipment.Armor;
 import org.tcs.model.equipment.Weapon;
+import org.tcs.ui.equipment.WeaponSelector;
 import org.tcs.ui.viewmodel.CreatureViewModel;
 
 public class CreatureView extends VBox {
   private enum Nav {
     All,
-    Weapons,
+    Inventory,
     Attacks,
     Movement
   }
@@ -86,8 +86,8 @@ public class CreatureView extends VBox {
   }
 
   private Node topLevelPlay(CreatureViewModel model) {
-    var weapons = new Button("Weapons");
-    weapons.setOnAction(_ -> nav.set(Nav.Weapons));
+    var weapons = new Button("Inventory");
+    weapons.setOnAction(_ -> nav.set(Nav.Inventory));
 
     var move = new Button("Move");
     move.setOnAction(
@@ -112,8 +112,8 @@ public class CreatureView extends VBox {
     var delete = new Button("Delete this creature");
     delete.setOnAction(_ -> onDelete.run());
 
-    var weapons = new Button("Weapons");
-    weapons.setOnAction(_ -> nav.set(Nav.Weapons));
+    var weapons = new Button("Inventory");
+    weapons.setOnAction(_ -> nav.set(Nav.Inventory));
 
     var topLevel = new VBox(8);
     topLevel.getChildren().addAll(delete, weapons);
@@ -133,7 +133,25 @@ public class CreatureView extends VBox {
     message.setVisible(false);
     message.managedProperty().bind(message.visibleProperty());
 
-    var equippedLabel = new Label("Equipped:");
+    Function<Armor, String> armorMap =
+        (Armor a) -> {
+          String base = "Equipped armor: ";
+          if (a == null) return base + "none";
+          return base + a.name();
+        };
+    var equippedArmor = new Label(armorMap.apply(model.wornArmorProperty().get()));
+    equippedArmor.textProperty().bind(model.wornArmorProperty().map(armorMap));
+    equippedArmor.setAlignment(Pos.CENTER_LEFT);
+    equippedArmor.setStyle("-fx-font-weight: bold;");
+
+    var armorClass = new Label();
+    armorClass.textProperty().bind(model.armorClassProperty().asString().map(s -> "AC: " + s));
+    armorClass.setAlignment(Pos.CENTER_RIGHT);
+    armorClass.setStyle("-fx-font-weight: bold;");
+
+    var armorBox = new HBox(equippedArmor, armorClass);
+
+    var equippedLabel = new Label("Equipped weapons:");
     equippedLabel.setStyle("-fx-font-weight: bold;");
 
     var equippedWeapons = new VBox(4.0);
@@ -179,13 +197,15 @@ public class CreatureView extends VBox {
     add.managedProperty().bind(add.visibleProperty());
 
     var selection = new VBox(8.0);
-    selection.visibleProperty().bind(nav.isEqualTo(Nav.Weapons));
-    selection.managedProperty().bind(nav.isEqualTo(Nav.Weapons));
+    selection.visibleProperty().bind(nav.isEqualTo(Nav.Inventory));
+    selection.managedProperty().bind(nav.isEqualTo(Nav.Inventory));
     selection
         .getChildren()
         .addAll(
             cancel,
             message,
+            new Separator(),
+            armorBox,
             new Separator(),
             equippedLabel,
             equippedWeapons,
@@ -248,7 +268,7 @@ public class CreatureView extends VBox {
 
   private Node targetSelection(CreatureViewModel model) {
     var cancel = new Button("Cancel");
-    cancel.setOnAction(_ -> nav.set(Nav.Weapons));
+    cancel.setOnAction(_ -> nav.set(Nav.Inventory));
 
     var buttons = new VBox(8);
     model

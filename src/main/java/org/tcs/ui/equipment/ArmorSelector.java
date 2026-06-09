@@ -46,6 +46,7 @@ public class ArmorSelector {
     ObservableList<ArmorEntry> entries = FXCollections.observableArrayList();
     armorList.setItems(entries);
 
+    entries.add(new ArmorEntry(null));
     for (Armor armor : ArmorLibrary.getArmors()) {
       entries.add(new ArmorEntry(armor));
     }
