@@ -1,5 +1,6 @@
 package org.tcs.ui.equipment;
 
+import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -62,7 +63,12 @@ public class WeaponSelector {
     var root = new VBox(10, weaponList, buttonBox);
     root.setPadding(new Insets(10));
 
-    popup.setScene(new Scene(root));
+    Scene scene = new Scene(root);
+    scene
+        .getStylesheets()
+        .add(Objects.requireNonNull(getClass().getResource("/global.css")).toExternalForm());
+
+    popup.setScene(scene);
   }
 
   public Weapon showAndWait() {
