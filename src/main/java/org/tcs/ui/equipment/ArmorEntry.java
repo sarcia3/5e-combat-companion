@@ -8,6 +8,6 @@ public class ArmorEntry extends Label {
 
   public ArmorEntry(Armor armor) {
     this.armor = armor;
-    setText(armor.name());
+    setText(armor == null ? "None" : armor.name());
   }
 }

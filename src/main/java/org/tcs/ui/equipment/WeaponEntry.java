@@ -1,4 +1,4 @@
-package org.tcs.ui;
+package org.tcs.ui.equipment;
 
 import javafx.scene.control.Label;
 import org.tcs.model.equipment.Weapon;
