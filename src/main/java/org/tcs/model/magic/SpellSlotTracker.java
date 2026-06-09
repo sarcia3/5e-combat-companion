@@ -14,10 +14,10 @@ public class SpellSlotTracker {
 
   public boolean hasSlot(SpellLevel spellLevel) {
     int maxSlots = maxSpellSlots.getOrDefault(spellLevel, 0);
-    return spellSlotsExpended.getOrDefault(spellLevel, maxSlots) < maxSlots;
+    return spellSlotsExpended.getOrDefault(spellLevel, 0) < maxSlots;
   }
 
-  public void spendSlot(SpellLevel spellLevel) {
+  public void expendSlot(SpellLevel spellLevel) {
     if (!hasSlot(spellLevel)) {
       // todo is this the best exception for this situation
       throw new IllegalArgumentException();
