@@ -12,6 +12,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   int hitPoints;
   int hitPointMaximum;
   int temporaryHitPoints = 0;
+  Integer fixedArmorClass;
 
   /** Resistance means taking half the damage of a given type */
   EnumSet<Damage.Type> resistances;
@@ -24,8 +25,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   DiceRoller diceRoller;
   int proficiencyBonus;
-  // Allow overriding the armor class for testing purposes
-  Integer overrideArmorClass;
+
   private Point position;
   Inventory inventory = new Inventory();
 
@@ -44,6 +44,7 @@ public class Creature implements HasInitiative, HasHitPoints {
       Collection<Damage.Type> resistances,
       Collection<Damage.Type> vulnerabilities,
       Collection<Damage.Type> immunities,
+      Integer fixedArmorClass,
       TurnTracker turnTracker) {
     this.name = name;
     this.position = position;
@@ -147,7 +148,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   @Override
   public int armorClass() {
-    if (overrideArmorClass != null) return overrideArmorClass;
+    if (fixedArmorClass != null) return fixedArmorClass;
     return inventory.armorClass(abilityModifier(Ability.DEX));
   }
 
@@ -199,7 +200,7 @@ public class Creature implements HasInitiative, HasHitPoints {
     private int hitPointMaximum = 20;
     private int proficiencyBonus = 2;
     private DiceRoller diceRoller = new RandomDiceRoller();
-    Integer overrideArmorClass;
+    Integer fixedArmorClass = null;
     private EnumSet<Damage.Type> resistances = EnumSet.noneOf(Damage.Type.class);
     private EnumSet<Damage.Type> vulnerabilities = EnumSet.noneOf(Damage.Type.class);
     private EnumSet<Damage.Type> immunities = EnumSet.noneOf(Damage.Type.class);
@@ -235,8 +236,8 @@ public class Creature implements HasInitiative, HasHitPoints {
       return this;
     }
 
-    public Builder overrideArmorClass(Integer overrideArmorClass) {
-      this.overrideArmorClass = overrideArmorClass;
+    public Builder overrideArmorClass(int fixedArmorClass) {
+      this.fixedArmorClass = fixedArmorClass;
       return this;
     }
 
@@ -291,6 +292,7 @@ public class Creature implements HasInitiative, HasHitPoints {
           resistances,
           vulnerabilities,
           immunities,
+          fixedArmorClass,
           turnTracker);
     }
   }
