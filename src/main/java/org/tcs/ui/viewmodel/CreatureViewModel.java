@@ -1,9 +1,12 @@
 package org.tcs.ui.viewmodel;
 
+import java.util.EnumMap;
+import java.util.Map;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.tcs.model.Ability;
 import org.tcs.model.Creature;
 import org.tcs.model.State;
 import org.tcs.model.StateProcess;
@@ -23,17 +26,26 @@ public class CreatureViewModel {
   private final IntegerProperty armorClass = new SimpleIntegerProperty(0);
   private final ObservableList<Spell> spells = FXCollections.observableArrayList();
   private final ObservableList<StateProcess> processes = FXCollections.observableArrayList();
+  private final Map<Ability, IntegerProperty> abilityScores = new EnumMap<>(Ability.class);
+  private final Map<Ability, IntegerProperty> abilityModifiers = new EnumMap<>(Ability.class);
+
   private NavMap navMap;
   private Runnable onPass = () -> {};
 
   public CreatureViewModel(State model, ObservableObjectValue<Creature> current) {
     this.model = model;
 
+    for (Ability ability : Ability.values()) {
+      abilityScores.put(ability, new SimpleIntegerProperty(-1));
+      abilityModifiers.put(ability, new SimpleIntegerProperty(-1));
+    }
+
     creature.addListener(
         _ -> {
           if (creature.get() == null) return;
           reloadEquipment();
           reloadSpells();
+          reloadAbilities();
           reloadNavMap();
         });
     isCurrent.bind(creature.isEqualTo(current));
@@ -110,6 +122,13 @@ public class CreatureViewModel {
     navMap = model.getMap().navMap(creature.get().position(), creature.get().movementLeft());
   }
 
+  private void reloadAbilities() {
+    for (Ability ability : Ability.values()) {
+      abilityScores.get(ability).set(creature.get().abilityScore(ability));
+      abilityModifiers.get(ability).set(creature.get().abilityModifier(ability));
+    }
+  }
+
   public DoubleProperty movementLeftProperty() {
     return movementLeft;
   }
@@ -140,6 +159,14 @@ public class CreatureViewModel {
 
   public ObservableList<StateProcess> processesProperty() {
     return processes;
+  }
+
+  public IntegerProperty abilityScoreProperty(Ability ability) {
+    return abilityScores.get(ability);
+  }
+
+  public IntegerProperty abilityModifierProperty(Ability ability) {
+    return abilityModifiers.get(ability);
   }
 
   public BooleanProperty isCurrentProperty() {

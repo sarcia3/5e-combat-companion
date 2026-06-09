@@ -1,5 +1,6 @@
 package org.tcs.ui.magic;
 
+import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -13,8 +14,6 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.tcs.model.magic.Spell;
 import org.tcs.model.magic.SpellLibrary;
-
-import java.util.Objects;
 
 public class SpellSelector {
   private final Stage popup = new Stage();
