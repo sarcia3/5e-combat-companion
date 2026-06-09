@@ -56,4 +56,12 @@ public class Spellcasting {
   public List<Spell> getSpells() {
     return List.copyOf(spells);
   }
+
+  public void addSpell(Spell spell) {
+    if (!spells.contains(spell)) spells.add(spell);
+  }
+
+  public void removeSpell(Spell spell) {
+    spells.remove(spell);
+  }
 }

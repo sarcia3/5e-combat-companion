@@ -10,6 +10,7 @@ import org.tcs.model.StateProcess;
 import org.tcs.model.equipment.Armor;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.NavMap;
+import org.tcs.model.magic.Spell;
 
 public class CreatureViewModel {
   private final State model;
@@ -17,10 +18,11 @@ public class CreatureViewModel {
   private final BooleanProperty isCurrent = new SimpleBooleanProperty(false);
   private final ObservableList<Weapon> storedWeapons = FXCollections.observableArrayList();
   private final ObservableList<Weapon> equippedWeapons = FXCollections.observableArrayList();
-  private final ObservableList<StateProcess> attacks = FXCollections.observableArrayList();
   private final SimpleDoubleProperty movementLeft = new SimpleDoubleProperty(0.0);
   private final StringProperty wornArmor = new SimpleStringProperty("none");
   private final IntegerProperty armorClass = new SimpleIntegerProperty(0);
+  private final ObservableList<Spell> spells = FXCollections.observableArrayList();
+  private final ObservableList<StateProcess> processes = FXCollections.observableArrayList();
   private NavMap navMap;
   private Runnable onPass = () -> {};
 
@@ -31,13 +33,14 @@ public class CreatureViewModel {
         _ -> {
           if (creature.get() == null) return;
           reloadEquipment();
+          reloadSpells();
           reloadNavMap();
         });
     isCurrent.bind(creature.isEqualTo(current));
   }
 
   public void loadAttacks(Weapon weapon) {
-    attacks.setAll(model.getPossibleAttacks(creature.get(), weapon));
+    processes.setAll(model.getPossibleAttacks(creature.get(), weapon));
   }
 
   public void addStoredWeapon(Weapon weapon) {
@@ -69,6 +72,24 @@ public class CreatureViewModel {
     Armor armor = creature.get().inventory().wornArmor();
     wornArmor.set(armor != null ? armor.name() : "none");
     armorClass.set(creature.get().armorClass());
+  }
+
+  public void loadSpellProcesses(Spell spell) {
+    processes.setAll(model.getPossibleSpells(creature.get(), spell));
+  }
+
+  private void reloadSpells() {
+    spells.setAll(creature.get().spellcasting().getSpells());
+  }
+
+  public void addSpell(Spell spell) {
+    creature.get().spellcasting().addSpell(spell);
+    reloadSpells();
+  }
+
+  public void removeSpell(Spell spell) {
+    creature.get().spellcasting().removeSpell(spell);
+    reloadSpells();
   }
 
   public void pass() {
@@ -113,8 +134,12 @@ public class CreatureViewModel {
     return armorClass;
   }
 
-  public ObservableList<StateProcess> attacksProperty() {
-    return attacks;
+  public ObservableList<Spell> spellsProperty() {
+    return spells;
+  }
+
+  public ObservableList<StateProcess> processesProperty() {
+    return processes;
   }
 
   public BooleanProperty isCurrentProperty() {

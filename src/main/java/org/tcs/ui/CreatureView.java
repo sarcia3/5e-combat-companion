@@ -20,6 +20,7 @@ import org.tcs.model.Creature;
 import org.tcs.model.StateProcess;
 import org.tcs.model.equipment.Armor;
 import org.tcs.model.equipment.Weapon;
+import org.tcs.model.magic.Spell;
 import org.tcs.ui.equipment.ArmorSelector;
 import org.tcs.ui.equipment.WeaponSelector;
 import org.tcs.ui.viewmodel.CreatureViewModel;
@@ -28,7 +29,8 @@ public class CreatureView extends VBox {
   private enum Nav {
     All,
     Inventory,
-    Attacks,
+    Process,
+    Spells,
     Movement
   }
 
@@ -74,6 +76,7 @@ public class CreatureView extends VBox {
             topLevelPlay(model),
             topLevelEdit(),
             inventoryView(model),
+            spellsView(model),
             targetSelection(model),
             movement(model));
     setMaxWidth(320.0);
@@ -89,6 +92,9 @@ public class CreatureView extends VBox {
     var inventory = new Button("Inventory");
     inventory.setOnAction(_ -> nav.set(Nav.Inventory));
 
+    var spells = new Button("Spells");
+    spells.setOnAction(_ -> nav.set(Nav.Spells));
+
     var move = new Button("Move");
     move.setOnAction(
         _ -> {
@@ -100,7 +106,7 @@ public class CreatureView extends VBox {
     pass.setOnAction(_ -> model.pass());
 
     var topLevel = new VBox(8);
-    topLevel.getChildren().addAll(inventory, move, pass);
+    topLevel.getChildren().addAll(inventory, spells, move, pass);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(playOnly));
     topLevel.managedProperty().bind(topLevel.visibleProperty());
@@ -115,8 +121,11 @@ public class CreatureView extends VBox {
     var inventory = new Button("Inventory");
     inventory.setOnAction(_ -> nav.set(Nav.Inventory));
 
+    var spells = new Button("Spells");
+    spells.setOnAction(_ -> nav.set(Nav.Spells));
+
     var topLevel = new VBox(8);
-    topLevel.getChildren().addAll(delete, inventory);
+    topLevel.getChildren().addAll(delete, inventory, spells);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(editMode));
     topLevel.managedProperty().bind(topLevel.visibleProperty());
@@ -256,7 +265,7 @@ public class CreatureView extends VBox {
     attackBtn.setOnAction(
         _ -> {
           model.loadAttacks(weapon);
-          nav.set(Nav.Attacks);
+          nav.set(Nav.Process);
         });
     attackBtn.visibleProperty().bind(playOnly);
     attackBtn.managedProperty().bind(attackBtn.visibleProperty());
@@ -273,16 +282,16 @@ public class CreatureView extends VBox {
 
   private Node targetSelection(CreatureViewModel model) {
     var cancel = new Button("Cancel");
-    cancel.setOnAction(_ -> nav.set(Nav.Inventory));
+    cancel.setOnAction(_ -> nav.set(Nav.All));
 
     var buttons = new VBox(8);
     model
-        .attacksProperty()
+        .processesProperty()
         .addListener(
             (ListChangeListener<? super Runnable>)
                 _ -> {
                   buttons.getChildren().clear();
-                  for (StateProcess a : model.attacksProperty()) {
+                  for (StateProcess a : model.processesProperty()) {
                     var attackBtn = new Button(a.toString());
                     attackBtn.setOnAction(
                         _ -> {
@@ -294,11 +303,53 @@ public class CreatureView extends VBox {
                 });
 
     var selection = new VBox(8);
-    selection.visibleProperty().bind(nav.isEqualTo(Nav.Attacks));
-    selection.managedProperty().bind(nav.isEqualTo(Nav.Attacks));
+    selection.visibleProperty().bind(nav.isEqualTo(Nav.Process));
+    selection.managedProperty().bind(nav.isEqualTo(Nav.Process));
     selection.getChildren().addAll(cancel, new Separator(), buttons);
 
     return selection;
+  }
+
+  private Node spellsView(CreatureViewModel model) {
+    var cancel = new Button("Cancel");
+    cancel.setOnAction(_ -> nav.set(Nav.All));
+
+    var spellsList = new VBox(8, cancel);
+
+    model
+        .spellsProperty()
+        .addListener(
+            (ListChangeListener<? super Spell>)
+                _ -> {
+                  spellsList.getChildren().clear();
+                  for (Spell spell : model.spellsProperty()) {
+                    spellsList.getChildren().add(spellEntry(spell, model));
+                  }
+                });
+
+    var box = new VBox(10, cancel, spellsList);
+    box.visibleProperty().bind(nav.isEqualTo(Nav.Spells).and(currentOrEdit));
+    box.managedProperty().bind(box.visibleProperty());
+
+    return box;
+  }
+
+  private Node spellEntry(Spell spell, CreatureViewModel model) {
+    var label = new Label(spell.name());
+
+    var castButton = new Button("Cast");
+    castButton.setOnAction(
+        _ -> {
+          model.loadSpellProcesses(spell);
+          nav.set(Nav.Process);
+        });
+
+    var deleteButton = new Button("Delete");
+    deleteButton.managedProperty().bind(editMode);
+    deleteButton.setOnAction(_ -> model.removeSpell(spell));
+
+    var buttonBox = new HBox(10, castButton, deleteButton);
+    return new VBox(label, buttonBox);
   }
 
   private Node movement(CreatureViewModel model) {
