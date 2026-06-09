@@ -210,7 +210,7 @@ public class Creature implements HasInitiative, HasHitPoints {
     private EnumSet<Damage.Type> resistances = EnumSet.noneOf(Damage.Type.class);
     private EnumSet<Damage.Type> vulnerabilities = EnumSet.noneOf(Damage.Type.class);
     private EnumSet<Damage.Type> immunities = EnumSet.noneOf(Damage.Type.class);
-    TurnTracker turnTracker = new TurnTracker(1, 1, 1, 1, 0, 10.0);
+    TurnTracker turnTracker = new TurnTracker(1, 1, 1, 1, 10.0);
 
     public Builder name(String name) {
       this.name = name;
@@ -279,11 +279,6 @@ public class Creature implements HasInitiative, HasHitPoints {
 
     public Builder attacksPerAction(Integer attacksPerAction) {
       turnTracker.attacksPerAction = attacksPerAction;
-      return this;
-    }
-
-    public Builder spellSlots(Integer spellSlots) {
-      turnTracker.spellSlots = spellSlots;
       return this;
     }
 

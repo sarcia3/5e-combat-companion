@@ -6,7 +6,6 @@ public class TurnTracker {
   int actions, maxActions;
   int bonusActions, maxBonusActions;
   int attackActions;
-  int spellSlots; // todo delete
   int leveledSpells = 0;
   int attacksPerAction;
 
@@ -15,13 +14,11 @@ public class TurnTracker {
       int maxBonusActions,
       int maxReactions,
       int attacksInAction,
-      int spellSlots,
       double maxMovement) {
     this.maxReactions = maxReactions;
     this.maxActions = maxActions;
     this.maxBonusActions = maxBonusActions;
     this.attacksPerAction = attacksInAction;
-    this.spellSlots = spellSlots;
     this.maxMovement = maxMovement;
   }
 
