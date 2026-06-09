@@ -18,6 +18,11 @@ public class Inventory {
     return storedWeapons.add(weapon);
   }
 
+  public boolean removeStoredWeapon(Weapon weapon) {
+    if (!storedWeapons.remove(weapon)) throw new IllegalArgumentException();
+    return true;
+  }
+
   public Collection<Weapon> getEquippedWeapons() {
     return List.copyOf(equippedWeapons);
   }

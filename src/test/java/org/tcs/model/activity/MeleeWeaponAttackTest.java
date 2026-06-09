@@ -5,30 +5,13 @@ import static org.tcs.model.CreatureFixtures.creature;
 import static org.tcs.model.CreatureFixtures.creatureWithArmorClass;
 import static org.tcs.model.equipment.WeaponFixtures.longsword;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
 import org.junit.jupiter.api.Test;
 import org.tcs.model.Creature;
-import org.tcs.model.dice.DiceRoller;
+import org.tcs.model.dice.QueuedDiceRoller;
+import org.tcs.model.dice.RollMode;
 import org.tcs.model.equipment.Weapon;
 
 class MeleeWeaponAttackTest {
-
-  /** A DiceRoller that returns a predetermined sequence of values, ignoring requested dice size. */
-  private static final class QueuedDiceRoller implements DiceRoller {
-    private final Queue<Integer> values;
-
-    QueuedDiceRoller(int... rolls) {
-      this.values = new ArrayDeque<>();
-      for (int r : rolls) values.add(r);
-    }
-
-    @Override
-    public int roll(int numberOfSides, RollInformation information) {
-      if (numberOfSides < 1) throw new IllegalArgumentException();
-      return values.poll();
-    }
-  }
 
   @Test
   void hitReducesTargetHitPointsByRolledDamage() {
@@ -39,7 +22,7 @@ class MeleeWeaponAttackTest {
     attacker.inventory().addStoredWeapon(weapon);
     WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
 
-    attack.resolve(null, target);
+    attack.resolve(null, target, RollMode.NORMAL);
 
     assertEquals(5, target.hitPoints()); // 10 - 5
   }
@@ -53,7 +36,7 @@ class MeleeWeaponAttackTest {
     attacker.inventory().addStoredWeapon(weapon);
     WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
 
-    attack.resolve(null, target);
+    attack.resolve(null, target, RollMode.NORMAL);
 
     assertEquals(10, target.hitPoints());
   }
@@ -67,7 +50,7 @@ class MeleeWeaponAttackTest {
     attacker.inventory().addStoredWeapon(weapon);
     WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
 
-    attack.resolve(null, target);
+    attack.resolve(null, target, RollMode.NORMAL);
 
     assertEquals(10, target.hitPoints());
   }
@@ -81,7 +64,7 @@ class MeleeWeaponAttackTest {
     Weapon weapon = longsword();
     attacker.inventory().addStoredWeapon(weapon);
     WeaponAttack attack = weapon.generateAttacks(attacker).stream().findAny().get();
-    attack.resolve(null, target);
+    attack.resolve(null, target, RollMode.NORMAL);
 
     assertEquals(24, target.hitPoints()); // 30 - 6
   }
