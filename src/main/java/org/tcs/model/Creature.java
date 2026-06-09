@@ -237,7 +237,7 @@ public class Creature implements HasInitiative, HasHitPoints {
       return this;
     }
 
-    public Builder overrideArmorClass(int fixedArmorClass) {
+    public Builder fixedArmorClass(Integer fixedArmorClass) {
       this.fixedArmorClass = fixedArmorClass;
       return this;
     }
