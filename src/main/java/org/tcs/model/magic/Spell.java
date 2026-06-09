@@ -17,8 +17,5 @@ public record Spell(
     Objects.requireNonNull(targeting, "spell targeting must not be null");
     Objects.requireNonNull(castingTime, "spell casting time must not be null");
     Objects.requireNonNull(effect, "spell effect must not be null");
-    if (range instanceof Touch && !(targeting instanceof SingleCreature)) {
-      throw new IllegalArgumentException("Touch spells must target a single creature");
-    }
   }
 }
