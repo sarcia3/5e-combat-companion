@@ -29,7 +29,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   private Point position;
   Inventory inventory = new Inventory();
-  Spellcasting spellcasting;
+  Spellcasting spellcasting = new Spellcasting(List.of(), new HashMap<>(), Ability.DEX, this);
 
   DeathTracker deathTracker = new DeathTracker(this);
   TurnTracker turnTracker;
