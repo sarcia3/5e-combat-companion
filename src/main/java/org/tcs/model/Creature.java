@@ -29,7 +29,7 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   private Point position;
   Inventory inventory = new Inventory();
-  Spellcasting spellcasting = new Spellcasting(List.of(), new HashMap<>(), Ability.DEX, this);
+  Spellcasting spellcasting = new Spellcasting(List.of(), new HashMap<>(), Ability.INT, this);
 
   DeathTracker deathTracker = new DeathTracker(this);
   TurnTracker turnTracker;
@@ -95,6 +95,10 @@ public class Creature implements HasInitiative, HasHitPoints {
   @Override
   public int hitPointMaximum() {
     return hitPointMaximum;
+  }
+
+  public int abilityScore(Ability ability) {
+    return abilityScores.get(ability);
   }
 
   public int abilityModifier(Ability ability) {

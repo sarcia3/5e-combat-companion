@@ -16,6 +16,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Window;
+import org.tcs.model.Ability;
 import org.tcs.model.Creature;
 import org.tcs.model.StateProcess;
 import org.tcs.model.equipment.Armor;
@@ -32,7 +33,8 @@ public class CreatureView extends VBox {
     Inventory,
     Process,
     Spells,
-    Movement
+    Movement,
+    Abilities
   }
 
   private final ObjectProperty<Nav> nav = new SimpleObjectProperty<>(Nav.All);
@@ -81,7 +83,9 @@ public class CreatureView extends VBox {
             inventoryView(model),
             spellsView(model),
             targetSelection(model),
-            movement(model));
+            movement(model),
+            abilityScores(model));
+    setStyle("-fx-font-weight: bold;");
     setMaxWidth(320.0);
     setAlignment(Pos.TOP_CENTER);
     setBackground(Background.fill(Color.WHITE));
@@ -98,6 +102,9 @@ public class CreatureView extends VBox {
     var spells = new Button("Spells");
     spells.setOnAction(_ -> nav.set(Nav.Spells));
 
+    var abilities = new Button("Abilities");
+    abilities.setOnAction(_ -> nav.set(Nav.Abilities));
+
     var move = new Button("Move");
     move.setOnAction(
         _ -> {
@@ -109,7 +116,7 @@ public class CreatureView extends VBox {
     pass.setOnAction(_ -> model.pass());
 
     var topLevel = new VBox(8);
-    topLevel.getChildren().addAll(inventory, spells, move, pass);
+    topLevel.getChildren().addAll(inventory, spells, abilities, move, pass);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(playOnly));
     topLevel.managedProperty().bind(topLevel.visibleProperty());
@@ -127,8 +134,11 @@ public class CreatureView extends VBox {
     var spells = new Button("Spells");
     spells.setOnAction(_ -> nav.set(Nav.Spells));
 
+    var abilities = new Button("Abilities");
+    abilities.setOnAction(_ -> nav.set(Nav.Abilities));
+
     var topLevel = new VBox(8);
-    topLevel.getChildren().addAll(delete, inventory, spells);
+    topLevel.getChildren().addAll(delete, inventory, spells, abilities);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(editMode));
     topLevel.managedProperty().bind(topLevel.visibleProperty());
@@ -206,7 +216,6 @@ public class CreatureView extends VBox {
             storedWeapons,
             new Separator(),
             addWeapon);
-    selection.setStyle("-fx-font-weight: bold;");
     return selection;
   }
 
@@ -381,6 +390,32 @@ public class CreatureView extends VBox {
     box.visibleProperty().bind(nav.isEqualTo(Nav.Movement));
     box.managedProperty().bind(nav.isEqualTo(Nav.Movement));
     box.getChildren().addAll(left, cancel);
+    return box;
+  }
+
+  private Node abilityScores(CreatureViewModel model) {
+    var cancel = new Button("Cancel");
+    cancel.setOnAction(_ -> nav.set(Nav.All));
+
+    var label = new Label("Abilities:");
+
+    var box = new VBox(5, cancel, label, new Separator());
+    box.visibleProperty().bind(nav.isEqualTo(Nav.Abilities));
+    box.managedProperty().bind(box.visibleProperty());
+
+    for (Ability ability : Ability.values()) {
+      var name = new Label(ability.name() + ": ");
+
+      var score = new Label();
+      score.textProperty().bind(model.abilityScoreProperty(ability).asString());
+
+      var modifier = new Label();
+      modifier
+          .textProperty()
+          .bind(model.abilityModifierProperty(ability).asString().map(s -> "(" + s + ")"));
+      box.getChildren().add(new HBox(3, name, score, modifier));
+    }
+
     return box;
   }
 
