@@ -81,18 +81,14 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
 
     var labelsBox = new VBox(5, sidesLabel, infoLabel);
     labelsBox.setAlignment(Pos.CENTER);
-    labelsBox.setStyle(
-        labelsBox.getStyle()
-            + "-fx-font-weight: bold;"
-            + "-fx-font-size: 18px;"
-            + "-fx-text-fill: -ink-brown;");
+    labelsBox.getStyleClass().add("labels-view");
 
     Button okButton = new Button("Submit");
     okButton.disableProperty().bind(isValid.not());
     okButton.setOnAction(_ -> hide());
 
     Button rollAll = new Button("Roll all");
-    rollAll.setPrefWidth(100);
+    rollAll.setPrefWidth(120);
     rollAll.setOnAction(
         _ -> {
           for (var val : rollResults) {
@@ -215,7 +211,7 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     var rollError = localIsValid.map(b -> b ? "" : "Invalid value");
     var rollErrorLabel = new Label();
     rollErrorLabel.textProperty().bind(rollError);
-    rollErrorLabel.setStyle(rollErrorLabel.getStyle() + "-fx-text-fill: -dnd-redLike;");
+    rollErrorLabel.getStyleClass().add("error-text");
 
     var visible = localIsValid.not().and(resultField.focusedProperty().not());
     rollErrorLabel.visibleProperty().bind(visible);
@@ -271,17 +267,7 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
 
     Button diceButton = new Button();
     diceButton.setPrefSize(80, 80);
-    diceButton.setStyle(
-        """
-            -fx-text-fill: -ink-brown;
-            -fx-background-color: -stone-light;
-            -fx-border-width: 2;
-            -fx-border-radius: 8;
-            -fx-background-radius: 8;
-            -fx-font-size: 18px;
-            -fx-font-weight: bold;
-            -fx-cursor: hand;
-            """);
+    diceButton.getStyleClass().add("dice-button");
 
     diceButton.textProperty().bind(rollResult.asString());
     diceButton.setOnAction(_ -> rollResult.set(random.nextInt(numberOfSides.get()) + 1));
@@ -290,10 +276,7 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
     BooleanBinding localIsValid =
         rollResult.greaterThan(0).and(rollResult.lessThanOrEqualTo(numberOfSides));
     localIsValid.addListener(
-        (_, _, valid) ->
-            diceButton.setStyle(
-                diceButton.getStyle()
-                    + (valid ? "-fx-text-fill: -ink-brown;" : "-fx-text-fill: -dnd-redLike;")));
+        (_, _, valid) -> diceButton.setStyle(valid ? "" : "-fx-text-fill: -dnd-redLike;"));
 
     return diceButton;
   }

@@ -21,7 +21,7 @@
     -dnd-bg-colour:   #7a7060;
 
     /* Some global settings so that it looks nice */
-    -fx-font-size:         14px;
+    -fx-font-size:         18px;
     -fx-text-fill: -stone-light;
     -fx-font-family: "Palatino Linotype", "Book Antiqua", "Georgia", serif;
     -fx-background-color: -dnd-bg-colour;
@@ -214,4 +214,99 @@
 .context-menu .separator .line {
     -fx-border-color: -ink-dark;
     -fx-border-width: 1;
+}
+
+
+/*----------------------------------------------------------------------*/
+/*------------------------------QUEUE VIEW------------------------------*/
+/*----------------------------------------------------------------------*/
+
+.queue-view{
+    -fx-background-color: -dnd-bg-colour;
+    -fx-background-radius: 5;
+    -fx-border-color: -ink-dark;
+}
+
+/*----------------------------------------------------------------------*/
+/*------------------------------CREATURE VIEW---------------------------*/
+/*----------------------------------------------------------------------*/
+
+.creature-view {
+    -fx-background-color: -dnd-bg-colour;
+}
+
+/*----------------------------------------------------------------------*/
+/*------------------------------ERROR-----------------------------------*/
+/*----------------------------------------------------------------------*/
+
+.error-text{
+    -fx-text-fill: -dnd-redLike;
+}
+
+
+/*----------------------------------------------------------------------*/
+/*------------------------------LABELS VIEW-----------------------------*/
+/*----------------------------------------------------------------------*/
+
+.labels-view{
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-text-fill: -ink-brown;
+}
+
+/*----------------------------------------------------------------------*/
+/*------------------------------TITLE VIEW------------------------------*/
+/*----------------------------------------------------------------------*/
+
+.title-view{
+    -fx-font-weight: bold;
+     -fx-font-size: 24px;
+}
+
+/*----------------------------------------------------------------------*/
+/*------------------------------IMAGE SELECTOR--------------------------*/
+/*----------------------------------------------------------------------*/
+
+.image-selector{
+    -fx-background-color: -dnd-bg-colour;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(three-pass-box, #0a0806, 8, 0.4, 2, 4);
+}
+
+/*----------------------------------------------------------------------*/
+/*------------------------------DICE BUTTON-----------------------------*/
+/*----------------------------------------------------------------------*/
+
+.dice-button {
+    -fx-text-fill:         -ink-brown;
+    -fx-background-color:  -stone-light;
+    -fx-border-width:      2;
+    -fx-border-radius:     8;
+    -fx-background-radius: 8;
+    -fx-font-size:         18px;
+    -fx-font-weight:       bold;
+    -fx-cursor:            hand;
+    -fx-border-color:      -stone-dark -grout-shadow -grout-shadow -stone-dark;
+    -fx-effect:            dropshadow(three-pass-box, #0a0806, 4, 0.3, 1, 2);
+}
+
+.dice-button:hover {
+    -fx-background-color:  -parchment-cream;
+    -fx-text-fill:         -ink-dark;
+    -fx-effect:            dropshadow(three-pass-box, #0a0806, 7, 0.4, 0, 3);
+}
+
+.dice-button:pressed {
+    -fx-background-color:  -stone-mid;
+    -fx-border-color:      -grout-shadow -stone-dark -stone-dark -grout-shadow;
+    -fx-effect:            innershadow(three-pass-box, #0a0806, 4, 0.35, 1, 2);
+    -fx-translate-y:       1;
+}
+
+.dice-button:disabled {
+    -fx-background-color:  #333130;
+    -fx-border-color:      #3a3836 #1e1c1b #1e1c1b #3a3836;
+    -fx-text-fill:         #5a5755;
+    -fx-effect:            none;
+    -fx-cursor:            default;
 }
