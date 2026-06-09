@@ -12,7 +12,7 @@ public class ArmorLibrary {
 
   private static final Map<String, Armor> armors = new HashMap<>();
 
-  public static void load() {
+  static {
     // Light armor: AC = base + full Dex modifier
     add(new Armor("Padded", 11, Category.LIGHT));
     add(new Armor("Leather", 11, Category.LIGHT));
