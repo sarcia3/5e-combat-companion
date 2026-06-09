@@ -30,7 +30,7 @@ public final class CreatureFixtures {
         .movementSpeed(30)
         .proficiencyBonus(proficiencyBonus)
         .diceRoller(diceRoller)
-        .overrideArmorClass(armorClass)
+        .fixedArmorClass(armorClass)
         .build();
   }
 }
