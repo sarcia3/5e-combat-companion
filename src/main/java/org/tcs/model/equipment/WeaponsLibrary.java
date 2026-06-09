@@ -36,35 +36,35 @@ public class WeaponsLibrary {
         new Weapon(
             "Shortsword",
             List.of(
-                new Weapon.Mode("1d6 PIERCING", Ability.DEX, false),
-                new Weapon.Mode("1d6 PIERCING", Ability.STR, false))));
+                new Weapon.Mode("1d6 PIERCING", Ability.DEX, false, null),
+                new Weapon.Mode("1d6 PIERCING", Ability.STR, false, null))));
 
     add(
         new Weapon(
             "Scimitar",
             List.of(
-                new Weapon.Mode("1d6 SLASHING", Ability.DEX, false),
-                new Weapon.Mode("1d6 SLASHING", Ability.STR, false))));
+                new Weapon.Mode("1d6 SLASHING", Ability.DEX, false, null),
+                new Weapon.Mode("1d6 SLASHING", Ability.STR, false, null))));
 
     add(
         new Weapon(
             "Rapier",
             List.of(
-                new Weapon.Mode("1d8 PIERCING", Ability.DEX, false),
-                new Weapon.Mode("1d8 PIERCING", Ability.STR, false))));
+                new Weapon.Mode("1d8 PIERCING", Ability.DEX, false, null),
+                new Weapon.Mode("1d8 PIERCING", Ability.STR, false, null))));
 
     add(
         new Weapon(
             "Whip",
             List.of(
-                new Weapon.Mode("1d4 SLASHING", Ability.DEX, false),
-                new Weapon.Mode("1d4 SLASHING", Ability.STR, false))));
+                new Weapon.Mode("1d4 SLASHING", Ability.DEX, false, null),
+                new Weapon.Mode("1d4 SLASHING", Ability.STR, false, null))));
     add(
         new Weapon(
             "Dagger",
             List.of(
-                new Weapon.Mode("1d4 PIERCING", Ability.DEX, false),
-                new Weapon.Mode("1d4 PIERCING", Ability.STR, false))));
+                new Weapon.Mode("1d4 PIERCING", Ability.DEX, false, null),
+                new Weapon.Mode("1d4 PIERCING", Ability.STR, false, null))));
     // new Weapon.Mode("1d4 PIERCING", Ability.DEX, true) when we add ranged weapons
 
     // Heavy Martial Melee Weapons (TODO two-handed only)

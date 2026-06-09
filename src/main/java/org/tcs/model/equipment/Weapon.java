@@ -16,7 +16,7 @@ public record Weapon(String name, List<Mode> possibleAttacks) {
   }
 
   public Weapon(String name, String damageRollStr, Ability ability, boolean isRanged) {
-    this(name, List.of(new Mode(damageRollStr, ability, isRanged)));
+    this(name, List.of(new Mode(damageRollStr, ability, isRanged, null)));
   }
 
   public Collection<WeaponAttack> generateAttacks(Creature creature) {
@@ -29,9 +29,11 @@ public record Weapon(String name, List<Mode> possibleAttacks) {
     return list;
   }
 
-  public record Mode(DamageRoll damageRoll, Ability ability, boolean isRanged) {
-    public Mode(String damageRollStr, Ability ability, boolean isRanged) {
-      this(DamageRoll.parse(damageRollStr), ability, isRanged);
+  public record Mode(
+      DamageRoll damageRoll, Ability ability, boolean isRanged, Ammunition requiredAmmunition) {
+    public Mode(
+        String damageRollStr, Ability ability, boolean isRanged, Ammunition requiredAmmunition) {
+      this(DamageRoll.parse(damageRollStr), ability, isRanged, requiredAmmunition);
     }
   }
 
