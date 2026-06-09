@@ -11,7 +11,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -32,6 +31,11 @@ public class AssetSelector {
     grid.setHgap(10);
     grid.setVgap(10);
     grid.setPadding(new Insets(10));
+    grid.setStyle(
+        grid.getStyle()
+            + "-fx-background-color: -dnd-bg-colour;"
+            + "-fx-border-color: transparent; "
+            + "-fx-effect: dropshadow(three-pass-box, #0a0806, 8, 0.4, 2, 4);");
 
     int col = 0;
     int row = 0;
@@ -62,7 +66,6 @@ public class AssetSelector {
         });
 
     HBox buttonBox = new HBox(10, okButton, cancelButton);
-    buttonBox.setBackground(Background.fill(Color.WHITE));
     buttonBox.setAlignment(Pos.CENTER_RIGHT);
     buttonBox.setPadding(new Insets(10));
 

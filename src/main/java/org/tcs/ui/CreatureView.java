@@ -250,7 +250,7 @@ public class CreatureView extends VBox {
     var cancel = new Button("Cancel");
     cancel.setOnAction(_ -> nav.set(Nav.Weapons));
 
-    var buttons = new VBox();
+    var buttons = new VBox(8);
     model
         .attacksProperty()
         .addListener(

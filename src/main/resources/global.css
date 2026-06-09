@@ -144,3 +144,74 @@
     -fx-effect:            none;
     -fx-cursor:            default;
 }
+
+/*----------------------------------------------------------------------*/
+/*------------------------------SCROLL PANE-----------------------------*/
+/*----------------------------------------------------------------------*/
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: -ink-dark;
+}
+
+/*----------------------------------------------------------------------*/
+/*------------------------------SEPARATOR-------------------------------*/
+/*----------------------------------------------------------------------*/
+
+.separator .line {
+    -fx-border-color: -ink-dark;
+    -fx-border-width: 1;
+}
+
+/*----------------------------------------------------------------------*/
+/*------------------------------CONTEXT MENU----------------------------*/
+/*----------------------------------------------------------------------*/
+
+.context-menu {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 100% 100%,
+            #1a1714 0%, #3a3530 100%),
+        linear-gradient(from 0% 0% to 0% 100%,
+            #4a4540 0%, #252220 100%);
+    -fx-background-insets: 0, 2;
+    -fx-border-color:      #5a5550 #1a1714 #1a1714 #5a5550;
+    -fx-border-width:      1.5;
+    -fx-border-radius:     3;
+    -fx-background-radius: 3;
+    -fx-effect: dropshadow(three-pass-box, #0a0806, 8, 0.4, 2, 4);
+    -fx-padding:           4;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-padding:          6 16 6 16;
+}
+
+.menu-item .label {
+    -fx-text-fill:   -stone-light;
+    -fx-font-family: "Palatino Linotype", "Book Antiqua", "Georgia", serif;
+    -fx-font-size:   14px;
+}
+
+.menu-item:hover, .menu-item:focused {
+    -fx-background-color:
+            linear-gradient(from 0% 0% to 100% 100%,
+                #252220 0%, #4a4540 100%),
+            linear-gradient(from 0% 0% to 0% 100%,
+                #5a5550 0%, #353230 100%);
+        -fx-text-fill:   -parchment-cream;
+        -fx-effect: dropshadow(three-pass-box, #0a0806, 8, 0.55, 0, 4);
+}
+
+.menu-item:hover .label, .menu-item:focused .label {
+    -fx-text-fill: -parchment-cream;
+}
+
+.menu-item:disabled .label {
+    -fx-text-fill: #5a5755;
+}
+
+.context-menu .separator .line {
+    -fx-border-color: -ink-dark;
+    -fx-border-width: 1;
+}

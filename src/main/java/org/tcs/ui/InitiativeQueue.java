@@ -81,7 +81,8 @@ public class InitiativeQueue extends VBox {
     imageView.setPreserveRatio(true);
 
     StackPane entryPane = new StackPane(imageView);
-    entryPane.setStyle("-fx-background-color: #444; -fx-background-radius: 5;");
+    entryPane.setStyle(
+        "-fx-background-color: -dnd-bg-colour; -fx-background-radius: 5; -fx-border-color: -ink-dark");
     entryPane.setPadding(new Insets(5));
     entryPane.setOnMouseClicked(_ -> onEntryClicked.accept(creature));
 
