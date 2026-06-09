@@ -6,7 +6,8 @@ public class TurnTracker {
   int actions, maxActions;
   int bonusActions, maxBonusActions;
   int attackActions;
-  int spellSlots;
+  int spellSlots; // todo delete
+  int leveledSpells = 0;
   int attacksPerAction;
 
   public TurnTracker(
@@ -68,14 +69,13 @@ public class TurnTracker {
     reactions--;
   }
 
-  boolean canCastSpell(int level) {
-    if (level == 0) return true;
-    return spellSlots > 0;
+  int leveledSpells() {
+    return leveledSpells;
   }
 
   void castSpell(int level) {
     if (level == 0) return;
-    spellSlots--;
+    leveledSpells++;
   }
 
   void reset() {
@@ -84,5 +84,6 @@ public class TurnTracker {
     bonusActions = maxBonusActions;
     attackActions = 0;
     movement = maxMovement;
+    leveledSpells = 0;
   }
 }

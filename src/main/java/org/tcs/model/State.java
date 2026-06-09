@@ -5,6 +5,9 @@ import java.util.function.Consumer;
 import org.tcs.model.activity.WeaponAttack;
 import org.tcs.model.equipment.Weapon;
 import org.tcs.model.geometry.*;
+import org.tcs.model.magic.Ranged;
+import org.tcs.model.magic.SingleCreature;
+import org.tcs.model.magic.Spell;
 import org.tcs.model.util.Pair;
 
 @SuppressWarnings("unused")
@@ -156,6 +159,82 @@ public class State {
                 }
               });
         }
+    }
+    return list;
+  }
+
+  public Collection<StateProcess> getPossibleSpells(Creature actor, Spell spell) {
+    // in my opinion this a bad way of handling this. I think just a method in activity called
+    // castSpell would be cleaner. That way you choose a spell, and then choose target(s).
+    // this version is especially problematic for stuff like choose any amount of creature within
+    // range
+    // this grows exponentially. I implemented a bare-bones version of this to have some
+    // consistancy,
+    // but I do not agree with it. This is the reason why I implemented only simple spell attacks
+    // ---
+    // for us to be able to change this quickly.
+    List<StateProcess> list = new ArrayList<>();
+    if (actor.spellcasting == null) {
+      return list;
+    }
+
+    if (actor.isUnconscious()) return list;
+
+    if (!actor.spellcasting().getSpells().contains(spell)) throw new IllegalArgumentException();
+
+    if (actor.turnTracker.leveledSpells() > 0 && spell.level().value() > 0) return list;
+
+    // leveled spells need an available slot; cantrips are always castable
+    if (spell.level().value() > 0 && !actor.spellcasting().hasSlot(spell.level())) return list;
+
+    boolean hasActivity =
+        switch (spell.castingTime()) {
+          case ACTION -> actor.turnTracker.hasAction();
+          case BONUS_ACTION -> actor.turnTracker.hasBonusAction();
+          default -> false;
+        };
+    if (!hasActivity) return list;
+
+    if (spell.range() instanceof Ranged(int range) && spell.targeting() instanceof SingleCreature) {
+      // todo ignore obstacles
+      for (Creature target : getCreaturesWithinDistance(actor.position(), range)) {
+        if (target == actor) continue;
+        list.add(
+            new StateProcess() {
+              @Override
+              public Creature getTarget() {
+                return target;
+              }
+
+              @Override
+              public Creature getSource() {
+                return actor;
+              }
+
+              @Override
+              public void run() {
+                spell.effect().resolve(State.this, actor, List.of(target), spell.level());
+                // consume the activity matching the casting time
+                switch (spell.castingTime()) {
+                  case ACTION -> actor.turnTracker.makeAction();
+                  case BONUS_ACTION -> actor.turnTracker.makeBonusAction();
+                  default -> {}
+                }
+                actor.turnTracker.castSpell(spell.level().value()); // mark leveled-spell-this-turn
+                actor
+                    .spellcasting()
+                    .castSpell(spell.level()); // spend the slot (no-op for cantrips)
+                if (target.isDead()) removeCreature(target);
+              }
+
+              @Override
+              public String toString() {
+                return spell.name() + " targeting " + target;
+              }
+            });
+      }
+    } else {
+      throw new UnsupportedOperationException();
     }
     return list;
   }
