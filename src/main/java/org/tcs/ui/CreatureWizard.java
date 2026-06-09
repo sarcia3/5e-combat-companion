@@ -15,6 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.converter.NumberStringConverter;
+import org.tcs.model.Ability;
 import org.tcs.model.Damage;
 import org.tcs.ui.util.BetterTextField;
 import org.tcs.ui.viewmodel.CreatureWizardViewModel;
@@ -118,13 +119,14 @@ public class CreatureWizard {
     buttonBox.setAlignment(Pos.CENTER_RIGHT);
     buttonBox.setPadding(new Insets(10));
 
+    form.getChildren().add(abilityScores(model));
     form.getChildren().add(resistances(model));
 
     BorderPane root = new BorderPane();
     root.setCenter(form);
     root.setBottom(buttonBox);
 
-    Scene scene = new Scene(root, 600, 600);
+    Scene scene = new Scene(root, 700, 620);
     scene
         .getStylesheets()
         .add(Objects.requireNonNull(getClass().getResource("/global.css")).toExternalForm());
@@ -163,6 +165,35 @@ public class CreatureWizard {
         });
 
     return new HBox(10, resistancesButton, vulnerabilitiesButton, immunitiesButton);
+  }
+
+  public Node abilityScores(CreatureWizardViewModel model) {
+    var abilityBox = new HBox(3);
+
+    for (Ability ability : Ability.values()) {
+      var label = new Label(ability.toString());
+
+      var field = new BetterTextField();
+      field.setTextFormatter(
+          new TextFormatter<>(
+              change1 -> {
+                if (change1.getControlNewText().matches("\\d*")) {
+                  return change1;
+                }
+
+                return null;
+              }));
+      Bindings.bindBidirectional(
+          field.textProperty(), model.abilityScores().get(ability), new NumberStringConverter("0"));
+      field.setPrefColumnCount(2);
+
+      var box = new HBox(5, label, field);
+      box.setAlignment(Pos.CENTER);
+
+      abilityBox.getChildren().add(box);
+    }
+
+    return abilityBox;
   }
 
   public boolean showAndWait() {

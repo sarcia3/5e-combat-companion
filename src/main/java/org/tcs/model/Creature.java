@@ -212,6 +212,7 @@ public class Creature implements HasInitiative, HasHitPoints {
     private final EnumSet<Damage.Type> resistances = EnumSet.noneOf(Damage.Type.class);
     private final EnumSet<Damage.Type> vulnerabilities = EnumSet.noneOf(Damage.Type.class);
     private final EnumSet<Damage.Type> immunities = EnumSet.noneOf(Damage.Type.class);
+    private final Map<Ability, Integer> abilityScores = new EnumMap<>(Ability.class);
     TurnTracker turnTracker = new TurnTracker(1, 1, 1, 1, 10.0);
 
     public Builder name(String name) {
@@ -287,19 +288,33 @@ public class Creature implements HasInitiative, HasHitPoints {
       return this;
     }
 
+    public Builder abilityScores(Map<Ability, Integer> abilityScores) {
+      this.abilityScores.clear();
+      this.abilityScores.putAll(abilityScores);
+      return this;
+    }
+
+    public Builder abilityScore(Ability ability, Integer value) {
+      abilityScores.put(ability, value);
+      return this;
+    }
+
     public Creature build() {
       turnTracker.reset();
-      return new Creature(
-          name,
-          position,
-          hitPointMaximum,
-          proficiencyBonus,
-          diceRoller,
-          resistances,
-          vulnerabilities,
-          immunities,
-          fixedArmorClass,
-          turnTracker);
+      Creature creature =
+          new Creature(
+              name,
+              position,
+              hitPointMaximum,
+              proficiencyBonus,
+              diceRoller,
+              resistances,
+              vulnerabilities,
+              immunities,
+              fixedArmorClass,
+              turnTracker);
+      creature.abilityScores.putAll(abilityScores);
+      return creature;
     }
   }
 }
