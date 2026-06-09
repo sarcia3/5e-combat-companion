@@ -5,6 +5,7 @@ import org.tcs.model.dice.DiceRoller;
 import org.tcs.model.dice.RandomDiceRoller;
 import org.tcs.model.equipment.Inventory;
 import org.tcs.model.geometry.Point;
+import org.tcs.model.magic.Spellcasting;
 
 /** Player, monster, summon etc. Basically anything that exists, has hp and takes actions */
 public class Creature implements HasInitiative, HasHitPoints {
@@ -28,6 +29,7 @@ public class Creature implements HasInitiative, HasHitPoints {
   Integer overrideArmorClass;
   private Point position;
   Inventory inventory = new Inventory();
+  Spellcasting spellcasting;
 
   DeathTracker deathTracker = new DeathTracker(this);
   TurnTracker turnTracker;
@@ -143,6 +145,11 @@ public class Creature implements HasInitiative, HasHitPoints {
 
   public Inventory inventory() {
     return inventory;
+  }
+
+  public Spellcasting spellcasting() {
+    // todo unsupported operation or something
+    return spellcasting;
   }
 
   @Override
