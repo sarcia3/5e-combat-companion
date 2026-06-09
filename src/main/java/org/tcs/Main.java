@@ -25,7 +25,6 @@ public class Main extends Application {
             .diceRoller(new WindowDiceRoller(primaryStage))
             .build();
 
-    WeaponsLibrary.load();
     creature.inventory().addStoredWeapon(WeaponsLibrary.get("Dagger"));
     creature.inventory().equipWeapon(WeaponsLibrary.get("Dagger"));
     state.addCreature(creature);

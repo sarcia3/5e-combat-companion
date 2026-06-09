@@ -84,7 +84,6 @@ class StateTest {
     @Test
     public void simpleScenario() {
       // A day in London
-      WeaponsLibrary.load();
       WorldMap map = new Finite2DGrid(10, 10);
       Weapon dagger = WeaponsLibrary.get("Dagger");
       List<Creature> list = new ArrayList<>();
@@ -112,7 +111,6 @@ class StateTest {
 
     @Test
     public void wallScenario() {
-      WeaponsLibrary.load();
       WorldMap map = new Finite2DGrid(3, 3);
       Point point1 = map.realPointToPoint(new RealPoint(0, 0));
       Point point2 = map.realPointToPoint(new RealPoint(2, 2));
@@ -146,7 +144,6 @@ class StateTest {
 
     @Test
     public void storedButNotEquippedWeaponCannotBeUsedToAttack() {
-      WeaponsLibrary.load();
       WorldMap map = new Finite2DGrid(3, 3);
       Weapon dagger = WeaponsLibrary.get("Dagger");
       Creature attacker =
@@ -173,7 +170,6 @@ class StateTest {
 
     @Test
     public void equippedWeaponCanBeUsedToAttack() {
-      WeaponsLibrary.load();
       WorldMap map = new Finite2DGrid(3, 3);
       Weapon dagger = WeaponsLibrary.get("Dagger");
       Creature attacker =
