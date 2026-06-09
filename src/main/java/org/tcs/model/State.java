@@ -195,47 +195,44 @@ public class State {
         };
     if (!hasActivity) return list;
 
-    if (spell.range() instanceof Ranged(int range) && spell.targeting() instanceof SingleCreature) {
-      // todo ignore obstacles
-      for (Creature target : getCreaturesWithinDistance(actor.position(), range)) {
-        if (target == actor) continue;
-        list.add(
-            new StateProcess() {
-              @Override
-              public Creature getTarget() {
-                return target;
-              }
+    if (!(spell.range() instanceof Ranged(int range)
+        && spell.targeting() instanceof SingleCreature)) throw new UnsupportedOperationException();
+    // todo ignore obstacles
+    for (Creature target : getCreaturesWithinDistance(actor.position(), range)) {
+      if (target == actor) continue;
+      list.add(
+          new StateProcess() {
+            @Override
+            public Creature getTarget() {
+              return target;
+            }
 
-              @Override
-              public Creature getSource() {
-                return actor;
-              }
+            @Override
+            public Creature getSource() {
+              return actor;
+            }
 
-              @Override
-              public void run() {
-                spell.effect().resolve(State.this, actor, List.of(target), spell.level());
-                // consume the activity matching the casting time
-                switch (spell.castingTime()) {
-                  case ACTION -> actor.turnTracker.makeAction();
-                  case BONUS_ACTION -> actor.turnTracker.makeBonusAction();
-                  default -> {}
-                }
-                actor.turnTracker.castSpell(spell.level().value()); // mark leveled-spell-this-turn
-                actor
-                    .spellcasting()
-                    .castSpell(spell.level()); // spend the slot (no-op for cantrips)
-                if (target.isDead()) removeCreature(target);
+            @Override
+            public void run() {
+              spell.effect().resolve(State.this, actor, List.of(target), spell.level());
+              // consume the activity matching the casting time
+              switch (spell.castingTime()) {
+                case ACTION -> actor.turnTracker.makeAction();
+                case BONUS_ACTION -> actor.turnTracker.makeBonusAction();
+                default -> {}
               }
+              actor.turnTracker.castSpell(spell.level().value()); // mark leveled-spell-this-turn
+              actor.spellcasting().castSpell(spell.level()); // spend the slot (no-op for cantrips)
+              if (target.isDead()) removeCreature(target);
+            }
 
-              @Override
-              public String toString() {
-                return spell.name() + " targeting " + target;
-              }
-            });
-      }
-    } else {
-      throw new UnsupportedOperationException();
+            @Override
+            public String toString() {
+              return spell.name() + " targeting " + target;
+            }
+          });
     }
+
     return list;
   }
 
