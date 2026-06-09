@@ -35,9 +35,7 @@
 
 .button {
     /* Shape */
-    -fx-background-radius: 3;
-    -fx-border-radius:     3;
-    -fx-padding:           10 24 10 24;
+    -fx-padding:           8 20 8 20;
 
     /* Iron texture: dark layered bevel */
     -fx-background-color:
@@ -173,10 +171,6 @@
             #1a1714 0%, #3a3530 100%),
         linear-gradient(from 0% 0% to 0% 100%,
             #4a4540 0%, #252220 100%);
-    -fx-background-insets: 0, 2;
-    -fx-border-color:      #5a5550 #1a1714 #1a1714 #5a5550;
-    -fx-border-width:      1.5;
-    -fx-border-radius:     3;
     -fx-background-radius: 3;
     -fx-effect: dropshadow(three-pass-box, #0a0806, 8, 0.4, 2, 4);
     -fx-padding:           4;
@@ -190,7 +184,7 @@
 .menu-item .label {
     -fx-text-fill:   -stone-light;
     -fx-font-family: "Palatino Linotype", "Book Antiqua", "Georgia", serif;
-    -fx-font-size:   14px;
+    -fx-font-size:   18px;
 }
 
 .menu-item:hover, .menu-item:focused {
