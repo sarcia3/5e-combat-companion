@@ -32,7 +32,7 @@ public class InitiativeQueue extends VBox {
     var firstName = new SimpleStringProperty();
     var label = new Label();
     label.textProperty().bind(firstName.map(v -> "Next: " + v).orElse("No creatures"));
-    label.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+    label.setStyle("-fx-font-weight: bold;");
 
     entries.addListener(
         (ListChangeListener<Creature>)
@@ -81,8 +81,7 @@ public class InitiativeQueue extends VBox {
     imageView.setPreserveRatio(true);
 
     StackPane entryPane = new StackPane(imageView);
-    entryPane.setStyle(
-        "-fx-background-color: -dnd-bg-colour; -fx-background-radius: 5; -fx-border-color: -ink-dark");
+    entryPane.getStyleClass().add("queue-view");
     entryPane.setPadding(new Insets(5));
     entryPane.setOnMouseClicked(_ -> onEntryClicked.accept(creature));
 

@@ -31,11 +31,7 @@ public class AssetSelector {
     grid.setHgap(10);
     grid.setVgap(10);
     grid.setPadding(new Insets(10));
-    grid.setStyle(
-        grid.getStyle()
-            + "-fx-background-color: -dnd-bg-colour;"
-            + "-fx-border-color: transparent; "
-            + "-fx-effect: dropshadow(three-pass-box, #0a0806, 8, 0.4, 2, 4);");
+    grid.getStyleClass().add("image-selector");
 
     int col = 0;
     int row = 0;

@@ -51,7 +51,7 @@ public class CreatureView extends VBox {
     var name = new Label();
     name.textProperty().bind(model.creatureProperty().map(Creature::name));
     name.setTextAlignment(TextAlignment.CENTER);
-    name.setStyle("-fx-font-weight: bold; -fx-font-size: 24px;");
+    name.getStyleClass().add("title-view");
 
     var portrait = new ImageView();
     portrait.setFitHeight(256.0);
@@ -81,7 +81,7 @@ public class CreatureView extends VBox {
     setBackground(Background.fill(Color.WHITE));
     setPadding(new Insets(8.0));
 
-    setStyle(getStyle() + "-fx-background-color: -dnd-bg-colour;");
+    getStyleClass().add("creature-view");
     model.creatureProperty().addListener(_ -> nav.set(Nav.All));
   }
 
@@ -129,7 +129,7 @@ public class CreatureView extends VBox {
     cancel.setOnAction(_ -> nav.set(Nav.All));
 
     var message = new Label();
-    message.setStyle("-fx-text-fill: -dnd-redLike;");
+    message.getStyleClass().add("error-text");
     message.setVisible(false);
     message.managedProperty().bind(message.visibleProperty());
 

@@ -50,7 +50,7 @@ public class CreatureWizard {
         model.creatureHitpointsProperty(),
         new NumberStringConverter("0"));
     var maxHitpointsError = new Label();
-    maxHitpointsError.setStyle(maxHitpointsError.getStyle() + "-fx-text-fill: -dnd-redLike;");
+    maxHitpointsError.getStyleClass().add("error-text");
     maxHitpointsError.textProperty().bind(model.creatureHitpointsErrorProperty());
     HBox maxHitpointsBox = new HBox(10, maxHitpointsLabel, maxHitpointsField);
     maxHitpointsBox.setAlignment(Pos.CENTER_LEFT);
@@ -72,7 +72,7 @@ public class CreatureWizard {
         model.creatureMovementProperty(),
         new NumberStringConverter("0.0"));
     var movementSpeedError = new Label();
-    movementSpeedError.setStyle(movementSpeedError.getStyle() + "-fx-text-fill: -dnd-redLike;");
+    movementSpeedError.getStyleClass().add("error-text");
     movementSpeedError.textProperty().bind(model.creatureMovementErrorProperty());
     HBox movementSpeedBox = new HBox(10, movementSpeedLabel, movementSpeedField);
     movementSpeedBox.setAlignment(Pos.CENTER_LEFT);
