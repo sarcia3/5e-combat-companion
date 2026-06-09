@@ -1,13 +1,16 @@
 package org.tcs.ui.viewmodel;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.*;
+import org.tcs.model.Ability;
 import org.tcs.model.Creature;
 import org.tcs.model.Damage;
 import org.tcs.model.dice.DiceRoller;
@@ -17,9 +20,9 @@ public class CreatureWizardViewModel {
   private final Creature.Builder builder = new Creature.Builder();
 
   private final SimpleStringProperty creatureName = new SimpleStringProperty("");
-  private final SimpleIntegerProperty creatureHitpoints = new SimpleIntegerProperty(20);
+  private final SimpleIntegerProperty creatureHitpoints = new SimpleIntegerProperty(-1);
   private final SimpleStringProperty creatureHitpointsError = new SimpleStringProperty("");
-  private final SimpleDoubleProperty creatureMovement = new SimpleDoubleProperty(10.0);
+  private final SimpleDoubleProperty creatureMovement = new SimpleDoubleProperty(-1);
   private final SimpleStringProperty creatureMovementError = new SimpleStringProperty("");
 
   private final ObservableSet<Damage.Type> resistances =
@@ -28,6 +31,8 @@ public class CreatureWizardViewModel {
       FXCollections.observableSet(EnumSet.noneOf(Damage.Type.class));
   private final ObservableSet<Damage.Type> immunities =
       FXCollections.observableSet(EnumSet.noneOf(Damage.Type.class));
+
+  private final Map<Ability, IntegerProperty> abilityScores = new EnumMap<>(Ability.class);
 
   public CreatureWizardViewModel() {
     creatureName.addListener(onChange(builder::name));
@@ -61,6 +66,13 @@ public class CreatureWizardViewModel {
     resistances.addListener(onSetChange(l -> builder.resistances(new ArrayList<>(l))));
     vulnerabilities.addListener(onSetChange(l -> builder.vulnerabilities(new ArrayList<>(l))));
     immunities.addListener(onSetChange(l -> builder.immunities(new ArrayList<>(l))));
+
+    for (Ability ability : Ability.values()) {
+      SimpleIntegerProperty score = new SimpleIntegerProperty(-1);
+      score.addListener(onChange(c -> builder.abilityScore(ability, c.intValue())));
+
+      abilityScores.put(ability, score);
+    }
 
     resetCreatureData();
   }
@@ -105,6 +117,10 @@ public class CreatureWizardViewModel {
     return creatureMovementError;
   }
 
+  public Map<Ability, IntegerProperty> abilityScores() {
+    return abilityScores;
+  }
+
   public void resetCreatureData() {
     creatureName.set("");
     creatureHitpoints.set(0);
@@ -113,6 +129,8 @@ public class CreatureWizardViewModel {
     resistances.clear();
     vulnerabilities.clear();
     immunities.clear();
+
+    for (Ability ability : Ability.values()) abilityScores.get(ability).set(0);
   }
 
   public Creature makeCreature(Point position, DiceRoller diceRoller) {
