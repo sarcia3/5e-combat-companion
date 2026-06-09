@@ -73,7 +73,7 @@ public class CreatureView extends VBox {
             nothingToDo,
             topLevelPlay(model),
             topLevelEdit(),
-            weaponsView(model),
+            inventoryView(model),
             targetSelection(model),
             movement(model));
     setMaxWidth(320.0);
@@ -86,8 +86,8 @@ public class CreatureView extends VBox {
   }
 
   private Node topLevelPlay(CreatureViewModel model) {
-    var weapons = new Button("Inventory");
-    weapons.setOnAction(_ -> nav.set(Nav.Inventory));
+    var inventory = new Button("Inventory");
+    inventory.setOnAction(_ -> nav.set(Nav.Inventory));
 
     var move = new Button("Move");
     move.setOnAction(
@@ -100,7 +100,7 @@ public class CreatureView extends VBox {
     pass.setOnAction(_ -> model.pass());
 
     var topLevel = new VBox(8);
-    topLevel.getChildren().addAll(weapons, move, pass);
+    topLevel.getChildren().addAll(inventory, move, pass);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(playOnly));
     topLevel.managedProperty().bind(topLevel.visibleProperty());
@@ -112,11 +112,11 @@ public class CreatureView extends VBox {
     var delete = new Button("Delete this creature");
     delete.setOnAction(_ -> onDelete.run());
 
-    var weapons = new Button("Inventory");
-    weapons.setOnAction(_ -> nav.set(Nav.Inventory));
+    var inventory = new Button("Inventory");
+    inventory.setOnAction(_ -> nav.set(Nav.Inventory));
 
     var topLevel = new VBox(8);
-    topLevel.getChildren().addAll(delete, weapons);
+    topLevel.getChildren().addAll(delete, inventory);
     topLevel.setAlignment(Pos.CENTER);
     topLevel.visibleProperty().bind(nav.isEqualTo(Nav.All).and(editMode));
     topLevel.managedProperty().bind(topLevel.visibleProperty());
@@ -124,7 +124,7 @@ public class CreatureView extends VBox {
     return topLevel;
   }
 
-  private Node weaponsView(CreatureViewModel model) {
+  private Node inventoryView(CreatureViewModel model) {
     var cancel = new Button("Cancel");
     cancel.setOnAction(_ -> nav.set(Nav.All));
 
@@ -132,29 +132,6 @@ public class CreatureView extends VBox {
     message.getStyleClass().add("error-text");
     message.setVisible(false);
     message.managedProperty().bind(message.visibleProperty());
-
-    var armorLabel = new Label("Equipped armor:");
-    var equippedArmor = new Label();
-    equippedArmor.textProperty().bind(model.wornArmorProperty());
-
-    var changeArmorButton = new Button("Change");
-    changeArmorButton.setOnAction(
-        _ -> {
-          Armor armor = armorSelector.showAndWait();
-          model.equip(armor);
-        });
-    changeArmorButton.visibleProperty().bind(editMode);
-    changeArmorButton.managedProperty().bind(editMode);
-
-    var spacer = new Region();
-    HBox.setHgrow(spacer, Priority.ALWAYS);
-    var armorBox = new HBox(equippedArmor, spacer, changeArmorButton);
-    armorBox.setAlignment(Pos.CENTER_LEFT);
-
-    var armorClass = new Label();
-    armorClass.textProperty().bind(model.armorClassProperty().asString().map(s -> "AC: " + s));
-
-    var armorInfo = new VBox(armorLabel, armorBox, armorClass);
 
     var equippedLabel = new Label("Equipped weapons:");
 
@@ -208,7 +185,7 @@ public class CreatureView extends VBox {
             cancel,
             message,
             new Separator(),
-            armorInfo,
+            armorView(model),
             new Separator(),
             equippedLabel,
             equippedWeapons,
@@ -219,6 +196,31 @@ public class CreatureView extends VBox {
             addWeapon);
     selection.setStyle("-fx-font-weight: bold;");
     return selection;
+  }
+
+  private Node armorView(CreatureViewModel model) {
+    var armorLabel = new Label("Equipped armor:");
+    var equippedArmor = new Label();
+    equippedArmor.textProperty().bind(model.wornArmorProperty());
+
+    var changeArmorButton = new Button("Change");
+    changeArmorButton.setOnAction(
+        _ -> {
+          Armor armor = armorSelector.showAndWait();
+          model.equip(armor);
+        });
+    changeArmorButton.visibleProperty().bind(editMode);
+    changeArmorButton.managedProperty().bind(editMode);
+
+    var spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+    var armorBox = new HBox(equippedArmor, spacer, changeArmorButton);
+    armorBox.setAlignment(Pos.CENTER_LEFT);
+
+    var armorClass = new Label();
+    armorClass.textProperty().bind(model.armorClassProperty().asString().map(s -> "AC: " + s));
+
+    return new VBox(armorLabel, armorBox, armorClass);
   }
 
   private HBox storedWeaponEntry(CreatureViewModel model, Weapon weapon, Label message) {

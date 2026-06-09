@@ -31,7 +31,7 @@ public class InitiativeQueue extends VBox {
     var entries = model.initiativeQueueProperty();
     var firstName = new SimpleStringProperty();
     var label = new Label();
-    label.textProperty().bind(firstName.map(v -> "Next: " + v).orElse("No creatures"));
+    label.textProperty().bind(firstName.map(v -> "Current: " + v).orElse("No creatures"));
     label.setStyle("-fx-font-weight: bold;");
 
     entries.addListener(
