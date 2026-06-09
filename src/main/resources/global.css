@@ -304,3 +304,58 @@
     -fx-effect:            none;
     -fx-cursor:            default;
 }
+
+/*----------------------------------------------------------------------*/
+/*------------------------------LIST VIEW-------------------------------*/
+/*----------------------------------------------------------------------*/
+
+.list-view {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 100% 100%,
+            #1a1714 0%, #3a3530 100%),
+        linear-gradient(from 0% 0% to 0% 100%,
+            #4a4540 0%, #252220 100%);
+    -fx-background-insets: 0, 2;
+    -fx-border-color:      #5a5550 #1a1714 #1a1714 #5a5550;
+    -fx-border-width:      1.5;
+    -fx-border-radius:     3;
+    -fx-background-radius: 3;
+    -fx-effect:            dropshadow(three-pass-box, #0a0806, 5, 0.5, 1, 3);
+}
+
+.list-view .viewport {
+    -fx-background-color: transparent;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill:        -stone-light;
+    -fx-padding:          6 10 6 10;
+    -fx-border-color:     transparent;
+    -fx-border-width:     0 0 1 0;
+}
+
+.list-cell:odd {
+    -fx-background-color: rgba(255, 255, 255, 0.03);
+}
+
+.list-cell:hover {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 0% 100%,
+            #5a5550 0%, #353230 100%);
+}
+
+.list-cell:selected {
+    -fx-background-color:
+        linear-gradient(from 0% 0% to 0% 100%,
+            -dnd-gold 0%, -dnd-gold-dark 100%);
+    -fx-text-fill: -ink-dark;
+}
+
+.list-cell:selected .label {
+    -fx-text-fill: -ink-dark;
+}
+
+.list-cell .label {
+    -fx-text-fill: -stone-light;
+}

@@ -78,6 +78,12 @@ public class WindowDiceRoller extends Stage implements DiceRoller {
                       return v.origin() + " is rolling: " + v.reason();
                     })
                 .orElse(""));
+    infoLabel
+        .textProperty()
+        .addListener(
+            (_, _, _) -> {
+              setWidth(Math.max(350, infoLabel.textProperty().get().length() * 6 + 200));
+            });
 
     var labelsBox = new VBox(5, sidesLabel, infoLabel);
     labelsBox.setAlignment(Pos.CENTER);

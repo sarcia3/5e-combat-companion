@@ -1,5 +1,6 @@
 package org.tcs.ui.equipment;
 
+import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -63,7 +64,12 @@ public class ArmorSelector {
     var root = new VBox(10, armorList, buttonBox);
     root.setPadding(new Insets(10));
 
-    popup.setScene(new Scene(root));
+    Scene scene = new Scene(root);
+    scene
+        .getStylesheets()
+        .add(Objects.requireNonNull(getClass().getResource("/global.css")).toExternalForm());
+
+    popup.setScene(scene);
   }
 
   public Armor showAndWait() {
